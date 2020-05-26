@@ -21,6 +21,13 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  conditional_builder: ^1.0.2
+  http: ^0.12.0+2
+  flutter_svg: 0.17.4
+  flare_flutter: ^1.8.3
+  shared_preferences: ^0.5.6
+  flutter_spinkit: "^4.1.1"
+  splashscreen: ^1.2.0
   flutter:
     sdk: flutter
 
@@ -38,6 +45,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+    - assets/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
