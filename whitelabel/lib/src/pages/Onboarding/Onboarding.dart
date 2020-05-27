@@ -40,7 +40,7 @@ class _OnboardingState extends State<Onboarding> {
     CarouselSlider carousel = CarouselSlider(
       carouselController: buttonCarouselController,
       options: CarouselOptions(
-        height: 450,
+        height: 350,
         viewportFraction: 1,
         onPageChanged: (index,reason){
           print(index);
@@ -53,8 +53,12 @@ class _OnboardingState extends State<Onboarding> {
       items: image.map((item) => Container(
         child: Center(
           child: Column(
-            children: <Widget>[
-              Image.asset(item, fit: BoxFit.cover,height: 410 ,width: MediaQuery.of(context).size.width),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[Container(
+              height: 350,
+              child:Image.asset(item, fit: BoxFit.fitHeight, width: MediaQuery.of(context).size.width,)
+            )
+              ,
             ],
           ) 
         ),
@@ -133,15 +137,20 @@ class _OnboardingState extends State<Onboarding> {
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         SingleChildScrollView(
           child: Container(
-              padding: EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(5.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Stack(children: <Widget>[
-                    IconButton(
-                    onPressed: (){},
-                    icon:Icon(Icons.close)),
+                    Container(
+                      padding: const EdgeInsets.only(top:10),
+                      child:                     
+                        IconButton(
+                          onPressed: (){},
+                          icon:Icon(Icons.close)),
+                        ),
+
                   carousel,
                   ],),
                   Row(
