@@ -23,6 +23,7 @@ class _CepState extends State<Cep> {
   }
 
   bool isSwitched = true, isValid = false, isInvalid = false;
+  String value = "";
 
   Widget Descricao() {
     return (Row(
@@ -59,10 +60,10 @@ class _CepState extends State<Cep> {
             Container(
               width: displayWidth(context) * 0.15,
               child: Switch(
-                value: isValid,
+                value: isInvalid,
                 onChanged: (value) {
                   setState(() {
-                  isValid = !isValid;
+                    isInvalid = !isInvalid;
                   });
                 },
                 activeTrackColor: Colors.orange,
@@ -94,6 +95,54 @@ class _CepState extends State<Cep> {
     ));
   }
 
+  Widget Continue() {
+    return (Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Container(
+                width: displayWidth(context) * 0.9,
+                height: displayHeight(context) * 0.08,
+                child: FlatButton(
+                  color: Colors.white,
+                  onPressed: () {
+                    print('oi');
+                  },
+                  child: Text('Desejo acessar mesmo assim',
+                      style: TextStyle(
+                          color: Color(0xFFFF805D),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700)),
+                  textColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                          color: Colors.white,
+                          width: 1,
+                          style: BorderStyle.solid),
+                      borderRadius: BorderRadius.circular(20)),
+                )),
+            Container(
+                width: displayWidth(context) * 0.9,
+                child: FlatButton(
+                  onPressed: () {
+                    print('oi');
+                  },
+                  child: Text('Utilizar outro CEP de entrega.',
+                      style: TextStyle(
+                         decoration: TextDecoration.underline,
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500)),
+                  textColor: Colors.white,
+                )),
+          ],
+        ),
+      ],
+    ));
+  }
+
   Widget Card() {
     return (Align(
         alignment: Alignment.bottomCenter,
@@ -105,8 +154,13 @@ class _CepState extends State<Cep> {
               duration: Duration(milliseconds: 300),
               curve: Curves.bounceInOut,
               decoration: BoxDecoration(
-                  color: isValid ? Color(0xFF1BD09A) : Color(0xFFFF805D),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
+                  color: isInvalid
+                      ? Color(0xFFFA5C5C)
+                      : isValid ? Color(0xFF1BD09A) : Color(0xFFFF805D),
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(20.0),
+                    topRight: const Radius.circular(20.0),
+                  )),
               width: displayWidth(context),
               height: displayHeight(context) * 0.3,
               child: Column(
@@ -117,11 +171,13 @@ class _CepState extends State<Cep> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Container(
-                        width: displayWidth(context) * 0.7,
+                        width: displayWidth(context) * 0.9,
                         child: Text(
-                          isValid
-                              ? 'Maravilha!\n Nós atendemos sua região'
-                              : 'Informe o CEP de entrega.',
+                          isInvalid
+                              ? 'Ah, que pena.\nAinda não atendemos sua região.'
+                              : isValid
+                                  ? 'Maravilha!\n Nós atendemos sua região'
+                                  : 'Informe o CEP de entrega.',
                           textAlign: TextAlign.center,
                           style: new TextStyle(
                             fontSize: 19.0,
@@ -137,75 +193,117 @@ class _CepState extends State<Cep> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.ease,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                color: Colors.white,
-                              ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          width: isValid
-                              ? displayWidth(context) * 0.2
-                              : displayWidth(context) * 0.9,
-                          height: displayHeight(context) * 0.09,
-                          child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: isValid
-                                          ? displayHeight(context) * 0.02
-                                          : displayHeight(context) * 0.03,
-                                      left: displayWidth(context) * 0.06),
-                                  child: Text(
-                                    isValid ? '🛵' : 'Seu CEP',
-                                    textAlign: TextAlign.center,
-                                    style: new TextStyle(
-                                      fontSize: isValid ? 26 : 19,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.black,
-                                    ),
+                      isInvalid
+                          ? Continue()
+                          : AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              curve: Curves.ease,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.white,
                                   ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: isValid
-                                          ? 0
-                                          : displayHeight(context) * 0.01,
-                                      bottom: isValid
-                                          ? 0
-                                          : displayHeight(context) * 0.01,
-                                      left: isValid
-                                          ? 0
-                                          : displayWidth(context) * 0.45),
-                                  child: isValid
-                                      ? null
-                                      : new GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              isValid = !isValid;
-                                            });
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Color(0xFF413131),
-                                                border: Border.all(
-                                                  color: Color(0xFF413131),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              width: isValid
+                                  ? displayWidth(context) * 0.2
+                                  : displayWidth(context) * 0.9,
+                              height: displayHeight(context) * 0.09,
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                        padding: EdgeInsets.only(
+                                            top: isValid
+                                                ? displayHeight(context) * 0.02
+                                                : displayHeight(context) * 0.03,
+                                            left: displayWidth(context) * 0.06),
+                                        child: isValid
+                                            ? Text(
+                                                '🛵',
+                                                textAlign: TextAlign.center,
+                                                style: new TextStyle(
+                                                  fontSize: isValid ? 26 : 19,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black,
                                                 ),
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(20))),
-                                            width: displayWidth(context) * 0.15,
-                                            height:
-                                                displayHeight(context) * 0.09,
-                                            child: Icon(Icons.check,
-                                                color: Colors.white),
-                                          )),
-                                ),
-                              ]))
+                                              )
+                                            : Container(
+                                                width: displayWidth(context) *
+                                                    0.55,
+                                                child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        bottom: displayHeight(
+                                                                context) *
+                                                            0.02),
+                                                    child: TextField(
+                                                      decoration: InputDecoration(
+                                                          border:
+                                                              InputBorder.none,
+                                                          hintText: "Seu CEP",
+                                                          hintStyle: TextStyle(
+                                                              color: Color(
+                                                                  0xFF413131),
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal)),
+                                                      textInputAction:
+                                                          TextInputAction
+                                                              .continueAction,
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          color:
+                                                              Color(0xFF413131),
+                                                          fontSize: 16,
+                                                          fontWeight: FontWeight
+                                                              .normal),
+                                                      onChanged: (text) {
+                                                        value = text;
+                                                      },
+                                                    )),
+                                              )),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: isValid
+                                              ? 0
+                                              : displayHeight(context) * 0.01,
+                                          bottom: isValid
+                                              ? 0
+                                              : displayHeight(context) * 0.01,
+                                          left: isValid
+                                              ? 0
+                                              : displayWidth(context) * 0.099),
+                                      child: isValid
+                                          ? null
+                                          : new GestureDetector(
+                                              onTap: () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                setState(() {
+                                                  isValid = true;
+                                                });
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    color: Color(0xFF413131),
+                                                    border: Border.all(
+                                                      color: Color(0xFF413131),
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                20))),
+                                                width: displayWidth(context) *
+                                                    0.15,
+                                                height: displayHeight(context) *
+                                                    0.09,
+                                                child: Icon(Icons.check,
+                                                    color: Colors.white),
+                                              )),
+                                    ),
+                                  ]))
                     ],
                   )
                 ],
@@ -228,16 +326,30 @@ class _CepState extends State<Cep> {
         Container(
             child: Column(children: <Widget>[
           Padding(padding: EdgeInsets.only(top: 40.0)),
-           SvgPicture.asset(
-            'assets/Logo.svg',
-            width: displayWidth(context) * 0.8,
-            height: displayHeight(context) * 0.1,
+          new GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+              setState(() {
+                isValid = false;
+              });
+            },
+            child: Image.asset(
+              'assets/logo.png',
+              width: displayWidth(context) * 0.4,
+            ),
           ),
-          Padding(
-              padding: EdgeInsets.only(
-                  top: displayHeight(context) * 0.3, bottom: 40)),
-          Descricao(),
-          Toogle(),
+          MediaQuery.of(context).viewInsets.bottom == 0
+              ? Image.asset(
+                  'assets/fone.png',
+                  width: displayWidth(context) * 0.8,
+                  height: displayHeight(context) * 0.35,
+                )
+              : Text(''),
+          Padding(padding: EdgeInsets.only(top: 20.0)),
+          MediaQuery.of(context).viewInsets.bottom == 0
+              ? Descricao()
+              : Text(''),
+          MediaQuery.of(context).viewInsets.bottom == 0 ? Toogle() : Text(''),
         ])),
       ]),
     );
