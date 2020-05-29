@@ -209,7 +209,9 @@ class _LoginState extends State<Login> {
     );
 
     Card cadastroCard = Card(
+      elevation: 0,
       color: Colors.white,
+      margin:EdgeInsets.all(0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Container(
           width: double.infinity,
@@ -259,6 +261,7 @@ class _LoginState extends State<Login> {
     Card loginCard = Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      margin: EdgeInsets.all(0),
       child: Container(
           width: MediaQuery.of(context).size.width,
           child: Column(
@@ -310,6 +313,7 @@ class _LoginState extends State<Login> {
                     Spacer(),
                     AnimatedContainer(
                         duration: Duration(milliseconds: 700),
+                        
                         height: isLogin ? 400 : 490,
                         curve: Curves.easeInOutBack,
                         child: isLogin ? loginCard : cadastroCard),
