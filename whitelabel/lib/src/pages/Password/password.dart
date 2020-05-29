@@ -18,7 +18,7 @@ class _LoginState extends State<Login> {
     Container textCadastro = Container(
       width: 270,
       child: Text(
-        'Vamos criar sua conta? É rápido! Igual nossa entrega.',
+        'Você acessou sua conta com uma senha provisória.',
         style: TextStyle(
             color: Color(
               0xFFFF805D,
@@ -30,7 +30,7 @@ class _LoginState extends State<Login> {
       ),
     );
 
-    Container textInstruction = Container(
+    Container textInstruction1 = Container(
       width: 270,
       child: Text(
         'Informe seu celular cadastrado                                    para enviarmos uma senha provisória',
@@ -43,6 +43,36 @@ class _LoginState extends State<Login> {
         textAlign: TextAlign.center,
       ),
     );
+
+    Container textInstruction2 = Container(
+      width: 270,
+      child: Text(
+        'Para sua maior segurança,                                    cadastre uma nova senha.',
+        style: TextStyle(
+          color: Color(
+            0xFF413131,
+          ),
+          fontSize: 12,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+
+    Container textInstruction3 = Container(
+      width: 270,
+      child: Text(
+        'Desejo cadastrar depois',
+        style: TextStyle(
+          decoration: TextDecoration.underline,
+          color: Color(
+            0xFF413131,
+          ),
+          fontSize: 12,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+
     GestureDetector returnButton = GestureDetector(
       onTap: (){
         setState(() {
@@ -77,6 +107,8 @@ class _LoginState extends State<Login> {
       ),
     );
 
+
+
     TextFormField celInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       decoration: InputDecoration(
@@ -101,7 +133,7 @@ class _LoginState extends State<Login> {
           filled: true,
           suffixIcon: Icon(Icons.remove_red_eye),
           contentPadding: EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
-          hintText: "Senha",
+          hintText: "Nova Senha",
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
               borderSide: BorderSide(color: Color(0xFFEDF1F7))),
@@ -150,41 +182,6 @@ class _LoginState extends State<Login> {
         ],
       ),
     ));
-    TextFormField emailInput = TextFormField(
-      validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
-      decoration: InputDecoration(
-          fillColor: Color(0xFFEDF1F7),
-          filled: true,
-          contentPadding: EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
-          hintText: "Seu e-mail",
-          enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15.0),
-              borderSide: BorderSide(
-                color: Color(0xFFEDF1F7),
-              )),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(color: Color(0xFFFF805D), width: 2.0),
-          )),
-    );
-
-    TextFormField nameInput = TextFormField(
-      validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
-      decoration: InputDecoration(
-          fillColor: Color(0xFFEDF1F7),
-          filled: true,
-          contentPadding: EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
-          hintText: "Seu nome",
-          enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15.0),
-              borderSide: BorderSide(
-                color: Color(0xFFEDF1F7),
-              )),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(color: Color(0xFFFF805D), width: 2.0),
-          )),
-    );
 
     Material bottomButton = Material(
       elevation: 5.0,
@@ -208,7 +205,7 @@ class _LoginState extends State<Login> {
       ),
     );
 
-    Card cadastroCard = Card(
+    Card passwordChangeCard = Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Container(
@@ -223,27 +220,19 @@ class _LoginState extends State<Login> {
                 children: <Widget>[
                   textCadastro,
                   SizedBox(
-                    height: 13,
+                    height: 15,
                   ),
-                  textInstruction,
+                  textInstruction2,
                   SizedBox(
-                    height: 13,
-                  ),
-                  celInput,
-                  SizedBox(
-                    height: 10,
-                  ),
-                  emailInput,
-                  SizedBox(
-                    height: 10,
-                  ),
-                  nameInput,
-                  SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   senhaInput,
                   SizedBox(
-                    height: 5,
+                    height: 20,
+                  ),
+                  textInstruction3,
+                  SizedBox(
+                    height: 10,
                   ),
                   SizedBox(
                     height: 15,
@@ -256,7 +245,7 @@ class _LoginState extends State<Login> {
           ])),
     );
 
-    Card loginCard = Card(
+    Card passwordForgottenCard = Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Container(
@@ -272,7 +261,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 30,
                   ),
-                  textInstruction,
+                  textInstruction1,
                   SizedBox(
                     height: 30,
                   ),
@@ -304,9 +293,9 @@ class _LoginState extends State<Login> {
                     Spacer(),
                     AnimatedContainer(
                         duration: Duration(milliseconds: 400),
-                        height: isLogin ? 400 : 490,
+                        height: isLogin ? 400 : 400,
                         curve: Curves.bounceInOut,
-                        child: isLogin ? loginCard : cadastroCard),
+                        child: isLogin ? passwordForgottenCard : passwordChangeCard),
                   ])),
         )
       ]),
