@@ -8,7 +8,6 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  //Abrindo o bottomSheet ao iniciar a tela
 
   bool isLogin = true;
   @override
@@ -43,6 +42,7 @@ class _LoginState extends State<Login> {
         textAlign: TextAlign.center,
       ),
     );
+
     GestureDetector returnButton = GestureDetector(
       onTap: (){
         setState(() {
@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
         });
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 400),
+        duration: Duration(milliseconds: 700),
         curve:Curves.fastOutSlowIn,
         width: isLogin? 0 :40,
         height: isLogin? 0:40,
@@ -293,6 +293,7 @@ class _LoginState extends State<Login> {
           ])),
     );
 
+
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         SingleChildScrollView(
@@ -308,9 +309,9 @@ class _LoginState extends State<Login> {
                     Padding(padding: EdgeInsets.only(left:20,top:40),child: returnButton,),
                     Spacer(),
                     AnimatedContainer(
-                        duration: Duration(milliseconds: 400),
+                        duration: Duration(milliseconds: 700),
                         height: isLogin ? 400 : 490,
-                        curve: Curves.bounceInOut,
+                        curve: Curves.easeInOutBack,
                         child: isLogin ? loginCard : cadastroCard),
                   ])),
         )
