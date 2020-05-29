@@ -203,7 +203,7 @@ class _LoginState extends State<Login> {
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w800,
                 fontSize: 16)),
       ),
     );
