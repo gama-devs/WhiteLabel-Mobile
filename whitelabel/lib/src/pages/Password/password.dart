@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-class Login extends StatefulWidget {
+class Password extends StatefulWidget {
   @override
-  _LoginState createState() => new _LoginState();
+  _PasswordState createState() => new _PasswordState();
 }
 
-class _LoginState extends State<Login> {
+class _PasswordState extends State<Password> {
   //Abrindo o bottomSheet ao iniciar a tela
 
-  bool isLogin = true;
+ bool isPassword = true;
+ bool isSuccesfull = false;
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -75,19 +77,26 @@ class _LoginState extends State<Login> {
 
     GestureDetector returnButton = GestureDetector(
       onTap: (){
+        if(isSuccesfull)
         setState(() {
-          isLogin = !isLogin;
+          isPassword = false;
+          isSuccesfull = false;
         });
+        else if(!isPassword)
+        setState(() {
+          isPassword = true;
+          isSuccesfull = false;
+        });
+        print(isSuccesfull);
+        print(isPassword);
       },
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 400),
-        curve:Curves.fastOutSlowIn,
-        width: isLogin? 0 :40,
-        height: isLogin? 0:40,
-        alignment: isLogin? Alignment.centerRight:Alignment.center,
-        child: isLogin? Container() : Icon(Icons.arrow_back_ios,color: Colors.white,),
+      child: Container(
+        width:  40,
+        height: 40,
+        alignment: Alignment.center,
+        child: Icon(Icons.arrow_back_ios,color: Colors.white,),
         decoration: BoxDecoration(
-          color: isLogin? Color(0x00FF805D): Color(0xFFFF805D),
+          color: Color(0xFFFF805D),
           borderRadius: BorderRadius.circular(10)
         ),),
     );
@@ -107,7 +116,26 @@ class _LoginState extends State<Login> {
       ),
     );
 
+    Container textNewPassword = Container(
+      width: 270,
+      child: Text(
+        'Nova Senha cadastrada com sucesso!',
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            height: 1,
+            fontWeight: FontWeight.w500),
+        textAlign: TextAlign.center,
+      ),
+    );
 
+    Container emoji = Container(
+      width: 50,
+      child: Icon(
+        Icons.lock,
+        size: 40,
+      ),
+    );
 
     TextFormField celInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
@@ -143,45 +171,6 @@ class _LoginState extends State<Login> {
           )),
     );
 
-    Container textForgetPassword = Container(
-      child: Text(
-        'Esqueci minha senha',
-        style: TextStyle(
-          color: Color(
-            0xFF413131,
-          ),
-          fontSize: 13,
-          height: 1.2,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-
-    Container textCreateAccount = Container(
-        child: GestureDetector(
-      onTap: () {
-        print(isLogin);
-        setState(() {
-          isLogin = false;
-        });
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'Ainda não tem conta?',
-            style: TextStyle(color: Color(0xFFFF805D), fontSize: 14),
-          ),
-          Text(
-            'Crie agora mesmo!',
-            style: TextStyle(
-                color: Color(0xFFFF805D),
-                fontSize: 14,
-                fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
-    ));
 
     Material bottomButton = Material(
       elevation: 5.0,
@@ -192,11 +181,20 @@ class _LoginState extends State<Login> {
         minWidth: double.infinity,
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
+          if (isPassword)
           setState(() {
-            isLogin = !isLogin;
+            isPassword = false;
+            isSuccesfull = false;
           });
+          else
+          setState(() {
+            isPassword = false;
+            isSuccesfull = true ;
+          });
+        print(isSuccesfull);
+        print(isPassword);
         },
-        child: Text(isLogin ? "Enviar" : "Cadastrar",
+        child: Text(isPassword ? "Enviar" : "Cadastrar",
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white,
@@ -206,7 +204,7 @@ class _LoginState extends State<Login> {
     );
 
     Card passwordChangeCard = Card(
-      color: Colors.white,
+      margin: EdgeInsets.all(0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Container(
           width: double.infinity,
@@ -246,7 +244,7 @@ class _LoginState extends State<Login> {
     );
 
     Card passwordForgottenCard = Card(
-      color: Colors.white,
+      margin: EdgeInsets.all(0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       child: Container(
           width: MediaQuery.of(context).size.width,
@@ -277,6 +275,34 @@ class _LoginState extends State<Login> {
           ])),
     );
 
+    Card passwordSuccesfulCard = Card(
+      margin: EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      child: Container(
+          color: Color(0xFF1BD09A),
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              child: Column(
+                children: <Widget>[
+                  textNewPassword,
+                  SizedBox(
+                    height: 30,
+                  ),
+                  emoji,
+                  SizedBox(
+                    height:30,
+                  )
+                ],
+              ),
+            ),
+            Spacer(),
+          ])), 
+    );
+
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         SingleChildScrollView(
@@ -292,10 +318,11 @@ class _LoginState extends State<Login> {
                     Padding(padding: EdgeInsets.only(left:20,top:40),child: returnButton,),
                     Spacer(),
                     AnimatedContainer(
-                        duration: Duration(milliseconds: 400),
-                        height: isLogin ? 400 : 400,
-                        curve: Curves.bounceInOut,
-                        child: isLogin ? passwordForgottenCard : passwordChangeCard),
+                        duration: Duration(milliseconds: 700),
+                        height: isSuccesfull ? 200 : 400,
+                        curve: Curves.easeInOutBack,
+                        child: isPassword ?  passwordForgottenCard : isSuccesfull ? passwordSuccesfulCard :passwordChangeCard ,
+                    ),
                   ])),
         )
       ]),
