@@ -87,8 +87,6 @@ class _PasswordState extends State<Password> {
           isPassword = true;
           isSuccesfull = false;
         });
-        print(isSuccesfull);
-        print(isPassword);
       },
       child: Container(
         width:  40,
@@ -191,8 +189,6 @@ class _PasswordState extends State<Password> {
             isPassword = false;
             isSuccesfull = true ;
           });
-        print(isSuccesfull);
-        print(isPassword);
         },
         child: Text(isPassword ? "Enviar" : "Cadastrar",
             textAlign: TextAlign.center,
