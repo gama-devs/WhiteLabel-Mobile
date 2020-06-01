@@ -351,7 +351,7 @@ class _CepState extends State<Cep> {
           ),
           MediaQuery.of(context).viewInsets.bottom == 0
               ? Image.asset(
-                  'assets/fone.png',
+                  'assets/fone2.png',
                   width: displayWidth(context) * 0.8,
                   height: displayHeight(context) * 0.35,
                 )
