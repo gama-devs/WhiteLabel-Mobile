@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Password extends StatefulWidget {
   @override
@@ -10,8 +11,9 @@ class Password extends StatefulWidget {
 class _PasswordState extends State<Password> {
   //Abrindo o bottomSheet ao iniciar a tela
 
- bool isPassword = true;
- bool isSuccesfull = false;
+  bool isPassword = true;
+  bool isSuccesfull = false;
+  bool hide = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class _PasswordState extends State<Password> {
             ),
             fontSize: 20,
             height: 1.2,
-            fontWeight: FontWeight.w500),
+            fontWeight: FontWeight.w700),
         textAlign: TextAlign.center,
       ),
     );
@@ -35,13 +37,13 @@ class _PasswordState extends State<Password> {
     Container textInstruction1 = Container(
       width: 270,
       child: Text(
-        'Informe seu celular cadastrado                                    para enviarmos uma senha provisória',
+        'Informe seu celular cadastrado\n para enviarmos uma senha provisória',
         style: TextStyle(
-          color: Color(
-            0xFF413131,
-          ),
-          fontSize: 12,
-        ),
+            color: Color(
+              0xFF413131,
+            ),
+            fontSize: 14,
+            fontWeight: FontWeight.w500),
         textAlign: TextAlign.center,
       ),
     );
@@ -51,11 +53,11 @@ class _PasswordState extends State<Password> {
       child: Text(
         'Para sua maior segurança,                                    cadastre uma nova senha.',
         style: TextStyle(
-          color: Color(
-            0xFF413131,
-          ),
-          fontSize: 12,
-        ),
+            color: Color(
+              0xFF413131,
+            ),
+            fontSize: 16,
+            fontWeight: FontWeight.w500),
         textAlign: TextAlign.center,
       ),
     );
@@ -69,47 +71,60 @@ class _PasswordState extends State<Password> {
           color: Color(
             0xFF413131,
           ),
-          fontSize: 12,
+          fontSize: 16,
         ),
         textAlign: TextAlign.center,
       ),
     );
 
     GestureDetector returnButton = GestureDetector(
-      onTap: (){
-        if(isSuccesfull)
-        setState(() {
-          isPassword = false;
-          isSuccesfull = false;
-        });
-        else if(!isPassword)
-        setState(() {
-          isPassword = true;
-          isSuccesfull = false;
-        });
+      onTap: () {
+        if (isSuccesfull)
+          setState(() {
+            isPassword = false;
+            isSuccesfull = false;
+          });
+        else if (!isPassword)
+          setState(() {
+            isPassword = true;
+            isSuccesfull = false;
+          });
       },
-      child: Container(
-        width:  40,
+      child: 
+       new GestureDetector(
+            onTap: () {
+             Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Login()
+        ));
+            },
+            child:
+      Container(
+        width: 40,
         height: 40,
         alignment: Alignment.center,
-        child: Icon(Icons.arrow_back_ios,color: Colors.white,),
+        child:
+         Icon(
+          Icons.arrow_back_ios,
+          color: Colors.white,
+        ),
         decoration: BoxDecoration(
-          color: Color(0xFFFF805D),
-          borderRadius: BorderRadius.circular(10)
-        ),),
+            color: Color(0xFFFF805D), borderRadius: BorderRadius.circular(12)),
+      ),)
     );
 
     Container textPassword = Container(
       width: 270,
       child: Text(
-        'Esqueceu sua senha?     Não tem problema!',
+        'Esqueceu sua senha?\nNão tem problema!',
         style: TextStyle(
             color: Color(
               0xFFFF805D,
             ),
             fontSize: 22,
             height: 1.2,
-            fontWeight: FontWeight.w500),
+            fontWeight: FontWeight.w700),
         textAlign: TextAlign.center,
       ),
     );
@@ -120,27 +135,39 @@ class _PasswordState extends State<Password> {
         'Nova Senha cadastrada com sucesso!',
         style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: 16,
             height: 1,
-            fontWeight: FontWeight.w500),
+            fontWeight: FontWeight.w700),
         textAlign: TextAlign.center,
       ),
     );
 
     Container emoji = Container(
-      width: 50,
-      child: Icon(
-        Icons.lock,
-        size: 40,
-      ),
-    );
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(top: 15),
+          child: Text(
+            '🔒',
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                height: 1,
+                fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
+          ),
+        ));
 
     TextFormField celInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
           filled: true,
-          contentPadding: EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
+          contentPadding: EdgeInsets.fromLTRB(25.0, 20.0, 30.0, 20.0),
           hintText: "Seu número de celular",
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
@@ -154,11 +181,20 @@ class _PasswordState extends State<Password> {
     );
     TextFormField senhaInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
+      obscureText: hide ? true : false,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
           filled: true,
-          suffixIcon: Icon(Icons.remove_red_eye),
-          contentPadding: EdgeInsets.fromLTRB(25.0, 10.0, 30.0, 10.0),
+          suffixIcon: new GestureDetector(
+            onTap: () {
+              setState(() {
+                hide = !hide;
+              });
+            },
+            child:
+                hide ? Icon(Icons.visibility_off) : Icon(Icons.remove_red_eye),
+          ),
+          contentPadding: EdgeInsets.fromLTRB(25.0, 20.0, 30.0, 20.0),
           hintText: "Nova Senha",
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
@@ -168,7 +204,6 @@ class _PasswordState extends State<Password> {
             borderSide: const BorderSide(color: Color(0xFFFF805D), width: 2.0),
           )),
     );
-
 
     Material bottomButton = Material(
       elevation: 5.0,
@@ -180,73 +215,71 @@ class _PasswordState extends State<Password> {
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
           if (isPassword)
-          setState(() {
-            isPassword = false;
-            isSuccesfull = false;
-          });
+            setState(() {
+              isPassword = false;
+              isSuccesfull = false;
+            });
           else
-          setState(() {
-            isPassword = false;
-            isSuccesfull = true ;
-          });
+            setState(() {
+              isPassword = false;
+              isSuccesfull = true;
+            });
         },
         child: Text(isPassword ? "Enviar" : "Cadastrar",
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16)),
+                fontSize: 20)),
       ),
     );
 
     Card passwordChangeCard = Card(
       margin: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
           width: double.infinity,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
-              child: Column(
-                children: <Widget>[
-                  textCadastro,
-                  SizedBox(
-                    height: 15,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+                  child: Column(
+                    children: <Widget>[
+                      textCadastro,
+                      SizedBox(
+                        height: 15,
+                      ),
+                      textInstruction2,
+                      SizedBox(
+                        height: 20,
+                      ),
+                      senhaInput,
+                      SizedBox(
+                        height: 20,
+                      ),
+                      textInstruction3,
+                      SizedBox(
+                        height: 10,
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                    ],
                   ),
-                  textInstruction2,
-                  SizedBox(
-                    height: 20,
-                  ),
-                  senhaInput,
-                  SizedBox(
-                    height: 20,
-                  ),
-                  textInstruction3,
-                  SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                ],
-              ),
-            ),
-            Spacer(),
-            bottomButton,
-          ])),
+                ),
+                Spacer(),
+                bottomButton,
+              ])),
     );
 
     Card passwordForgottenCard = Card(
       margin: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
           width: MediaQuery.of(context).size.width,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
               padding: EdgeInsets.only(left: 30, right: 30, top: 30),
               child: Column(
@@ -273,13 +306,11 @@ class _PasswordState extends State<Password> {
 
     Card passwordSuccesfulCard = Card(
       margin: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
           color: Color(0xFF1BD09A),
           width: MediaQuery.of(context).size.width,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
               padding: EdgeInsets.only(left: 30, right: 30, top: 30),
               child: Column(
@@ -290,37 +321,41 @@ class _PasswordState extends State<Password> {
                   ),
                   emoji,
                   SizedBox(
-                    height:30,
+                    height: 30,
                   )
                 ],
               ),
             ),
             Spacer(),
-          ])), 
+          ])),
     );
 
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
-        SingleChildScrollView(
-          child: Container(
-              height: MediaQuery.of(context).size.height,
-              decoration: new BoxDecoration(
-                  image: new DecorationImage(
-                      image: new AssetImage("assets/backgroundpizza.png"),
-                      fit: BoxFit.cover)),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(padding: EdgeInsets.only(left:20,top:40),child: returnButton,),
-                    Spacer(),
-                    AnimatedContainer(
-                        duration: Duration(milliseconds: 700),
-                        height: isSuccesfull ? 200 : 400,
-                        curve: Curves.easeInOutBack,
-                        child: isPassword ?  passwordForgottenCard : isSuccesfull ? passwordSuccesfulCard :passwordChangeCard ,
-                    ),
-                  ])),
-        )
+        Container(
+            height: MediaQuery.of(context).size.height,
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage("assets/bg.png"), fit: BoxFit.cover)),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, top: 40),
+                    child: returnButton,
+                  ),
+                  Spacer(),
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 700),
+                    height: isSuccesfull ? 200 : 400,
+                    curve: Curves.easeInOutBack,
+                    child: isPassword
+                        ? passwordForgottenCard
+                        : isSuccesfull
+                            ? passwordSuccesfulCard
+                            : passwordChangeCard,
+                  ),
+                ])),
       ]),
     );
   }

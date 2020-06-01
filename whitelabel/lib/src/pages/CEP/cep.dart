@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Cep extends StatefulWidget {
   @override
@@ -131,7 +134,7 @@ class _CepState extends State<Cep> {
                   },
                   child: Text('Utilizar outro CEP de entrega.',
                       style: TextStyle(
-                         decoration: TextDecoration.underline,
+                          decoration: TextDecoration.underline,
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w500)),
@@ -284,6 +287,14 @@ class _CepState extends State<Cep> {
                                                 setState(() {
                                                   isValid = true;
                                                 });
+                                                Timer(
+                                                    Duration(seconds: 2),
+                                                    () => Navigator.of(context)
+                                                        .pushReplacement(
+                                                            MaterialPageRoute(
+                                                                builder: (BuildContext
+                                                                        context) =>
+                                                                    Login()))); 
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
