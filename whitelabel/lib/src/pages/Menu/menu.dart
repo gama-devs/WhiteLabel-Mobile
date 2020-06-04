@@ -62,6 +62,33 @@ class _MenuState extends State<Menu> {
           image: 'assets/pizzaGrande.png')
     ];
 
+    final List<Produto> burguers = [
+      Produto(
+          name: "Smash Meat",
+          description: "180g de picanha, cheddar, rúcula e pão de brioche",
+          price: "28,90",
+          image: "assets/burg1.png",
+          options: ''),
+      Produto(
+          name: "Triple Angus",
+          description: "180g de picanha, cheddar, rúcula e pão de brioche",
+          price: "32,90",
+          image: "assets/burg2.png",
+          options: ''),
+      Produto(
+          name: "Cheddar Souce",
+          description: "180g de picanha, cheddar, rúcula e pão de brioche",
+          price: "25,90",
+          image: "assets/burg3.png",
+          options: ''),
+      Produto(
+          name: "Crispy Chicken",
+          description: "180g de picanha, cheddar, rúcula e pão de brioche",
+          price: "31,90",
+          image: "assets/burg4.png",
+          options: ''),
+    ];
+
     Container containerLogo = Container(
       width: MediaQuery.of(context).size.width / 4,
       child: Image.asset('assets/logo.png'),
@@ -149,10 +176,11 @@ class _MenuState extends State<Menu> {
           )
         ]));
     CarouselSlider carouselPizzas = CarouselSlider(
-      options: CarouselOptions(viewportFraction: 0.48, height: MediaQuery.of(context).size.height/2.5),
+      options: CarouselOptions(
+          viewportFraction: 0.48,
+          height: MediaQuery.of(context).size.height / 2.5),
       items: produtos
           .map((produto) => Container(
-              
                 child: Center(
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -249,6 +277,97 @@ class _MenuState extends State<Menu> {
           .toList(),
     );
 
+    Container textBurger = Container(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+          Container(
+            padding: EdgeInsets.only(bottom: 5),
+            child: Text(
+              'Especiais',
+              style: TextStyle(
+                  color: Color(0xFF413131),
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800),
+            ),
+          ),
+          Container(
+            child: Text(
+              'Aqueles que quem conhece ama',
+              style: TextStyle(color: Color(0xFF413131), fontSize: 14),
+            ),
+          )
+        ]));
+
+    Container gridBurguer = Container(
+      height: 500,
+        child: GridView.count(
+          childAspectRatio: 0.75,
+      crossAxisCount: 2,
+      children: burguers
+          .map((produto) => Container(
+            
+                    child: Column(
+                  children: <Widget>[
+                    Container(
+                        child: Container(
+                      padding: EdgeInsets.only(right: 10),
+                      width: MediaQuery.of(context).size.width / 2.0,
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width / 2.0,
+                            decoration: BoxDecoration(border: Border()),
+                            child:
+                                Image.asset(produto.image, fit: BoxFit.cover),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    produto.name,
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0XFFFF805D),
+                                        fontWeight: FontWeight.w800),
+                                  ),
+                                  Container(
+                                      height: 40,
+                                      child: Text(
+                                        produto.description,
+                                        style: TextStyle(
+                                            color: Color(0xFF413131),
+                                            fontSize: 12),
+                                      )),
+                                  
+                                  Row(
+                                    children: <Widget>[
+                                      Container(
+                                        padding: EdgeInsets.only(right: 3),
+                                        child: Text(
+                                          produto.price,
+                                          style: TextStyle(
+                                              color: Color(0XFF413131),
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w800),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ]),
+                          ),
+                        ],
+                      ),
+                    )),
+                  ],
+                ),
+              ))
+          .toList(),
+    ));
+
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         SingleChildScrollView(
@@ -276,8 +395,7 @@ class _MenuState extends State<Menu> {
                     ),
                     carouselPromos,
                     Container(
-                        padding:
-                            EdgeInsets.only(top: 20, left: 20, right: 20),
+                        padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                         child: Column(
                           children: <Widget>[
                             Row(children: <Widget>[
@@ -286,7 +404,18 @@ class _MenuState extends State<Menu> {
                           ],
                         )),
                     Container(
-                      child:carouselPizzas,)
+                      child: carouselPizzas,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          textBurger,
+                          gridBurguer,
+                        ],
+                      ),
+                    )
                   ],
                 )),
               ])),
