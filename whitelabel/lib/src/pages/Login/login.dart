@@ -12,9 +12,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final formKey = new GlobalKey<FormState>();
   bool isLogin = true;
   bool hide = false;
-
+  bool loginFail = false;
   saveTolken(tolken) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('tolken_code', tolken);
@@ -255,11 +256,19 @@ class _LoginState extends State<Login> {
             },
             body: jsonLogin);
         var jsonData = response.body;
+        print(jsonData);
         var parsedJson = json.decode(jsonData);
-        var token = parsedJson['data']["access_token"];
-        if(token !=null){
+        print(parsedJson);
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          print("cadsada");
+          var token = parsedJson['data']["access_token"];
           var userId = parsedJson['data']['user']['id'];
           saveTolken(token);
+        } else {
+          setState(() {
+            loginFail = true;
+          });
         }
         print(response.body);
       } catch (e) {
@@ -276,7 +285,9 @@ class _LoginState extends State<Login> {
         minWidth: double.infinity,
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
+          final form = formKey.currentState;
           postLoginButton(context);
+          FocusScope.of(context).unfocus();
         },
         child: Text("Login",
             textAlign: TextAlign.center,
@@ -436,6 +447,74 @@ class _LoginState extends State<Login> {
           ])),
     );
 
+    Card error = Card(
+      margin: EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      child: Container(
+          color: Color(0xFFFA5C5C),
+          width: MediaQuery.of(context).size.width,
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    "Email ou senha incorretos",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        height: 1,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+            Spacer(),
+            Container(padding: EdgeInsets.only(),),
+            Material(
+              elevation: 0,
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              color: Colors.white,
+              child: MaterialButton(
+                minWidth: MediaQuery.of(context).size.width/1.2,
+                padding: EdgeInsets.fromLTRB(30.0, 30, 30.0, 30.0),
+                onPressed: () {
+                  setState(() {
+                    loginFail = !loginFail;
+                  });
+                },
+                child: Text("Tentar novamente",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 22)),
+              ),
+            ),
+            SizedBox(height: 30,),
+            Container(
+                child: new GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => Password()));
+              },
+              child: Text(
+                'Esqueci minha senha',
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+
+                ),
+                textAlign: TextAlign.center,
+              ),
+            )),
+            Spacer(),
+          ])),
+    );
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         Container(
@@ -453,9 +532,11 @@ class _LoginState extends State<Login> {
                   Spacer(),
                   AnimatedContainer(
                       duration: Duration(milliseconds: 700),
-                      height: isLogin ? 420 : 550,
+                      height: loginFail ? 350 : isLogin ? 420 : 550,
                       curve: Curves.easeInOutBack,
-                      child: isLogin ? loginCard : registerCard),
+                      child: loginFail
+                          ? error
+                          : isLogin ? loginCard : registerCard),
                 ])),
       ]),
     );
