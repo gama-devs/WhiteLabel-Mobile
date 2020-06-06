@@ -45,7 +45,7 @@ class _OnboardingState extends State<Onboarding> {
     CarouselSlider carousel = CarouselSlider(
       carouselController: buttonCarouselController,
       options: CarouselOptions(
-          height: 350,
+          height: MediaQuery.of(context).size.height / 1.8,
           viewportFraction: 1,
           onPageChanged: (index, reason) {
             print(index);
@@ -62,7 +62,7 @@ class _OnboardingState extends State<Onboarding> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                        height: 350,
+                        height: MediaQuery.of(context).size.height / 1.8,
                         child: Image.asset(
                           item,
                           fit: BoxFit.fitHeight,
@@ -103,7 +103,7 @@ class _OnboardingState extends State<Onboarding> {
       borderRadius: BorderRadius.circular(10.0),
       color: Color(0xFFFF805D),
       child: Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: EdgeInsets.only(left: 20, right: 20, top: 0),
           child: MaterialButton(
             minWidth: MediaQuery.of(context).size.width,
             padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 15.0),
@@ -122,7 +122,7 @@ class _OnboardingState extends State<Onboarding> {
                 Text(
                   indexCarousel == 0 || indexCarousel == 1
                       ? 'Próximo'
-                      : 'Ir para pizzas',
+                      : 'Ir para pizzas 🤤',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontFamily: 'Roboto', color: Colors.white),
                 ),
@@ -137,16 +137,7 @@ class _OnboardingState extends State<Onboarding> {
                         ))
                     : Container(
                         width: 30,
-                        height: 30,
-                        child: Text(
-                          '🤤',
-                          textAlign: TextAlign.center,
-                          style: new TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black,
-                          ),
-                        )),
+                        height: 30,),
               ],
             ),
           )),
@@ -157,14 +148,17 @@ class _OnboardingState extends State<Onboarding> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-          Text(
-            textBold[indexCarousel],
-            style: TextStyle(
-                color: Color(0xFF413131),
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                wordSpacing: 1),
-            textAlign: TextAlign.center,
+          Container(
+            width: 300,
+            child: Text(
+              textBold[indexCarousel],
+              style: TextStyle(
+                  color: Color(0xFF413131),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  wordSpacing: 1),
+              textAlign: TextAlign.center,
+            ),
           ),
           SizedBox(
             height: 30,
@@ -186,7 +180,7 @@ class _OnboardingState extends State<Onboarding> {
           child: new Align(
               alignment: FractionalOffset.bottomCenter,
               child: Container(
-                  padding: EdgeInsets.only(bottom: 70.0, left: 30, right: 30),
+                  padding: EdgeInsets.only(bottom: 50.0, left: 30, right: 30),
                   child: nextButton)),
         ),
         Container(
@@ -225,6 +219,7 @@ class _OnboardingState extends State<Onboarding> {
                       checkBox(0, indexCarousel),
                       SizedBox(
                         width: 1,
+                        height: 00,
                       ),
                       checkBox(1, indexCarousel),
                       SizedBox(
@@ -234,7 +229,7 @@ class _OnboardingState extends State<Onboarding> {
                     ],
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 0,
                   ),
                   Center(child: carouselText)
                 ])),

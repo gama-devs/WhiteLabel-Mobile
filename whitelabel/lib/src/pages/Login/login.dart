@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
 
 class Login extends StatefulWidget {
@@ -9,8 +13,18 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final formKey = new GlobalKey<FormState>();
   bool isLogin = true;
   bool hide = false;
+  bool loginFail = false;
+  bool loading = false;
+  saveTolken(tolken) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('tolken_code', tolken);
+    // String to = prefs.getString('tolken_code');
+    //print('$to');
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -88,7 +102,9 @@ class _LoginState extends State<Login> {
           ),
         ));
 
+    TextEditingController celInputController = new TextEditingController();
     TextFormField celInput = TextFormField(
+      controller: celInputController,
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -105,7 +121,10 @@ class _LoginState extends State<Login> {
             borderSide: const BorderSide(color: Color(0xFFFF805D), width: 2.0),
           )),
     );
-    TextFormField senhaInput = TextFormField(
+
+    TextEditingController passwordInputController = new TextEditingController();
+    TextFormField passwordInput = TextFormField(
+      controller: passwordInputController,
       validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
       obscureText: hide ? true : false,
       decoration: InputDecoration(
@@ -176,7 +195,10 @@ class _LoginState extends State<Login> {
         ],
       ),
     ));
+
+    TextEditingController emailInputController = new TextEditingController();
     TextFormField emailInput = TextFormField(
+      controller: emailInputController,
       validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -194,7 +216,9 @@ class _LoginState extends State<Login> {
           )),
     );
 
+    TextEditingController nameInputController = new TextEditingController();
     TextFormField nameInput = TextFormField(
+      controller: nameInputController,
       validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -212,7 +236,58 @@ class _LoginState extends State<Login> {
           )),
     );
 
-    Material bottomButton = Material(
+    Future<String> postLoginButton(BuildContext context) async {
+      print(passwordInputController.text);
+      print(nameInputController.text);
+      print(celInputController.text);
+      print(emailInputController.text);
+      print("TESTE");
+      var jsonLogin = json.encode({
+        "company_id": 2,
+        "phone": celInputController.text,
+        "password": passwordInputController.text
+      });
+      var number = "2";
+      try {
+        setState(() {
+          loading = true;
+        });
+        print("Teste login");
+        http.Response response = await http.post(
+            Uri.encodeFull("http://50.16.146.1/api/auth/login/app"),
+            headers: {
+              "Accept": "application/json",
+              "content-type": "application/json",
+            },
+            body: jsonLogin);
+        var jsonData = response.body;
+        print(jsonData);
+        var parsedJson = json.decode(jsonData);
+        print(parsedJson);
+        print(response.statusCode);
+        if (response.statusCode == 200) {
+          setState(() {
+            loading = false;
+          });
+          print("cadsada");
+          var token = parsedJson['data']["access_token"];
+          var userId = parsedJson['data']['user']['id'];
+          saveTolken(token);
+        } else {
+          setState(() {
+            loading = false;
+          });
+          setState(() {
+            loginFail = true;
+          });
+        }
+        print(response.body);
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    Material loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30), topRight: Radius.circular(30)),
@@ -221,11 +296,90 @@ class _LoginState extends State<Login> {
         minWidth: double.infinity,
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
+          final form = formKey.currentState;
+          postLoginButton(context);
+          FocusScope.of(context).unfocus();
+        },
+        child: loading
+            ? SpinKitCircle(
+                color: Colors.white,
+                size: 35,
+              )
+            : Text("Login",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20)),
+      ),
+    );
+
+    Future<String> postRegisterData(BuildContext context) async {
+      print(passwordInputController.text);
+      print(nameInputController.text);
+      print(celInputController.text);
+      print(emailInputController.text);
+      print("TESTE");
+      var number = 2;
+      var jsao = json.encode({
+        "company_id": number,
+        "name": nameInputController.text,
+        "email": emailInputController.text,
+        "phone": celInputController.text,
+        "password": passwordInputController.text,
+        "password_confirmation": passwordInputController.text,
+        "addresses": [
+          {
+            "description": "Casa",
+            "complement": "Apto 1",
+            "zip_code": "91712150",
+            "address": "Rua Primordial 103 - Gloria - Porto Alegre - RS",
+            "latitude": "-30.09045170",
+            "longitude": "-51.18067240"
+          }
+        ]
+      });
+      try {
+        setState(() {
+          loading = true;
+        });
+        http.Response response = await http.post(
+            Uri.encodeFull("http://50.16.146.1/api/customers"),
+            headers: {
+              "Accept": "application/json",
+              "content-type": "application/json"
+            },
+            body: jsao);
+        print(response.body);
+        print(jsao);
+      } catch (e) {
+        print(e);
+      }
+      setState(() {
+        loading = false;
+      });
+    }
+
+    Material registerButton = Material(
+      elevation: 5.0,
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+      color: Color(0xFFFF805D),
+      child: MaterialButton(
+        minWidth: double.infinity,
+        padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
+        onPressed: () {
+          postRegisterData(context);
           setState(() {
             isLogin = !isLogin;
           });
         },
-        child: Text(isLogin ? "Entrar" : "Cadastrar",
+        child: loading
+            ? SpinKitCircle(
+                color: Colors.white,
+                size: 35,
+              )
+            : Text("Cadastrar",
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white,
@@ -234,7 +388,7 @@ class _LoginState extends State<Login> {
       ),
     );
 
-    Card cadastroCard = Card(
+    Card registerCard = Card(
       elevation: 0,
       color: Colors.white,
       margin: EdgeInsets.all(0),
@@ -269,7 +423,7 @@ class _LoginState extends State<Login> {
                       SizedBox(
                         height: 10,
                       ),
-                      senhaInput,
+                      passwordInput,
                       SizedBox(
                         height: 5,
                       ),
@@ -280,7 +434,7 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 Spacer(),
-                bottomButton,
+                registerButton,
               ])),
     );
 
@@ -303,7 +457,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 10,
                   ),
-                  senhaInput,
+                  passwordInput,
                   SizedBox(
                     height: 5,
                   ),
@@ -316,10 +470,81 @@ class _LoginState extends State<Login> {
               ),
             ),
             Spacer(),
-            bottomButton,
+            loginButton,
           ])),
     );
 
+    Card error = Card(
+      margin: EdgeInsets.all(0),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      child: Container(
+          color: Color(0xFFFA5C5C),
+          width: MediaQuery.of(context).size.width,
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    "Email ou senha incorretos",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        height: 1,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+            Spacer(),
+            Container(
+              padding: EdgeInsets.only(),
+            ),
+            Material(
+              elevation: 0,
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+              color: Colors.white,
+              child: MaterialButton(
+                minWidth: MediaQuery.of(context).size.width / 1.2,
+                padding: EdgeInsets.fromLTRB(30.0, 30, 30.0, 30.0),
+                onPressed: () {
+                  setState(() {
+                    loginFail = !loginFail;
+                  });
+                },
+                child: Text("Tentar novamente",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 22)),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Container(
+                child: new GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => Password()));
+              },
+              child: Text(
+                'Esqueci minha senha',
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            )),
+            Spacer(),
+          ])),
+    );
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         Container(
@@ -337,9 +562,11 @@ class _LoginState extends State<Login> {
                   Spacer(),
                   AnimatedContainer(
                       duration: Duration(milliseconds: 700),
-                      height: isLogin ? 420 : 550,
+                      height: loginFail ? 350 : isLogin ? 420 : 550,
                       curve: Curves.easeInOutBack,
-                      child: isLogin ? loginCard : cadastroCard),
+                      child: loginFail
+                          ? error
+                          : isLogin ? loginCard : registerCard),
                 ])),
       ]),
     );
