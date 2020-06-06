@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
@@ -16,6 +17,7 @@ class _LoginState extends State<Login> {
   bool isLogin = true;
   bool hide = false;
   bool loginFail = false;
+  bool loading = false;
   saveTolken(tolken) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('tolken_code', tolken);
@@ -247,6 +249,9 @@ class _LoginState extends State<Login> {
       });
       var number = "2";
       try {
+        setState(() {
+          loading = true;
+        });
         print("Teste login");
         http.Response response = await http.post(
             Uri.encodeFull("http://50.16.146.1/api/auth/login/app"),
@@ -261,11 +266,17 @@ class _LoginState extends State<Login> {
         print(parsedJson);
         print(response.statusCode);
         if (response.statusCode == 200) {
+          setState(() {
+            loading = false;
+          });
           print("cadsada");
           var token = parsedJson['data']["access_token"];
           var userId = parsedJson['data']['user']['id'];
           saveTolken(token);
         } else {
+          setState(() {
+            loading = false;
+          });
           setState(() {
             loginFail = true;
           });
@@ -289,12 +300,17 @@ class _LoginState extends State<Login> {
           postLoginButton(context);
           FocusScope.of(context).unfocus();
         },
-        child: Text("Login",
-            textAlign: TextAlign.center,
-            style: TextStyle(
+        child: loading
+            ? SpinKitCircle(
                 color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 20)),
+                size: 35,
+              )
+            : Text("Login",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20)),
       ),
     );
 
@@ -324,6 +340,9 @@ class _LoginState extends State<Login> {
         ]
       });
       try {
+        setState(() {
+          loading = true;
+        });
         http.Response response = await http.post(
             Uri.encodeFull("http://50.16.146.1/api/customers"),
             headers: {
@@ -336,6 +355,9 @@ class _LoginState extends State<Login> {
       } catch (e) {
         print(e);
       }
+      setState(() {
+        loading = false;
+      });
     }
 
     Material registerButton = Material(
@@ -352,7 +374,12 @@ class _LoginState extends State<Login> {
             isLogin = !isLogin;
           });
         },
-        child: Text("Cadastrar",
+        child: loading
+            ? SpinKitCircle(
+                color: Colors.white,
+                size: 35,
+              )
+            : Text("Cadastrar",
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white,
@@ -471,13 +498,15 @@ class _LoginState extends State<Login> {
               ),
             ),
             Spacer(),
-            Container(padding: EdgeInsets.only(),),
+            Container(
+              padding: EdgeInsets.only(),
+            ),
             Material(
               elevation: 0,
               borderRadius: BorderRadius.all(Radius.circular(12)),
               color: Colors.white,
               child: MaterialButton(
-                minWidth: MediaQuery.of(context).size.width/1.2,
+                minWidth: MediaQuery.of(context).size.width / 1.2,
                 padding: EdgeInsets.fromLTRB(30.0, 30, 30.0, 30.0),
                 onPressed: () {
                   setState(() {
@@ -492,7 +521,9 @@ class _LoginState extends State<Login> {
                         fontSize: 22)),
               ),
             ),
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             Container(
                 child: new GestureDetector(
               onTap: () {
@@ -507,7 +538,6 @@ class _LoginState extends State<Login> {
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   height: 1.2,
-
                 ),
                 textAlign: TextAlign.center,
               ),
