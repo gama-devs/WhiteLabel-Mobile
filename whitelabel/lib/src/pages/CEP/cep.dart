@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:whitelabel/src/pages/CEP/search.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Cep extends StatefulWidget {
@@ -244,7 +245,7 @@ class _CepState extends State<Cep> {
                                                       decoration: InputDecoration(
                                                           border:
                                                               InputBorder.none,
-                                                          hintText: "Seu CEP",
+                                                          hintText: "Endereço de entrega",
                                                           hintStyle: TextStyle(
                                                               color: Color(
                                                                   0xFF413131),
@@ -294,7 +295,7 @@ class _CepState extends State<Cep> {
                                                             MaterialPageRoute(
                                                                 builder: (BuildContext
                                                                         context) =>
-                                                                    Login()))); 
+                                                                   Address()))); 
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -360,7 +361,6 @@ class _CepState extends State<Cep> {
           MediaQuery.of(context).viewInsets.bottom == 0
               ? Descricao()
               : Text(''),
-          MediaQuery.of(context).viewInsets.bottom == 0 ? Toogle() : Text(''),
         ])),
       ]),
     );

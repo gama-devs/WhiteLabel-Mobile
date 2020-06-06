@@ -132,17 +132,12 @@ class _LoginState extends State<Login> {
     );
 
     Container textForgetPassword = Container(
-      child:
-      new GestureDetector(
-            onTap: () {
-             Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Password()
-        ));
-            },
-            child:
-       Text(
+        child: new GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Password()));
+      },
+      child: Text(
         'Esqueci minha senha',
         style: TextStyle(
           color: Color(
@@ -152,8 +147,8 @@ class _LoginState extends State<Login> {
           height: 1.2,
         ),
         textAlign: TextAlign.center,
-      ),)
-    );
+      ),
+    ));
 
     Container textCreateAccount = Container(
         child: GestureDetector(
