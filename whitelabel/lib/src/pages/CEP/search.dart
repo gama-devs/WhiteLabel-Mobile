@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:whitelabel/src/pages/CEP/cep.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Address extends StatefulWidget {
@@ -25,8 +27,58 @@ class _AddressState extends State<Address> {
     return displaySize(context).width;
   }
 
-  bool isSwitched = true, isValid = false, isInvalid = false;
+  bool isSwitched = true,
+      isValid = false,
+      isInvalid = false,
+      check = false,
+      escolha = false;
   String value = "";
+  String texto = "";
+  var arr = [];
+  String description = ' ',
+      str = '',
+      fullresp = '',
+      numero = '',
+      complement = 'Apto 1',
+      lat = '',
+      long = '',
+      zip_code = '',
+      address = '',
+      fullobj = ' ';
+
+  var _textController = new TextEditingController();
+
+  void initState() {
+    _textController.addListener(() {
+      //here you have the changes of your textfield
+      print("value: ${_textController.text}");
+      texto = Uri.encodeFull(_textController.text);
+      print(texto);
+      getData(context);
+      //use setState to rebuild the widget
+      setState(() {});
+    });
+    super.initState();
+  }
+
+  Future<String> getData(BuildContext context) async {
+    try {
+      http.Response response = await http.get(
+        Uri.encodeFull("https://api.mapbox.com/geocoding/v5/mapbox.places/" +
+            texto +
+            ".json?bbox=-73,-33,-34.0,5.5&access_token=pk.eyJ1IjoiZGVsaXZlcnlhZSIsImEiOiJja2F3eHlnZ2IwMDB3MnBudzV3OGx3eDA5In0.42k6GoeW3xZIySLKeBx22Q"),
+        headers: {
+          "Accept": "application/json",
+        },
+      );
+      var jsonData = response.body;
+      var parsedJson = json.decode(jsonData);
+      var status = parsedJson['data']['features'];
+      print(response.body);
+    } catch (e) {
+      print(e);
+    }
+  }
 
   Widget Descricao() {
     return (Row(
@@ -34,18 +86,33 @@ class _AddressState extends State<Address> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Padding(padding: EdgeInsets.only(top: 0.0, bottom: 40)),
-        Container(
-          width: displayWidth(context) * 0.2,
-          child: Padding(
-              padding: EdgeInsets.only(top: 10.0),
-              child: Icon(
-                Icons.arrow_back_ios,
-                color: Color(0xFFFF805D),
-              )),
+        new GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            /*    Timer(
+                Duration(seconds: 0),
+                () => Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (BuildContext context) => Cep()))); */
+          },
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            width: displayWidth(context) * 0.2,
+            child: Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Icon(
+                  Icons.arrow_back_ios,
+                  color: Color(0xFFFF805D),
+                )),
+          ),
         ),
-        Container(
+        AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            decoration: BoxDecoration(
+                color: Color(0xFFEDF1F7),
+                borderRadius: BorderRadius.all(Radius.circular(12))),
             width: displayWidth(context) * 0.7,
             child: TextField(
+              controller: _textController,
               decoration: InputDecoration(
                   prefixIcon: Icon(
                     Icons.search,
@@ -76,7 +143,8 @@ class _AddressState extends State<Address> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Container(
+        AnimatedContainer(
+          duration: Duration(milliseconds: 300),
           width: displayWidth(context) * 0.9,
           child: Padding(
             padding: EdgeInsets.only(top: 10.0),
@@ -98,7 +166,13 @@ class _AddressState extends State<Address> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-            width: displayWidth(context) * 0.7,
+          width: displayWidth(context) * 0.9,
+          height: 55,
+          decoration: BoxDecoration(
+              color: Color(0xFFEDF1F7),
+              borderRadius: BorderRadius.all(Radius.circular(12))),
+          child: Padding(
+            padding: EdgeInsets.only(left: 15.0, top: 5.0),
             child: TextField(
               decoration: InputDecoration(
                   border: InputBorder.none,
@@ -116,7 +190,9 @@ class _AddressState extends State<Address> {
               onChanged: (text) {
                 value = text;
               },
-            )),
+            ),
+          ),
+        ),
       ],
     ));
   }
@@ -126,25 +202,27 @@ class _AddressState extends State<Address> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Container(
+        Padding(
+          padding: EdgeInsets.only(left: 40.0, top: 15.0),
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 300),
             width: displayWidth(context) * 0.75,
             height: displayHeight(context) * 0.08,
-            child: FlatButton(
-              color: Colors.white,
-              onPressed: () {
-                print('oi');
-              },
-              child: Text('Endereço sem número',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal)),
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.white, width: 1, style: BorderStyle.solid),
-                  borderRadius: BorderRadius.circular(20)),
-            )),
+            child: Text('Endereço sem número',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal)),
+          ),
+        ),
+        Checkbox(
+          value: check,
+          onChanged: (check) {
+            setState(() {
+              check = !check;
+            });
+          },
+        ),
       ],
     ));
   }
@@ -156,7 +234,8 @@ class _AddressState extends State<Address> {
       children: <Widget>[
         Column(
           children: <Widget>[
-            Container(
+            AnimatedContainer(
+                duration: Duration(milliseconds: 300),
                 width: displayWidth(context) * 0.9,
                 height: displayHeight(context) * 0.08,
                 child: FlatButton(
@@ -197,6 +276,57 @@ class _AddressState extends State<Address> {
     ));
   }
 
+  Widget Item() {
+    return (Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.only(top: 15.0, right: 20),
+                child: Icon(Icons.location_on))
+          ],
+        ),
+        new GestureDetector(
+          onTap: () {
+            setState(() {
+              escolha = true;
+            });
+          },
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 15.0),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  width: displayWidth(context) * 0.75,
+                  child: Text('Avenida Venancio alves',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal)),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 0.0),
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 300),
+                  width: displayWidth(context) * 0.75,
+                  child: Text('Cidade Baixa, porto alegre - RS,brazil',
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                          fontWeight: FontWeight.normal)),
+                ),
+              ),
+            ],
+          ),
+        )
+      ],
+    ));
+  }
+
   Widget Card() {
     return (Align(
         alignment: Alignment.bottomCenter,
@@ -216,7 +346,7 @@ class _AddressState extends State<Address> {
               width: displayWidth(context),
               height: isInvalid
                   ? displayHeight(context) * 0.35
-                  : displayHeight(context) * 0.68,
+                  : displayHeight(context) * 0.7,
               child: Column(
                 children: <Widget>[
                   Padding(padding: EdgeInsets.only(top: 43.0)),
@@ -224,7 +354,8 @@ class _AddressState extends State<Address> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Container(
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
                         width: displayWidth(context) * 0.9,
                         child: Text(
                           isInvalid
@@ -315,7 +446,14 @@ class _AddressState extends State<Address> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Container(
-                                width: displayWidth(context) * 0.6,
+                              width: displayWidth(context) * 0.8,
+                              height: 55,
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFEDF1F7),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12))),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 15.0, top: 5.0),
                                 child: TextField(
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
@@ -334,7 +472,9 @@ class _AddressState extends State<Address> {
                                   onChanged: (text) {
                                     value = text;
                                   },
-                                )),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                   isInvalid
@@ -347,11 +487,18 @@ class _AddressState extends State<Address> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Container(
-                                width: displayWidth(context) * 0.6,
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFEDF1F7),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(12))),
+                              width: displayWidth(context) * 0.8,
+                              height: 55,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 15.0, top: 5.0),
                                 child: TextField(
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
-                                      hintText: "Nome do endereço(ex.Casa)",
+                                      hintText: "Nome do endereço (ex.casa)",
                                       hintStyle: TextStyle(
                                           color: Color(0xFF413131),
                                           fontSize: 16,
@@ -366,7 +513,9 @@ class _AddressState extends State<Address> {
                                   onChanged: (text) {
                                     value = text;
                                   },
-                                )),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                   isInvalid
@@ -388,11 +537,12 @@ class _AddressState extends State<Address> {
                                     color: Color(0xFFFF805D),
                                     onPressed: () {
                                       print('oi');
-                                      setState(() {
-                                        isValid = true;
-                                      });
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  Login()));
                                     },
-                                    child: Text('Confirmar',
+                                    child: Text('Salvar',
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16,
@@ -425,10 +575,10 @@ class _AddressState extends State<Address> {
                                     color: Colors.white,
                                     onPressed: () {
                                       print('oi');
-                                      setState(() {
-                                        isInvalid = true;
-                                        isValid = false;
-                                      });
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  Login()));
                                     },
                                     child: Text('Não, obrigado.',
                                         style: TextStyle(
@@ -436,7 +586,7 @@ class _AddressState extends State<Address> {
                                                 TextDecoration.underline,
                                             color: Colors.black,
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w700)),
+                                            fontWeight: FontWeight.w500)),
                                     textColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(
@@ -461,7 +611,8 @@ class _AddressState extends State<Address> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return Scaffold(
-      backgroundColor: isValid ? Color(0xFF1BD09A) : Colors.white,
+      backgroundColor:
+          isInvalid ? Colors.white : isValid ? Color(0xFF1BD09A) : Colors.white,
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         isValid
             ? Positioned.fill(
@@ -504,19 +655,81 @@ class _AddressState extends State<Address> {
             Container(
               height: 50,
             ),
-            isValid ? Text('') : Descricao(),
+            !isValid
+                ? SizedBox.shrink()
+                : Container(
+                    height: 20,
+                  ),
+            !isValid
+                ? SizedBox.shrink()
+                : Container(
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 14),
+                      child: Text(
+                        '🛵',
+                        textAlign: TextAlign.center,
+                        style: new TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black,
+                        ),
+                      ),
+                    )),
+            !isValid
+                ? SizedBox.shrink()
+                : Container(
+                    width: 300,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 14),
+                      child: Text(
+                        'Maravilha!\n Nós atendemos sua região',
+                        textAlign: TextAlign.center,
+                        style: new TextStyle(
+                          fontSize: 19.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    )),
+            isValid ? SizedBox.shrink() : Descricao(),
             Container(
               height: 50,
             ),
-            isValid ? Text('') : Number(),
+            escolha == false && isValid == false && isInvalid == false
+                ? SizedBox.shrink()
+                : isValid ? SizedBox.shrink() : Number(),
+            escolha == false && isValid == false && isInvalid == false
+                ? Item()
+                : SizedBox.shrink(),
+            escolha == false && isValid == false && isInvalid == false
+                ? Item()
+                : SizedBox.shrink(),
+            escolha == false && isValid == false && isInvalid == false
+                ? Item()
+                : SizedBox.shrink(),
+            escolha == false && isValid == false && isInvalid == false
+                ? Item()
+                : SizedBox.shrink(),
+            escolha == false && isValid == false && isInvalid == false
+                ? Item()
+                : SizedBox.shrink(),
             Container(
               height: 50,
             ),
-            isValid ? Text('') : NumberTextField(),
+            escolha == false
+                ? SizedBox.shrink()
+                : isValid ? SizedBox.shrink() : NumberTextField(),
             Container(
               height: 20,
             ),
-            isValid ? Text('') : NumberButton()
+            escolha == false
+                ? SizedBox.shrink()
+                : isValid ? SizedBox.shrink() : NumberButton(),
           ],
         ),
       ]),

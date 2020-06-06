@@ -17,7 +17,7 @@ class _SplashState extends State<Splash> {
     super.initState();
     Timer(
         Duration(seconds: 1),
-        () => Navigator.push(
+        () => Navigator.pushReplacement(
               context,
               PageRouteBuilder(
                 pageBuilder: (c, a1, a2) => Onboarding(),

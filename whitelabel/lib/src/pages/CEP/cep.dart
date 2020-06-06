@@ -181,7 +181,7 @@ class _CepState extends State<Cep> {
                               ? 'Ah, que pena.\nAinda não atendemos sua região.'
                               : isValid
                                   ? 'Maravilha!\n Nós atendemos sua região'
-                                  : 'Informe o CEP de entrega.',
+                                  : 'Informe o endereço de entrega.',
                           textAlign: TextAlign.center,
                           style: new TextStyle(
                             fontSize: 19.0,
@@ -242,6 +242,7 @@ class _CepState extends State<Cep> {
                                                                 context) *
                                                             0.02),
                                                     child: TextField(
+                                                       enabled: false, 
                                                       decoration: InputDecoration(
                                                           border:
                                                               InputBorder.none,
@@ -285,11 +286,8 @@ class _CepState extends State<Cep> {
                                               onTap: () {
                                                 FocusScope.of(context)
                                                     .unfocus();
-                                                setState(() {
-                                                  isValid = true;
-                                                });
                                                 Timer(
-                                                    Duration(seconds: 2),
+                                                    Duration(seconds: 0),
                                                     () => Navigator.of(context)
                                                         .pushReplacement(
                                                             MaterialPageRoute(
@@ -311,7 +309,7 @@ class _CepState extends State<Cep> {
                                                     0.15,
                                                 height: displayHeight(context) *
                                                     0.09,
-                                                child: Icon(Icons.check,
+                                                child: Icon(Icons.add,
                                                     color: Colors.white),
                                               )),
                                     ),
