@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Password extends StatefulWidget {
@@ -9,8 +10,17 @@ class Password extends StatefulWidget {
 }
 
 class _PasswordState extends State<Password> {
+  var tolken;
+getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('tolken_code');
+    tolken = token;
+  }
   //Abrindo o bottomSheet ao iniciar a tela
-
+  @override
+  void initState() {
+    super.initState();
+    getToken();}
   bool isPassword = true;
   bool isSuccesfull = false;
   bool hide = false;
@@ -214,6 +224,7 @@ class _PasswordState extends State<Password> {
         minWidth: double.infinity,
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
+          print(tolken);
           if (isPassword)
             setState(() {
               isPassword = false;

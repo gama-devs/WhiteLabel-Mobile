@@ -45,7 +45,7 @@ class _OnboardingState extends State<Onboarding> {
     CarouselSlider carousel = CarouselSlider(
       carouselController: buttonCarouselController,
       options: CarouselOptions(
-          height: 350,
+          height: MediaQuery.of(context).size.height / 1.8,
           viewportFraction: 1,
           onPageChanged: (index, reason) {
             print(index);
@@ -62,7 +62,7 @@ class _OnboardingState extends State<Onboarding> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                        height: 350,
+                        height: MediaQuery.of(context).size.height / 1.8,
                         child: Image.asset(
                           item,
                           fit: BoxFit.fitHeight,
@@ -157,14 +157,17 @@ class _OnboardingState extends State<Onboarding> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-          Text(
-            textBold[indexCarousel],
-            style: TextStyle(
-                color: Color(0xFF413131),
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                wordSpacing: 1),
-            textAlign: TextAlign.center,
+          Container(
+            width: 300,
+            child: Text(
+              textBold[indexCarousel],
+              style: TextStyle(
+                  color: Color(0xFF413131),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  wordSpacing: 1),
+              textAlign: TextAlign.center,
+            ),
           ),
           SizedBox(
             height: 30,

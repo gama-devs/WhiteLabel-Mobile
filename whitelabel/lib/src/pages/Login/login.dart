@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
 
 class Login extends StatefulWidget {
@@ -11,6 +14,14 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   bool isLogin = true;
   bool hide = false;
+
+  saveTolken(tolken) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('tolken_code', tolken);
+    // String to = prefs.getString('tolken_code');
+    //print('$to');
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -88,7 +99,9 @@ class _LoginState extends State<Login> {
           ),
         ));
 
+    TextEditingController celInputController = new TextEditingController();
     TextFormField celInput = TextFormField(
+      controller: celInputController,
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -105,7 +118,10 @@ class _LoginState extends State<Login> {
             borderSide: const BorderSide(color: Color(0xFFFF805D), width: 2.0),
           )),
     );
-    TextFormField senhaInput = TextFormField(
+
+    TextEditingController passwordInputController = new TextEditingController();
+    TextFormField passwordInput = TextFormField(
+      controller: passwordInputController,
       validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
       obscureText: hide ? true : false,
       decoration: InputDecoration(
@@ -132,17 +148,12 @@ class _LoginState extends State<Login> {
     );
 
     Container textForgetPassword = Container(
-      child:
-      new GestureDetector(
-            onTap: () {
-             Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Password()
-        ));
-            },
-            child:
-       Text(
+        child: new GestureDetector(
+      onTap: () {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Password()));
+      },
+      child: Text(
         'Esqueci minha senha',
         style: TextStyle(
           color: Color(
@@ -152,8 +163,8 @@ class _LoginState extends State<Login> {
           height: 1.2,
         ),
         textAlign: TextAlign.center,
-      ),)
-    );
+      ),
+    ));
 
     Container textCreateAccount = Container(
         child: GestureDetector(
@@ -181,7 +192,10 @@ class _LoginState extends State<Login> {
         ],
       ),
     ));
+
+    TextEditingController emailInputController = new TextEditingController();
     TextFormField emailInput = TextFormField(
+      controller: emailInputController,
       validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -199,7 +213,9 @@ class _LoginState extends State<Login> {
           )),
     );
 
+    TextEditingController nameInputController = new TextEditingController();
     TextFormField nameInput = TextFormField(
+      controller: nameInputController,
       validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -217,7 +233,41 @@ class _LoginState extends State<Login> {
           )),
     );
 
-    Material bottomButton = Material(
+    Future<String> postLoginButton(BuildContext context) async {
+      print(passwordInputController.text);
+      print(nameInputController.text);
+      print(celInputController.text);
+      print(emailInputController.text);
+      print("TESTE");
+      var jsonLogin = json.encode({
+        "company_id": 2,
+        "phone": celInputController.text,
+        "password": passwordInputController.text
+      });
+      var number = "2";
+      try {
+        print("Teste login");
+        http.Response response = await http.post(
+            Uri.encodeFull("http://50.16.146.1/api/auth/login/app"),
+            headers: {
+              "Accept": "application/json",
+              "content-type": "application/json",
+            },
+            body: jsonLogin);
+        var jsonData = response.body;
+        var parsedJson = json.decode(jsonData);
+        var token = parsedJson['data']["access_token"];
+        if(token !=null){
+          var userId = parsedJson['data']['user']['id'];
+          saveTolken(token);
+        }
+        print(response.body);
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    Material loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
           topLeft: Radius.circular(30), topRight: Radius.circular(30)),
@@ -226,11 +276,9 @@ class _LoginState extends State<Login> {
         minWidth: double.infinity,
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
-          setState(() {
-            isLogin = !isLogin;
-          });
+          postLoginButton(context);
         },
-        child: Text(isLogin ? "Entrar" : "Cadastrar",
+        child: Text("Login",
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: Colors.white,
@@ -239,7 +287,70 @@ class _LoginState extends State<Login> {
       ),
     );
 
-    Card cadastroCard = Card(
+    Future<String> postRegisterData(BuildContext context) async {
+      print(passwordInputController.text);
+      print(nameInputController.text);
+      print(celInputController.text);
+      print(emailInputController.text);
+      print("TESTE");
+      var number = 2;
+      var jsao = json.encode({
+        "company_id": number,
+        "name": nameInputController.text,
+        "email": emailInputController.text,
+        "phone": celInputController.text,
+        "password": passwordInputController.text,
+        "password_confirmation": passwordInputController.text,
+        "addresses": [
+          {
+            "description": "Casa",
+            "complement": "Apto 1",
+            "zip_code": "91712150",
+            "address": "Rua Primordial 103 - Gloria - Porto Alegre - RS",
+            "latitude": "-30.09045170",
+            "longitude": "-51.18067240"
+          }
+        ]
+      });
+      try {
+        http.Response response = await http.post(
+            Uri.encodeFull("http://50.16.146.1/api/customers"),
+            headers: {
+              "Accept": "application/json",
+              "content-type": "application/json"
+            },
+            body: jsao);
+        print(response.body);
+        print(jsao);
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    Material registerButton = Material(
+      elevation: 5.0,
+      borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+      color: Color(0xFFFF805D),
+      child: MaterialButton(
+        minWidth: double.infinity,
+        padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
+        onPressed: () {
+          postRegisterData(context);
+          setState(() {
+            isLogin = !isLogin;
+          });
+        },
+        child: Text("Cadastrar",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 20)),
+      ),
+    );
+
+    Card registerCard = Card(
       elevation: 0,
       color: Colors.white,
       margin: EdgeInsets.all(0),
@@ -274,7 +385,7 @@ class _LoginState extends State<Login> {
                       SizedBox(
                         height: 10,
                       ),
-                      senhaInput,
+                      passwordInput,
                       SizedBox(
                         height: 5,
                       ),
@@ -285,7 +396,7 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 Spacer(),
-                bottomButton,
+                registerButton,
               ])),
     );
 
@@ -308,7 +419,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 10,
                   ),
-                  senhaInput,
+                  passwordInput,
                   SizedBox(
                     height: 5,
                   ),
@@ -321,7 +432,7 @@ class _LoginState extends State<Login> {
               ),
             ),
             Spacer(),
-            bottomButton,
+            loginButton,
           ])),
     );
 
@@ -344,7 +455,7 @@ class _LoginState extends State<Login> {
                       duration: Duration(milliseconds: 700),
                       height: isLogin ? 420 : 550,
                       curve: Curves.easeInOutBack,
-                      child: isLogin ? loginCard : cadastroCard),
+                      child: isLogin ? loginCard : registerCard),
                 ])),
       ]),
     );

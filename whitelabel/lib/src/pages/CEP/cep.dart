@@ -252,9 +252,6 @@ class _CepState extends State<Cep> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .normal)),
-                                                      textInputAction:
-                                                          TextInputAction
-                                                              .continueAction,
                                                       textAlign: TextAlign.left,
                                                       style: TextStyle(
                                                           color:
