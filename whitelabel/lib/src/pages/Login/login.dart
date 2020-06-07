@@ -198,7 +198,7 @@ class _LoginState extends State<Login> {
             style: TextStyle(
                 color: Color(0xFFFF805D),
                 fontSize: 14,
-                fontWeight: FontWeight.w600),
+                fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -313,7 +313,7 @@ class _LoginState extends State<Login> {
                 color: Colors.white,
                 size: 35,
               )
-            : Text("Login",
+            : Text("Entrar",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
@@ -408,7 +408,7 @@ class _LoginState extends State<Login> {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 30, right: 30, top: 40),
+                  padding: EdgeInsets.only(left: 30, right: 30, top: 15),
                   child: Column(
                     children: <Widget>[
                       textCadastro,
@@ -454,12 +454,12 @@ class _LoginState extends State<Login> {
           width: MediaQuery.of(context).size.width,
           child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              padding: EdgeInsets.only(left: 30, right: 30, top: 15),
               child: Column(
                 children: <Widget>[
                   textLogin,
                   SizedBox(
-                    height: 10,
+                    height: 0,
                   ),
                   celInput,
                   SizedBox(
@@ -471,7 +471,7 @@ class _LoginState extends State<Login> {
                   ),
                   Row(children: <Widget>[Spacer(), textForgetPassword]),
                   SizedBox(
-                    height: 15,
+                    height: 10,
                   ),
                   textCreateAccount,
                 ],
@@ -575,9 +575,9 @@ class _LoginState extends State<Login> {
                         height: loginFail
                             ? 250
                             : isLogin
-                                ? 420
+                                ? 355
                                 : MediaQuery.of(context).viewInsets.bottom == 0
-                                    ? 500
+                                    ? 475
                                     : 550,
                         curve: Curves.easeInOutBack,
                         child: loginFail
