@@ -111,7 +111,7 @@ class _AddressState extends State<Address> {
   Widget Descricao() {
     return (Container(
         color: Color(0xFFF8F6F8),
-        height: MediaQuery.of(context).size.height / 5,
+        height: MediaQuery.of(context).size.height * 0.2,
         child: Container(
             padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Row(
@@ -159,7 +159,7 @@ class _AddressState extends State<Address> {
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12.0),
                               borderSide: BorderSide(
-                                color: Color(0xFFEDF1F7),
+                                color: Color(0xFFF8F6F8),
                               )),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -656,47 +656,50 @@ class _AddressState extends State<Address> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor:
-          isInvalid ? Colors.white : isValid ? Color(0xFF1BD09A) : Colors.white,
+          isInvalid ? Color(0xFFF8F6F8) : isValid ? Color(0xFF1BD09A) : Color(0xFFF8F6F8),
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         isValid
             ? Positioned.fill(
                 child: Card(),
               )
-            :             escolha == false && isValid == false && isInvalid == false
+            : escolha == false && isValid == false && isInvalid == false
                 ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : new Positioned(
-                child: new Align(
-                    alignment: FractionalOffset.bottomCenter,
-                    child: Container(
-                      padding:
-                          EdgeInsets.only(bottom: 70.0, left: 30, right: 30),
-                      child: Container(
-                          width: displayWidth(context) * 0.8,
-                          height: displayHeight(context) * 0.08,
-                          child: FlatButton(
-                            color: Color(0xFFFF805D),
-                            onPressed: () {
-                              print('oi');
-
-                              setState(() {
-                                isValid = true;
-                              });
-                            },
-                            child: Text('Confirmar',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700)),
-                            textColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(
+                : isValid
+                    ? SizedBox.shrink()
+                    : new Positioned(
+                        child: new Align(
+                            alignment: FractionalOffset.bottomCenter,
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  bottom: 70.0, left: 30, right: 30),
+                              child: Container(
+                                  width: displayWidth(context) * 0.8,
+                                  height: displayHeight(context) * 0.08,
+                                  child: FlatButton(
                                     color: Color(0xFFFF805D),
-                                    width: 1,
-                                    style: BorderStyle.solid),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                    )),
-              ),
+                                    onPressed: () {
+                                      print('oi');
+
+                                      setState(() {
+                                        isValid = true;
+                                      });
+                                    },
+                                    child: Text('Confirmar',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700)),
+                                    textColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Color(0xFFFF805D),
+                                            width: 1,
+                                            style: BorderStyle.solid),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                  )),
+                            )),
+                      ),
         Column(
           children: <Widget>[
             !isValid
@@ -747,33 +750,44 @@ class _AddressState extends State<Address> {
                         )),
             isValid ? SizedBox.shrink() : Descricao(),
             Container(
-              height: 10,
-            ),
-            escolha == false && isValid == false && isInvalid == false
-                ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : Number(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Column(
-                    children: listAdrreses.length > 0
-                        ? listAdrreses
-                            .map((produto) => Item(
-                                produto.name, produto.description, produto.cep))
-                            .toList()
-                        : [SizedBox.shrink()],
-                  )
-                : SizedBox.shrink(),
-            Container(
-              height: 50,
-            ),
-            escolha == false
-                ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : NumberTextField(),
-            Container(
-              height: 20,
-            ),
-            escolha == false
-                ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : NumberButton(),
+                height: MediaQuery.of(context).size.height * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(32),
+                        topRight: Radius.circular(32))),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 10,
+                    ),
+                    escolha == false && isValid == false && isInvalid == false
+                        ? SizedBox.shrink()
+                        : isValid ? SizedBox.shrink() : Number(),
+                    escolha == false && isValid == false && isInvalid == false
+                        ? Column(
+                            children: listAdrreses.length > 0
+                                ? listAdrreses
+                                    .map((produto) => Item(produto.name,
+                                        produto.description, produto.cep))
+                                    .toList()
+                                : [SizedBox.shrink()],
+                          )
+                        : SizedBox.shrink(),
+                    Container(
+                      height: 50,
+                    ),
+                    escolha == false
+                        ? SizedBox.shrink()
+                        : isValid ? SizedBox.shrink() : NumberTextField(),
+                    Container(
+                      height: 20,
+                    ),
+                    escolha == false
+                        ? SizedBox.shrink()
+                        : isValid ? SizedBox.shrink() : NumberButton(),
+                  ],
+                )),
           ],
         ),
       ]),
