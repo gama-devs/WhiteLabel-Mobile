@@ -87,9 +87,9 @@ class _AddressState extends State<Address> {
         },
       );
       Map<String,dynamic> jsonData = json.decode(response.body);
-      listAdrreses = [];
       List<dynamic> data = jsonData['features'];
-      for (int i=0;i<5 || i<data.length;i++){
+      listAdrreses.clear();
+      for (int i=0;i<5 && i<data.length;i++){
         listAdrreses.add(AddressFields(name: data[i]['text'],description: data[i]['place_name']));
       }
     } catch (e) {
