@@ -119,7 +119,7 @@ class _LoginState extends State<Login> {
           fillColor: Color(0xFFEDF1F7),
           filled: true,
           contentPadding: EdgeInsets.fromLTRB(25.0, 20.0, 30.0, 20.0),
-          hintText: "Seu Celular",
+          hintText: "Seu celular",
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
               borderSide: BorderSide(
@@ -198,7 +198,7 @@ class _LoginState extends State<Login> {
             style: TextStyle(
                 color: Color(0xFFFF805D),
                 fontSize: 14,
-                fontWeight: FontWeight.w600),
+                fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -298,11 +298,11 @@ class _LoginState extends State<Login> {
     Material loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          topLeft: Radius.circular(12), topRight: Radius.circular(12)),
       color: Color(0xFFFF805D),
       child: MaterialButton(
         minWidth: double.infinity,
-        padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
+        padding: EdgeInsets.fromLTRB(40.0, 20, 40.0, 40.0),
         onPressed: () {
           final form = formKey.currentState;
           postLoginButton(context);
@@ -313,7 +313,7 @@ class _LoginState extends State<Login> {
                 color: Colors.white,
                 size: 35,
               )
-            : Text("Login",
+            : Text("Entrar",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
@@ -371,11 +371,11 @@ class _LoginState extends State<Login> {
     Material registerButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          topLeft: Radius.circular(12), topRight: Radius.circular(12)),
       color: Color(0xFFFF805D),
       child: MaterialButton(
         minWidth: double.infinity,
-        padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
+        padding: EdgeInsets.fromLTRB(40.0, 20, 40.0, 40.0),
         onPressed: () {
           postRegisterData(context);
           setState(() {
@@ -408,35 +408,35 @@ class _LoginState extends State<Login> {
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+                  padding: EdgeInsets.only(left: 30, right: 30, top: 15),
                   child: Column(
                     children: <Widget>[
                       textCadastro,
                       SizedBox(
-                        height: 13,
+                        height: 5,
                       ),
                       textInstruction,
                       SizedBox(
-                        height: 13,
+                        height: 10,
                       ),
                       celInput,
                       SizedBox(
-                        height: 10,
+                        height: 5,
                       ),
                       emailInput,
                       SizedBox(
-                        height: 10,
+                        height: 5,
                       ),
                       nameInput,
                       SizedBox(
-                        height: 10,
+                        height: 5,
                       ),
                       passwordInput,
                       SizedBox(
                         height: 5,
                       ),
                       SizedBox(
-                        height: 15,
+                        height: 0,
                       ),
                     ],
                   ),
@@ -454,12 +454,12 @@ class _LoginState extends State<Login> {
           width: MediaQuery.of(context).size.width,
           child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              padding: EdgeInsets.only(left: 30, right: 30, top: 15),
               child: Column(
                 children: <Widget>[
                   textLogin,
                   SizedBox(
-                    height: 10,
+                    height: 0,
                   ),
                   celInput,
                   SizedBox(
@@ -471,7 +471,7 @@ class _LoginState extends State<Login> {
                   ),
                   Row(children: <Widget>[Spacer(), textForgetPassword]),
                   SizedBox(
-                    height: 15,
+                    height: 10,
                   ),
                   textCreateAccount,
                 ],
@@ -483,10 +483,14 @@ class _LoginState extends State<Login> {
     );
 
     Card error = Card(
+      elevation: 0,
+      color: Colors.transparent,
       margin: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
-          color: Color(0xFFFA5C5C),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(12), topLeft: Radius.circular(12)),
+              color: Color(0xFFFA5C5C)),
           width: MediaQuery.of(context).size.width,
           child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
@@ -494,7 +498,7 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    "Ah, que pena.\nEmail ou senha incorretos",
+                    "Ah, que pena.\nE-mail ou senha incorretos",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
@@ -575,9 +579,9 @@ class _LoginState extends State<Login> {
                         height: loginFail
                             ? 250
                             : isLogin
-                                ? 420
+                                ? 355
                                 : MediaQuery.of(context).viewInsets.bottom == 0
-                                    ? 550
+                                    ? 475
                                     : 550,
                         curve: Curves.easeInOutBack,
                         child: loginFail
