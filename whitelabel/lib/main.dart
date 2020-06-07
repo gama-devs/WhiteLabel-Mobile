@@ -12,9 +12,5 @@ import 'src/pages/Splash/splash.dart';
 void main() {
   runApp(MaterialApp(
 /*      home: Cep() */
-<<<<<<< HEAD
       home: Splash() ));
-=======
-      home: Splash()));
->>>>>>> 74a0130e0c2f37a1621f8e8dff547fa99a62005b
 }
