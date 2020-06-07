@@ -9,6 +9,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Deliveryae"
         android:icon="@mipmap/launcher_icon">
+        <uses-permission android:name="android.permission.INTERNET"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
