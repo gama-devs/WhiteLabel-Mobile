@@ -109,60 +109,91 @@ class _AddressState extends State<Address> {
   }
 
   Widget Descricao() {
-    return (Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Padding(padding: EdgeInsets.only(top: 0.0, bottom: 40)),
-        new GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-            Timer(
-                Duration(seconds: 0),
-                () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (BuildContext context) => Cep())));
-          },
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            width: displayWidth(context) * 0.2,
-            child: Padding(
-                padding: EdgeInsets.only(top: 10.0),
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: Color(0xFFFF805D),
-                )),
-          ),
-        ),
-        AnimatedContainer(
-            duration: Duration(milliseconds: 300),
-            decoration: BoxDecoration(
-                color: Color(0xFFEDF1F7),
-                borderRadius: BorderRadius.all(Radius.circular(12))),
-            width: displayWidth(context) * 0.7,
-            child: TextField(
-              controller: _textController,
-              decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    Icons.search,
-                    color: Color(0xFFFF805D),
+    return (Container(
+        color: Color(0xFFF8F6F8),
+        height: MediaQuery.of(context).size.height / 5,
+        child: Container(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(padding: EdgeInsets.only(top: 0, bottom: 40)),
+                new GestureDetector(
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                    Timer(
+                        Duration(seconds: 0),
+                        () => Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (BuildContext context) => Cep())));
+                  },
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    width: 40,
+                    height: 40,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                        ),
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: Color(0xFFFF805D),
+                        )),
                   ),
-                  border: InputBorder.none,
-                  hintText: "Digite o endereço",
-                  hintStyle: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal)),
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                  color: Color(0xFF413131),
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal),
-              onChanged: (text) {
-                value = text;
-              },
-            )),
-      ],
-    ));
+                ),
+                Spacer(),
+                AnimatedContainer(
+                    height: 50,
+                    duration: Duration(milliseconds: 700),
+                    decoration: BoxDecoration(
+                        color: Color(0xFFEDF1F7),
+                        borderRadius: BorderRadius.all(Radius.circular(12))),
+                    width: displayWidth(context) * 0.7,
+                    child: TextField(
+                      controller: _textController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(top: 5, bottom: 5),
+                          filled: true,
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: BorderSide(
+                                color: Color(0xFFEDF1F7),
+                              )),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                                color: Color(0xFFFF805D), width: 2.0),
+                          ),
+                          fillColor: Colors.white,
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Color(0xFFFF805D),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              _textController.clear();
+                            },
+                            icon: Icon(Icons.cancel),
+                            color: Color(0xFF868484),
+                          ),
+                          hintText: "Digite o endereço",
+                          hintStyle: TextStyle(
+                              color: Color(0xFF413131),
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal)),
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.normal),
+                      onChanged: (text) {
+                        value = text;
+                      },
+                    )),
+              ],
+            ))));
   }
 
   Widget Number() {
@@ -242,8 +273,9 @@ class _AddressState extends State<Address> {
           ),
         ),
         Checkbox(
-          activeColor:Color(0xFFFF805D),
-          value: rememberMe, onChanged: _onRememberMeChanged),
+            activeColor: Color(0xFFFF805D),
+            value: rememberMe,
+            onChanged: _onRememberMeChanged),
       ],
     ));
   }
@@ -314,6 +346,7 @@ class _AddressState extends State<Address> {
         ),
         new GestureDetector(
           onTap: () {
+            FocusScope.of(context).unfocus();
             setState(() {
               nameAddress = name;
               descriptionAddress = description;
@@ -629,7 +662,9 @@ class _AddressState extends State<Address> {
             ? Positioned.fill(
                 child: Card(),
               )
-            : new Positioned(
+            :             escolha == false && isValid == false && isInvalid == false
+                ? SizedBox.shrink()
+                : isValid ? SizedBox.shrink() : new Positioned(
                 child: new Align(
                     alignment: FractionalOffset.bottomCenter,
                     child: Container(
@@ -642,7 +677,7 @@ class _AddressState extends State<Address> {
                             color: Color(0xFFFF805D),
                             onPressed: () {
                               print('oi');
-                              
+
                               setState(() {
                                 isValid = true;
                               });
@@ -664,9 +699,6 @@ class _AddressState extends State<Address> {
               ),
         Column(
           children: <Widget>[
-            Container(
-              height: 50,
-            ),
             !isValid
                 ? SizedBox.shrink()
                 : Container(
@@ -715,7 +747,7 @@ class _AddressState extends State<Address> {
                         )),
             isValid ? SizedBox.shrink() : Descricao(),
             Container(
-              height: 50,
+              height: 10,
             ),
             escolha == false && isValid == false && isInvalid == false
                 ? SizedBox.shrink()
