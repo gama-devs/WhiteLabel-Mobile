@@ -9,12 +9,12 @@ import 'package:http/http.dart' as http;
 import 'package:whitelabel/src/pages/CEP/cep.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
-class AddressFields{
+class AddressFields {
   String name;
   String description;
   String cep;
 
-  AddressFields({this.name,this.description});
+  AddressFields({this.name, this.description});
 }
 
 class Address extends StatefulWidget {
@@ -23,7 +23,6 @@ class Address extends StatefulWidget {
 }
 
 class _AddressState extends State<Address> {
-
   String nameAddress = '';
   String descriptionAddress = '';
   String cepAdress = '';
@@ -44,7 +43,7 @@ class _AddressState extends State<Address> {
       isInvalid = false,
       check = false,
       escolha = false;
-  List <AddressFields> listAdrreses = [];
+  List<AddressFields> listAdrreses = [];
   String value = "";
   String texto = "";
   var arr = [];
@@ -58,6 +57,17 @@ class _AddressState extends State<Address> {
       zip_code = '',
       address = '',
       fullobj = ' ';
+  bool rememberMe = false;
+
+  void _onRememberMeChanged(bool newValue) => setState(() {
+        rememberMe = newValue;
+
+        if (rememberMe) {
+          // TODO: Here goes your functionality that remembers the user.
+        } else {
+          // TODO: Forget the user
+        }
+      });
 
   var _textController = new TextEditingController();
 
@@ -67,7 +77,7 @@ class _AddressState extends State<Address> {
       print("value: ${_textController.text}");
       texto = Uri.encodeFull(_textController.text);
       print(texto);
-      
+
       //use setState to rebuild the widget
       setState(() {
         getData(context);
@@ -86,11 +96,12 @@ class _AddressState extends State<Address> {
           "Accept": "application/json",
         },
       );
-      Map<String,dynamic> jsonData = json.decode(response.body);
+      Map<String, dynamic> jsonData = json.decode(response.body);
       List<dynamic> data = jsonData['features'];
       listAdrreses.clear();
-      for (int i=0;i<5 && i<data.length;i++){
-        listAdrreses.add(AddressFields(name: data[i]['text'],description: data[i]['place_name']));
+      for (int i = 0; i < 5 && i < data.length; i++) {
+        listAdrreses.add(AddressFields(
+            name: data[i]['text'], description: data[i]['place_name']));
       }
     } catch (e) {
       print(e);
@@ -106,7 +117,7 @@ class _AddressState extends State<Address> {
         new GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus();
-               Timer(
+            Timer(
                 Duration(seconds: 0),
                 () => Navigator.of(context).pushReplacement(MaterialPageRoute(
                     builder: (BuildContext context) => Cep())));
@@ -218,7 +229,7 @@ class _AddressState extends State<Address> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(left: 40.0, top: 15.0),
+          padding: EdgeInsets.only(left: 30.0, top: 15.0),
           child: AnimatedContainer(
             duration: Duration(milliseconds: 300),
             width: displayWidth(context) * 0.75,
@@ -231,13 +242,8 @@ class _AddressState extends State<Address> {
           ),
         ),
         Checkbox(
-          value: check,
-          onChanged: (check) {
-            setState(() {
-              check = !check;
-            });
-          },
-        ),
+          activeColor:Color(0xFFFF805D),
+          value: rememberMe, onChanged: _onRememberMeChanged),
       ],
     ));
   }
@@ -291,7 +297,7 @@ class _AddressState extends State<Address> {
     ));
   }
 
-  Widget Item(name,description,cep) {
+  Widget Item(name, description, cep) {
     print(name);
     print(description);
     print(cep);
@@ -315,7 +321,7 @@ class _AddressState extends State<Address> {
             });
           },
           child: Column(
-            children:[
+            children: [
               Padding(
                 padding: EdgeInsets.only(top: 15.0),
                 child: AnimatedContainer(
@@ -356,7 +362,7 @@ class _AddressState extends State<Address> {
           children: <Widget>[
             AnimatedContainer(
               duration: Duration(milliseconds: 300),
-              curve: Curves.bounceInOut,
+              curve: Curves.easeInOut,
               decoration: BoxDecoration(
                   color: isInvalid ? Color(0xFFFA5C5C) : Colors.white,
                   borderRadius: BorderRadius.only(
@@ -364,239 +370,247 @@ class _AddressState extends State<Address> {
                     topRight: const Radius.circular(20.0),
                   )),
               width: displayWidth(context),
-              height: isInvalid
-                  ? displayHeight(context) * 0.35
-                  : displayHeight(context) * 0.66,
-              child: SingleChildScrollView(child: Column(
-                children: <Widget>[
-                  Padding(padding: EdgeInsets.only(top: 43.0)),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        width: displayWidth(context) * 0.9,
-                        child: Text(
-                          isInvalid
-                              ? 'Ah, que pena.\nAinda não atendemos sua região.'
-                              : isValid
-                                  ? 'Que tal já salvar o endereço\n para suas compras?'
-                                  : 'Informe o CEP de entrega.',
-                          textAlign: TextAlign.center,
-                          style: new TextStyle(
-                            fontSize: 19.0,
-                            fontWeight: FontWeight.bold,
-                            color: isInvalid ? Colors.white : Colors.black,
+              height: MediaQuery.of(context).viewInsets.bottom != 0
+                  ? displayHeight(context) * 1
+                  : isInvalid
+                      ? displayHeight(context) * 0.35
+                      : displayHeight(context) * 0.66,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Padding(padding: EdgeInsets.only(top: 43.0)),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          width: displayWidth(context) * 0.9,
+                          child: Text(
+                            isInvalid
+                                ? 'Ah, que pena.\nAinda não atendemos sua região.'
+                                : isValid
+                                    ? 'Que tal já salvar o endereço\n para suas compras?'
+                                    : 'Informe o CEP de entrega.',
+                            textAlign: TextAlign.center,
+                            style: new TextStyle(
+                              fontSize: 19.0,
+                              fontWeight: FontWeight.bold,
+                              color: isInvalid ? Colors.white : Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Padding(padding: EdgeInsets.only(top: 43.0)),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: displayWidth(context) * 0.9,
-                              child: Text(
-                                nameAddress,
-                                textAlign: TextAlign.center,
-                                style: new TextStyle(
-                                  fontSize: 19.0,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color(0xFFFF805D),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: displayWidth(context) * 0.9,
-                              child: Text(
-                                descriptionAddress,
-                                textAlign: TextAlign.center,
-                                style: new TextStyle(
-                                  fontSize: 19.0,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color(0xFFFF805D),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Padding(padding: EdgeInsets.only(top: 43.0)),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: displayWidth(context) * 0.8,
-                              height: 55,
-                              decoration: BoxDecoration(
-                                  color: Color(0xFFEDF1F7),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12))),
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 15.0, top: 5.0),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Complemento(caso tenha)",
-                                      hintStyle: TextStyle(
-                                          color: Color(0xFF413131),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.normal)),
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      color: Color(0xFF413131),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal),
-                                  onChanged: (text) {
-                                    value = text;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Padding(padding: EdgeInsets.only(top: 13.0)),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Color(0xFFEDF1F7),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(12))),
-                              width: displayWidth(context) * 0.8,
-                              height: 55,
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 15.0, top: 5.0),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Nome do endereço (ex.casa)",
-                                      hintStyle: TextStyle(
-                                          color: Color(0xFF413131),
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.normal)),
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      color: Color(0xFF413131),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.normal),
-                                  onChanged: (text) {
-                                    value = text;
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                  isInvalid
-                      ? Padding(padding: EdgeInsets.only(top: 21.0))
-                      : Padding(padding: EdgeInsets.only(top: 13.0)),
-                  isInvalid
-                      ? Continue()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(
-                                  bottom: 20.0, left: 30, right: 30),
-                              child: Container(
-                                  width: displayWidth(context) * 0.8,
-                                  height: displayHeight(context) * 0.08,
-                                  child: FlatButton(
+                      ],
+                    ),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Padding(padding: EdgeInsets.only(top: 43.0)),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: displayWidth(context) * 0.9,
+                                child: Text(
+                                  nameAddress,
+                                  textAlign: TextAlign.center,
+                                  style: new TextStyle(
+                                    fontSize: 19.0,
+                                    fontWeight: FontWeight.normal,
                                     color: Color(0xFFFF805D),
-                                    onPressed: () {
-                                      print('oi');
-                                      Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  Login()));
-                                    },
-                                    child: Text('Salvar',
-                                        style: TextStyle(
-                                            color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: displayWidth(context) * 0.9,
+                                child: Text(
+                                  descriptionAddress,
+                                  textAlign: TextAlign.center,
+                                  style: new TextStyle(
+                                    fontSize: 19.0,
+                                    fontWeight: FontWeight.normal,
+                                    color: Color(0xFFFF805D),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Padding(padding: EdgeInsets.only(top: 43.0)),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: displayWidth(context) * 0.8,
+                                height: 55,
+                                decoration: BoxDecoration(
+                                    color: Color(0xFFEDF1F7),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12))),
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.only(left: 15.0, top: 5.0),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Complemento(caso tenha)",
+                                        hintStyle: TextStyle(
+                                            color: Color(0xFF413131),
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w700)),
-                                    textColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Color(0xFFFF805D),
-                                            width: 1,
-                                            style: BorderStyle.solid),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                  )),
-                            )
-                          ],
-                        ),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.only(
-                                  bottom: 70.0, left: 30, right: 30),
-                              child: Container(
-                                  width: displayWidth(context) * 0.8,
-                                  height: displayHeight(context) * 0.03,
-                                  child: FlatButton(
-                                    color: Colors.white,
-                                    onPressed: () {
-                                      print('oi');
-                                      Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  Login()));
+                                            fontWeight: FontWeight.normal)),
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Color(0xFF413131),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal),
+                                    onChanged: (text) {
+                                      value = text;
                                     },
-                                    child: Text('Não, obrigado.',
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Padding(padding: EdgeInsets.only(top: 13.0)),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Color(0xFFEDF1F7),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(12))),
+                                width: displayWidth(context) * 0.8,
+                                height: 55,
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.only(left: 15.0, top: 5.0),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: "Nome do endereço (ex.casa)",
+                                        hintStyle: TextStyle(
+                                            color: Color(0xFF413131),
                                             fontSize: 16,
-                                            fontWeight: FontWeight.w500)),
-                                    textColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Colors.white,
-                                            width: 1,
-                                            style: BorderStyle.solid),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                  )),
-                            )
-                          ],
-                        )
-                ],
-              ),),
+                                            fontWeight: FontWeight.normal)),
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                        color: Color(0xFF413131),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.normal),
+                                    onChanged: (text) {
+                                      value = text;
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    isInvalid
+                        ? Padding(padding: EdgeInsets.only(top: 21.0))
+                        : Padding(padding: EdgeInsets.only(top: 13.0)),
+                    isInvalid
+                        ? Continue()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.only(
+                                    bottom: 20.0, left: 30, right: 30),
+                                child: Container(
+                                    width: displayWidth(context) * 0.8,
+                                    height: displayHeight(context) * 0.08,
+                                    child: FlatButton(
+                                      color: Color(0xFFFF805D),
+                                      onPressed: () {
+                                        print('oi');
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        Login()));
+                                      },
+                                      child: Text('Salvar',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700)),
+                                      textColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: Color(0xFFFF805D),
+                                              width: 1,
+                                              style: BorderStyle.solid),
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                    )),
+                              )
+                            ],
+                          ),
+                    isInvalid
+                        ? SizedBox.shrink()
+                        : Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.only(
+                                    bottom: 70.0, left: 30, right: 30),
+                                child: Container(
+                                    width: displayWidth(context) * 0.8,
+                                    height: displayHeight(context) * 0.03,
+                                    child: FlatButton(
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        print('oi');
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        Login()));
+                                      },
+                                      child: Text('Não, obrigado.',
+                                          style: TextStyle(
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              color: Colors.black,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500)),
+                                      textColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: Colors.white,
+                                              width: 1,
+                                              style: BorderStyle.solid),
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                    )),
+                              )
+                            ],
+                          )
+                  ],
+                ),
+              ),
             ),
           ],
         )));
@@ -657,42 +671,47 @@ class _AddressState extends State<Address> {
                 : Container(
                     height: 20,
                   ),
-            !isValid
+            MediaQuery.of(context).viewInsets.bottom != 0
                 ? SizedBox.shrink()
-                : Container(
-                    height: 70,
-                    width: 70,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 14),
-                      child: Text(
-                        '🛵',
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black,
-                        ),
-                      ),
-                    )),
-            !isValid
+                : !isValid
+                    ? SizedBox.shrink()
+                    : Container(
+                        height: 70,
+                        width: 70,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20))),
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 14),
+                          child: Text(
+                            '🛵',
+                            textAlign: TextAlign.center,
+                            style: new TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.black,
+                            ),
+                          ),
+                        )),
+            MediaQuery.of(context).viewInsets.bottom != 0
                 ? SizedBox.shrink()
-                : Container(
-                    width: 300,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 14),
-                      child: Text(
-                        'Maravilha!\n Nós atendemos sua região',
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(
-                          fontSize: 19.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )),
+                : !isValid
+                    ? SizedBox.shrink()
+                    : Container(
+                        width: 300,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 14),
+                          child: Text(
+                            'Maravilha!\n Nós atendemos sua região',
+                            textAlign: TextAlign.center,
+                            style: new TextStyle(
+                              fontSize: 19.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )),
             isValid ? SizedBox.shrink() : Descricao(),
             Container(
               height: 50,
@@ -700,11 +719,16 @@ class _AddressState extends State<Address> {
             escolha == false && isValid == false && isInvalid == false
                 ? SizedBox.shrink()
                 : isValid ? SizedBox.shrink() : Number(),
-            escolha == false && isValid == false && isInvalid == false ? Column(
-              children: listAdrreses.length > 0 ? listAdrreses
-          .map((produto) => Item(produto.name,produto.description,produto.cep))
-          .toList(): [SizedBox.shrink()],
-            ): SizedBox.shrink(),
+            escolha == false && isValid == false && isInvalid == false
+                ? Column(
+                    children: listAdrreses.length > 0
+                        ? listAdrreses
+                            .map((produto) => Item(
+                                produto.name, produto.description, produto.cep))
+                            .toList()
+                        : [SizedBox.shrink()],
+                  )
+                : SizedBox.shrink(),
             Container(
               height: 50,
             ),
@@ -719,6 +743,7 @@ class _AddressState extends State<Address> {
                 : isValid ? SizedBox.shrink() : NumberButton(),
           ],
         ),
-      ]),);
+      ]),
+    );
   }
 }
