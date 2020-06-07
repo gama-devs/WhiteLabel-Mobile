@@ -45,7 +45,7 @@ class _OnboardingState extends State<Onboarding> {
     CarouselSlider carousel = CarouselSlider(
       carouselController: buttonCarouselController,
       options: CarouselOptions(
-          height: 350,
+          height: MediaQuery.of(context).size.height/2,
           viewportFraction: 1,
           onPageChanged: (index, reason) {
             print(index);
@@ -62,7 +62,7 @@ class _OnboardingState extends State<Onboarding> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                        height: 350,
+                        height:MediaQuery.of(context).size.height/2,
                         child: Image.asset(
                           item,
                           fit: BoxFit.fitHeight,
@@ -167,7 +167,7 @@ class _OnboardingState extends State<Onboarding> {
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 30,
+            height:MediaQuery.of(context).size.height/30
           ),
           Text(
             textGrey[indexCarousel],
@@ -176,7 +176,7 @@ class _OnboardingState extends State<Onboarding> {
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 30,
+            height: MediaQuery.of(context).size.height/30
           ),
         ]));
 
@@ -186,7 +186,7 @@ class _OnboardingState extends State<Onboarding> {
           child: new Align(
               alignment: FractionalOffset.bottomCenter,
               child: Container(
-                  padding: EdgeInsets.only(bottom: 70.0, left: 30, right: 30),
+                  padding: EdgeInsets.only(bottom: 50.0, left: 30, right: 30),
                   child: nextButton)),
         ),
         Container(
@@ -234,7 +234,7 @@ class _OnboardingState extends State<Onboarding> {
                     ],
                   ),
                   SizedBox(
-                    height: 20,
+                    height: MediaQuery.of(context).size.height/30,
                   ),
                   Center(child: carouselText)
                 ])),
