@@ -43,7 +43,7 @@ class _CepState extends State<Cep> {
             style: new TextStyle(
               fontSize: 23.0,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Color(0xFF413131),
             ),
           ),
         ),
@@ -218,65 +218,64 @@ class _CepState extends State<Cep> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Padding(
-                                        padding: EdgeInsets.only(
-                                            top: isValid
-                                                ? displayHeight(context) * 0.02
-                                                : displayHeight(context) * 0.03,
-                                            left: displayWidth(context) * 0.06),
-                                        child: isValid
-                                            ? Text(
-                                                '🛵',
-                                                textAlign: TextAlign.center,
-                                                style: new TextStyle(
-                                                  fontSize: isValid ? 26 : 19,
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Colors.black,
-                                                ),
-                                              )
-                                            : Container(
-                                                width: displayWidth(context) *
-                                                    0.55,
-                                                child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        bottom: displayHeight(
-                                                                context) *
-                                                            0.02),
-                                                    child: TextField(
-                                                       enabled: false, 
-                                                      decoration: InputDecoration(
-                                                          border:
-                                                              InputBorder.none,
-                                                          hintText: "Endereço de entrega",
-                                                          hintStyle: TextStyle(
-                                                              color: Color(
-                                                                  0xFF413131),
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal)),
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                          color:
-                                                              Color(0xFF413131),
-                                                          fontSize: 16,
-                                                          fontWeight: FontWeight
-                                                              .normal),
-                                                      onChanged: (text) {
-                                                        value = text;
-                                                      },
-                                                    )),
-                                              )),
+                                      padding: EdgeInsets.only(
+                                          top: isValid
+                                              ? displayHeight(context) * 0.02
+                                              : displayHeight(context) * 0.03,
+                                          left: displayWidth(context) * 0.06),
+                                      child: isValid
+                                          ? Text(
+                                              '🛵',
+                                              textAlign: TextAlign.center,
+                                              style: new TextStyle(
+                                                fontSize: isValid ? 26 : 19,
+                                                fontWeight: FontWeight.normal,
+                                                color: Color(0xFF413131),
+                                              ),
+                                            )
+                                          : Center(
+                                              child: Container(
+                                              width:
+                                                  displayWidth(context) * 0.55,
+                                              child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: displayHeight(
+                                                              context) *
+                                                          0.02),
+                                                  child: TextField(
+                                                    decoration: InputDecoration(
+                                                        border:
+                                                            InputBorder.none,
+                                                        hintText:
+                                                            "Endereço de entrega",
+                                                        hintStyle: TextStyle(
+                                                            color: Color(
+                                                                0xFF413131),
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500)),
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF413131),
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.normal),
+                                                    onChanged: (text) {
+                                                      value = text;
+                                                    },
+                                                  )),
+                                            )),
+                                    ),
                                     Padding(
                                       padding: EdgeInsets.only(
                                           top: isValid
                                               ? 0
-                                              : displayHeight(context) * 0.01,
-                                          bottom: isValid
-                                              ? 0
-                                              : displayHeight(context) * 0.01,
+                                              : displayHeight(context) * 0.012,
                                           left: isValid
                                               ? 0
-                                              : displayWidth(context) * 0.099),
+                                              : displayWidth(context) * 0.12),
                                       child: isValid
                                           ? null
                                           : new GestureDetector(
@@ -290,7 +289,7 @@ class _CepState extends State<Cep> {
                                                             MaterialPageRoute(
                                                                 builder: (BuildContext
                                                                         context) =>
-                                                                   Address()))); 
+                                                                    Address())));
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -301,11 +300,9 @@ class _CepState extends State<Cep> {
                                                     borderRadius:
                                                         BorderRadius.all(
                                                             Radius.circular(
-                                                                20))),
-                                                width: displayWidth(context) *
-                                                    0.15,
-                                                height: displayHeight(context) *
-                                                    0.09,
+                                                                12))),
+                                                width: 51,
+                                                height: 51,
                                                 child: Icon(Icons.add,
                                                     color: Colors.white),
                                               )),
@@ -344,6 +341,9 @@ class _CepState extends State<Cep> {
               'assets/logo.png',
               width: displayWidth(context) * 0.4,
             ),
+          ),
+          Container(
+            height: displayHeight(context) * 0.05,
           ),
           MediaQuery.of(context).viewInsets.bottom == 0
               ? Image.asset(

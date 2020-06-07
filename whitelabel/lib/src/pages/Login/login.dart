@@ -524,7 +524,7 @@ class _LoginState extends State<Login> {
                 child: Text("Tentar novamente",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: Color(0xFF413131),
                         fontWeight: FontWeight.w800,
                         fontSize: 16)),
               ),

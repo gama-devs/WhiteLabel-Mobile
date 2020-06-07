@@ -178,7 +178,7 @@ class _AddressState extends State<Address> {
             child: Text('Por gentileza, informe o número.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Color(0xFF413131),
                     fontSize: 19,
                     fontWeight: FontWeight.bold)),
           ),
@@ -236,7 +236,7 @@ class _AddressState extends State<Address> {
             height: displayHeight(context) * 0.08,
             child: Text('Endereço sem número',
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Color(0xFF413131),
                     fontSize: 16,
                     fontWeight: FontWeight.normal)),
           ),
@@ -266,7 +266,7 @@ class _AddressState extends State<Address> {
                   },
                   child: Text('Desejo acessar mesmo assim',
                       style: TextStyle(
-                          color: Colors.black,
+                          color: Color(0xFF413131),
                           fontSize: 16,
                           fontWeight: FontWeight.w700)),
                   textColor: Colors.white,
@@ -329,7 +329,7 @@ class _AddressState extends State<Address> {
                   width: displayWidth(context) * 0.75,
                   child: Text(name,
                       style: TextStyle(
-                          color: Colors.black,
+                          color: Color(0xFF413131),
                           fontSize: 16,
                           fontWeight: FontWeight.normal)),
                 ),
@@ -396,7 +396,7 @@ class _AddressState extends State<Address> {
                             style: new TextStyle(
                               fontSize: 19.0,
                               fontWeight: FontWeight.bold,
-                              color: isInvalid ? Colors.white : Colors.black,
+                              color: isInvalid ? Colors.white : Color(0xFF413131),
                             ),
                           ),
                         ),
@@ -593,7 +593,7 @@ class _AddressState extends State<Address> {
                                           style: TextStyle(
                                               decoration:
                                                   TextDecoration.underline,
-                                              color: Colors.black,
+                                              color: Color(0xFF413131),
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500)),
                                       textColor: Colors.white,
@@ -691,7 +691,7 @@ class _AddressState extends State<Address> {
                             style: new TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.normal,
-                              color: Colors.black,
+                              color: Color(0xFF413131),
                             ),
                           ),
                         )),
