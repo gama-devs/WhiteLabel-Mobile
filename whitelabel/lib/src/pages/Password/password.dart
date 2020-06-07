@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Password extends StatefulWidget {
@@ -9,12 +11,25 @@ class Password extends StatefulWidget {
 }
 
 class _PasswordState extends State<Password> {
+  var tolken;
+  getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('tolken_code');
+    tolken = token;
+  }
+
   //Abrindo o bottomSheet ao iniciar a tela
+  @override
+  void initState() {
+    super.initState();
+    getToken();
+  }
 
   bool isPassword = true;
   bool isSuccesfull = false;
   bool hide = false;
-
+  var maskFormatter = new MaskTextInputFormatter(
+      mask: '#####-####', filter: {"#": RegExp(r'[0-9]')});
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -78,41 +93,36 @@ class _PasswordState extends State<Password> {
     );
 
     GestureDetector returnButton = GestureDetector(
-      onTap: () {
-        if (isSuccesfull)
-          setState(() {
-            isPassword = false;
-            isSuccesfull = false;
-          });
-        else if (!isPassword)
-          setState(() {
-            isPassword = true;
-            isSuccesfull = false;
-          });
-      },
-      child: 
-       new GestureDetector(
-            onTap: () {
-             Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Login()
+        onTap: () {
+          if (isSuccesfull)
+            setState(() {
+              isPassword = false;
+              isSuccesfull = false;
+            });
+          else if (!isPassword)
+            setState(() {
+              isPassword = true;
+              isSuccesfull = false;
+            });
+        },
+        child: new GestureDetector(
+          onTap: () {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => Login()));
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            ),
+            decoration: BoxDecoration(
+                color: Color(0xFFFF805D),
+                borderRadius: BorderRadius.circular(12)),
+          ),
         ));
-            },
-            child:
-      Container(
-        width: 40,
-        height: 40,
-        alignment: Alignment.center,
-        child:
-         Icon(
-          Icons.arrow_back_ios,
-          color: Colors.white,
-        ),
-        decoration: BoxDecoration(
-            color: Color(0xFFFF805D), borderRadius: BorderRadius.circular(12)),
-      ),)
-    );
 
     Container textPassword = Container(
       width: 270,
@@ -164,6 +174,7 @@ class _PasswordState extends State<Password> {
 
     TextFormField celInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
+      inputFormatters: [maskFormatter],
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
           filled: true,
@@ -214,6 +225,7 @@ class _PasswordState extends State<Password> {
         minWidth: double.infinity,
         padding: EdgeInsets.fromLTRB(40.0, 40, 40.0, 40.0),
         onPressed: () {
+          print(tolken);
           if (isPassword)
             setState(() {
               isPassword = false;
@@ -331,32 +343,38 @@ class _PasswordState extends State<Password> {
     );
 
     return Scaffold(
-      body: new Stack(fit: StackFit.expand, children: <Widget>[
-        Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage("assets/bg.png"), fit: BoxFit.cover)),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 20, top: 40),
-                    child: returnButton,
-                  ),
-                  Spacer(),
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 700),
-                    height: isSuccesfull ? 200 : 400,
-                    curve: Curves.easeInOutBack,
-                    child: isPassword
-                        ? passwordForgottenCard
-                        : isSuccesfull
-                            ? passwordSuccesfulCard
-                            : passwordChangeCard,
-                  ),
-                ])),
-      ]),
-    );
+        body: new Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        SingleChildScrollView(
+            child: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: new BoxDecoration(
+              image: new DecorationImage(
+                  image: new AssetImage("assets/bg.png"), fit: BoxFit.cover)),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 20, top: 40),
+                  child: returnButton,
+                ),
+                Spacer(),
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 700),
+                  height: MediaQuery.of(context).viewInsets.bottom != 0
+                      ? 380
+                      : isSuccesfull ? 200 : 400,
+                  curve: Curves.easeInOutBack,
+                  child: isPassword
+                      ? passwordForgottenCard
+                      : isSuccesfull
+                          ? passwordSuccesfulCard
+                          : passwordChangeCard,
+                ),
+              ]),
+        ))
+      ],
+    ));
   }
 }

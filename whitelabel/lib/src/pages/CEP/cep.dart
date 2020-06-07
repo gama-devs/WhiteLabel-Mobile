@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:whitelabel/src/pages/CEP/search.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Cep extends StatefulWidget {
@@ -180,10 +181,10 @@ class _CepState extends State<Cep> {
                               ? 'Ah, que pena.\nAinda não atendemos sua região.'
                               : isValid
                                   ? 'Maravilha!\n Nós atendemos sua região'
-                                  : 'Informe o CEP de entrega.',
+                                  : 'Informe o endereço de entrega.',
                           textAlign: TextAlign.center,
                           style: new TextStyle(
-                            fontSize: 19.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -241,10 +242,11 @@ class _CepState extends State<Cep> {
                                                                 context) *
                                                             0.02),
                                                     child: TextField(
+                                                       enabled: false, 
                                                       decoration: InputDecoration(
                                                           border:
                                                               InputBorder.none,
-                                                          hintText: "Seu CEP",
+                                                          hintText: "Endereço de entrega",
                                                           hintStyle: TextStyle(
                                                               color: Color(
                                                                   0xFF413131),
@@ -252,9 +254,6 @@ class _CepState extends State<Cep> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .normal)),
-                                                      textInputAction:
-                                                          TextInputAction
-                                                              .continueAction,
                                                       textAlign: TextAlign.left,
                                                       style: TextStyle(
                                                           color:
@@ -284,17 +283,14 @@ class _CepState extends State<Cep> {
                                               onTap: () {
                                                 FocusScope.of(context)
                                                     .unfocus();
-                                                setState(() {
-                                                  isValid = true;
-                                                });
                                                 Timer(
-                                                    Duration(seconds: 2),
+                                                    Duration(seconds: 0),
                                                     () => Navigator.of(context)
                                                         .pushReplacement(
                                                             MaterialPageRoute(
                                                                 builder: (BuildContext
                                                                         context) =>
-                                                                    Login()))); 
+                                                                   Address()))); 
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -310,7 +306,7 @@ class _CepState extends State<Cep> {
                                                     0.15,
                                                 height: displayHeight(context) *
                                                     0.09,
-                                                child: Icon(Icons.check,
+                                                child: Icon(Icons.add,
                                                     color: Colors.white),
                                               )),
                                     ),
@@ -351,7 +347,7 @@ class _CepState extends State<Cep> {
           ),
           MediaQuery.of(context).viewInsets.bottom == 0
               ? Image.asset(
-                  'assets/fone.png',
+                  'assets/fone2.png',
                   width: displayWidth(context) * 0.8,
                   height: displayHeight(context) * 0.35,
                 )
@@ -360,7 +356,6 @@ class _CepState extends State<Cep> {
           MediaQuery.of(context).viewInsets.bottom == 0
               ? Descricao()
               : Text(''),
-          MediaQuery.of(context).viewInsets.bottom == 0 ? Toogle() : Text(''),
         ])),
       ]),
     );
