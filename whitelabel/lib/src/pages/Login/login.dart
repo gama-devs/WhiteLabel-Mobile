@@ -4,13 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whitelabel/src/pages/Menu/menu.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
 
 class Login extends StatefulWidget {
   @override
   _LoginState createState() => new _LoginState();
 }
+
+TextEditingController emailInputController = new TextEditingController();
+TextEditingController celInputController = new TextEditingController();
+TextEditingController passwordInputController = new TextEditingController();
+TextEditingController nameInputController = new TextEditingController();
+var maskFormatter = new MaskTextInputFormatter(
+    mask: '#####-####', filter: {"#": RegExp(r'[0-9]')});
 
 class _LoginState extends State<Login> {
   final formKey = new GlobalKey<FormState>();
@@ -102,9 +111,9 @@ class _LoginState extends State<Login> {
           ),
         ));
 
-    TextEditingController celInputController = new TextEditingController();
     TextFormField celInput = TextFormField(
       controller: celInputController,
+      inputFormatters: [maskFormatter],
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -122,7 +131,6 @@ class _LoginState extends State<Login> {
           )),
     );
 
-    TextEditingController passwordInputController = new TextEditingController();
     TextFormField passwordInput = TextFormField(
       controller: passwordInputController,
       validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
@@ -196,7 +204,6 @@ class _LoginState extends State<Login> {
       ),
     ));
 
-    TextEditingController emailInputController = new TextEditingController();
     TextFormField emailInput = TextFormField(
       controller: emailInputController,
       validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
@@ -216,7 +223,6 @@ class _LoginState extends State<Login> {
           )),
     );
 
-    TextEditingController nameInputController = new TextEditingController();
     TextFormField nameInput = TextFormField(
       controller: nameInputController,
       validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
@@ -269,9 +275,11 @@ class _LoginState extends State<Login> {
           setState(() {
             loading = false;
           });
-          print("cadsada");
           var token = parsedJson['data']["access_token"];
           var userId = parsedJson['data']['user']['id'];
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => Menu()));
+
           saveTolken(token);
         } else {
           setState(() {
@@ -380,11 +388,11 @@ class _LoginState extends State<Login> {
                 size: 35,
               )
             : Text("Cadastrar",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 20)),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20)),
       ),
     );
 
@@ -486,11 +494,11 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    "Email ou senha incorretos",
+                    "Ah, que pena.\nEmail ou senha incorretos",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 18,
                         height: 1,
                         fontWeight: FontWeight.w700),
                   ),
@@ -507,7 +515,7 @@ class _LoginState extends State<Login> {
               color: Colors.white,
               child: MaterialButton(
                 minWidth: MediaQuery.of(context).size.width / 1.2,
-                padding: EdgeInsets.fromLTRB(30.0, 30, 30.0, 30.0),
+                padding: EdgeInsets.fromLTRB(30.0, 25, 30.0, 25.0),
                 onPressed: () {
                   setState(() {
                     loginFail = !loginFail;
@@ -518,7 +526,7 @@ class _LoginState extends State<Login> {
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w800,
-                        fontSize: 22)),
+                        fontSize: 16)),
               ),
             ),
             SizedBox(
@@ -547,27 +555,36 @@ class _LoginState extends State<Login> {
     );
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
-        Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage("assets/bg.png"), fit: BoxFit.cover)),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(left: 20, top: 40),
-                    child: returnButton,
-                  ),
-                  Spacer(),
-                  AnimatedContainer(
-                      duration: Duration(milliseconds: 700),
-                      height: loginFail ? 350 : isLogin ? 420 : 550,
-                      curve: Curves.easeInOutBack,
-                      child: loginFail
-                          ? error
-                          : isLogin ? loginCard : registerCard),
-                ])),
+        SingleChildScrollView(
+          child: Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: new BoxDecoration(
+                  image: new DecorationImage(
+                      image: new AssetImage("assets/bg.png"),
+                      fit: BoxFit.cover)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: 20, top: 40),
+                      child: returnButton,
+                    ),
+                    Spacer(),
+                    AnimatedContainer(
+                        duration: Duration(milliseconds: 700),
+                        height: loginFail
+                            ? 250
+                            : isLogin
+                                ? 420
+                                : MediaQuery.of(context).viewInsets.bottom == 0
+                                    ? 550
+                                    : 550,
+                        curve: Curves.easeInOutBack,
+                        child: loginFail
+                            ? error
+                            : isLogin ? loginCard : registerCard),
+                  ])),
+        ),
       ]),
     );
   }

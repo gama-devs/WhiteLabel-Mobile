@@ -29,6 +29,7 @@ dependencies:
   flutter_spinkit: "^4.1.1"
   splashscreen: ^1.2.0
   carousel_slider: ^2.0.0
+  mask_text_input_formatter: ^1.0.6
   flutter:
     sdk: flutter
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
@@ -24,7 +25,7 @@ getToken() async {
   bool isPassword = true;
   bool isSuccesfull = false;
   bool hide = false;
-
+var maskFormatter = new MaskTextInputFormatter(mask: '#####-####', filter: { "#": RegExp(r'[0-9]') });
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -174,6 +175,7 @@ getToken() async {
 
     TextFormField celInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
+         inputFormatters: [maskFormatter],
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
           filled: true,
@@ -358,7 +360,7 @@ getToken() async {
                   Spacer(),
                   AnimatedContainer(
                     duration: Duration(milliseconds: 700),
-                    height: isSuccesfull ? 200 : 400,
+                    height: MediaQuery.of(context).viewInsets.bottom != 0 ? 380 : isSuccesfull ? 200 : 400,
                     curve: Curves.easeInOutBack,
                     child: isPassword
                         ? passwordForgottenCard

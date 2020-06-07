@@ -184,7 +184,7 @@ class _CepState extends State<Cep> {
                                   : 'Informe o endereço de entrega.',
                           textAlign: TextAlign.center,
                           style: new TextStyle(
-                            fontSize: 19.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
