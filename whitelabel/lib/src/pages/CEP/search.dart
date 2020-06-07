@@ -658,48 +658,6 @@ class _AddressState extends State<Address> {
       backgroundColor:
           isInvalid ? Color(0xFFF8F6F8) : isValid ? Color(0xFF1BD09A) : Color(0xFFF8F6F8),
       body: new Stack(fit: StackFit.expand, children: <Widget>[
-        isValid
-            ? Positioned.fill(
-                child: Card(),
-              )
-            : escolha == false && isValid == false && isInvalid == false
-                ? SizedBox.shrink()
-                : isValid
-                    ? SizedBox.shrink()
-                    : new Positioned(
-                        child: new Align(
-                            alignment: FractionalOffset.bottomCenter,
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                  bottom: 70.0, left: 30, right: 30),
-                              child: Container(
-                                  width: displayWidth(context) * 0.8,
-                                  height: displayHeight(context) * 0.08,
-                                  child: FlatButton(
-                                    color: Color(0xFFFF805D),
-                                    onPressed: () {
-                                      print('oi');
-
-                                      setState(() {
-                                        isValid = true;
-                                      });
-                                    },
-                                    child: Text('Confirmar',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700)),
-                                    textColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Color(0xFFFF805D),
-                                            width: 1,
-                                            style: BorderStyle.solid),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                  )),
-                            )),
-                      ),
         Column(
           children: <Widget>[
             !isValid
@@ -790,7 +748,48 @@ class _AddressState extends State<Address> {
                 )),
           ],
         ),
-      ]),
+      isValid
+            ? Positioned.fill(
+                child: Card(),
+              )
+            : escolha == false && isValid == false && isInvalid == false
+                ? SizedBox.shrink()
+                : isValid
+                    ? SizedBox.shrink()
+                    : new Positioned(
+                        child: new Align(
+                            alignment: FractionalOffset.bottomCenter,
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  bottom: 70.0, left: 30, right: 30),
+                              child: Container(
+                                  width: displayWidth(context) * 0.8,
+                                  height: displayHeight(context) * 0.08,
+                                  child: FlatButton(
+                                    color: Color(0xFFFF805D),
+                                    onPressed: () {
+                                      print('oi');
+
+                                      setState(() {
+                                        isValid = true;
+                                      });
+                                    },
+                                    child: Text('Confirmar',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700)),
+                                    textColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Color(0xFFFF805D),
+                                            width: 1,
+                                            style: BorderStyle.solid),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                  )),
+                            )),
+                      ),]),
     );
   }
 }
