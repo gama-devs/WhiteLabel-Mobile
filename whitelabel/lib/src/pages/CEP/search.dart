@@ -105,10 +105,10 @@ class _AddressState extends State<Address> {
         new GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus();
-            /*    Timer(
+               Timer(
                 Duration(seconds: 0),
                 () => Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (BuildContext context) => Cep()))); */
+                    builder: (BuildContext context) => Cep())));
           },
           child: AnimatedContainer(
             duration: Duration(milliseconds: 300),
