@@ -9,12 +9,24 @@ import 'package:http/http.dart' as http;
 import 'package:whitelabel/src/pages/CEP/cep.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
+class AddressFields{
+  String name;
+  String description;
+  String cep;
+
+  AddressFields({this.name,this.description});
+}
+
 class Address extends StatefulWidget {
   @override
   _AddressState createState() => new _AddressState();
 }
 
 class _AddressState extends State<Address> {
+
+  String nameAddress = '';
+  String descriptionAddress = '';
+  String cepAdress = '';
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -32,6 +44,7 @@ class _AddressState extends State<Address> {
       isInvalid = false,
       check = false,
       escolha = false;
+  List <AddressFields> listAdrreses = [];
   String value = "";
   String texto = "";
   var arr = [];
@@ -54,14 +67,16 @@ class _AddressState extends State<Address> {
       print("value: ${_textController.text}");
       texto = Uri.encodeFull(_textController.text);
       print(texto);
-      getData(context);
+      
       //use setState to rebuild the widget
-      setState(() {});
+      setState(() {
+        getData(context);
+      });
     });
     super.initState();
   }
 
-  Future<String> getData(BuildContext context) async {
+  Future getData(BuildContext context) async {
     try {
       http.Response response = await http.get(
         Uri.encodeFull("https://api.mapbox.com/geocoding/v5/mapbox.places/" +
@@ -71,10 +86,11 @@ class _AddressState extends State<Address> {
           "Accept": "application/json",
         },
       );
-      var jsonData = response.body;
-      var parsedJson = json.decode(jsonData);
-      var status = parsedJson['data']['features'];
-      print(response.body);
+      Map<String,dynamic> jsonData = json.decode(response.body);
+      List<dynamic> data = jsonData['features'];
+      for (int i=0;i<5 || i<data.length;i++){
+        listAdrreses.add(AddressFields(name: data[i]['text'],description: data[i]['place_name']));
+      }
     } catch (e) {
       print(e);
     }
@@ -124,7 +140,6 @@ class _AddressState extends State<Address> {
                       color: Color(0xFF413131),
                       fontSize: 16,
                       fontWeight: FontWeight.normal)),
-              textInputAction: TextInputAction.continueAction,
               textAlign: TextAlign.left,
               style: TextStyle(
                   color: Color(0xFF413131),
@@ -181,7 +196,6 @@ class _AddressState extends State<Address> {
                       color: Color(0xFF413131),
                       fontSize: 16,
                       fontWeight: FontWeight.normal)),
-              textInputAction: TextInputAction.continueAction,
               textAlign: TextAlign.left,
               style: TextStyle(
                   color: Color(0xFF413131),
@@ -276,7 +290,10 @@ class _AddressState extends State<Address> {
     ));
   }
 
-  Widget Item() {
+  Widget Item(name,description,cep) {
+    print(name);
+    print(description);
+    print(cep);
     return (Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -291,17 +308,19 @@ class _AddressState extends State<Address> {
         new GestureDetector(
           onTap: () {
             setState(() {
+              nameAddress = name;
+              descriptionAddress = description;
               escolha = true;
             });
           },
           child: Column(
-            children: <Widget>[
+            children:[
               Padding(
                 padding: EdgeInsets.only(top: 15.0),
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   width: displayWidth(context) * 0.75,
-                  child: Text('Avenida Venancio alves',
+                  child: Text(name,
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 16,
@@ -313,7 +332,7 @@ class _AddressState extends State<Address> {
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 300),
                   width: displayWidth(context) * 0.75,
-                  child: Text('Cidade Baixa, porto alegre - RS,brazil',
+                  child: Text(description,
                       style: TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
@@ -346,8 +365,8 @@ class _AddressState extends State<Address> {
               width: displayWidth(context),
               height: isInvalid
                   ? displayHeight(context) * 0.35
-                  : displayHeight(context) * 0.7,
-              child: Column(
+                  : displayHeight(context) * 0.66,
+              child: SingleChildScrollView(child: Column(
                 children: <Widget>[
                   Padding(padding: EdgeInsets.only(top: 43.0)),
                   Row(
@@ -385,7 +404,7 @@ class _AddressState extends State<Address> {
                             Container(
                               width: displayWidth(context) * 0.9,
                               child: Text(
-                                'Rua Venâncio Aires, 139,',
+                                nameAddress,
                                 textAlign: TextAlign.center,
                                 style: new TextStyle(
                                   fontSize: 19.0,
@@ -405,27 +424,7 @@ class _AddressState extends State<Address> {
                             Container(
                               width: displayWidth(context) * 0.9,
                               child: Text(
-                                'Rua Venâncio Aires, 139,',
-                                textAlign: TextAlign.center,
-                                style: new TextStyle(
-                                  fontSize: 19.0,
-                                  fontWeight: FontWeight.normal,
-                                  color: Color(0xFFFF805D),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                  isInvalid
-                      ? SizedBox.shrink()
-                      : Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                              width: displayWidth(context) * 0.9,
-                              child: Text(
-                                'CEP: 94415-352',
+                                descriptionAddress,
                                 textAlign: TextAlign.center,
                                 style: new TextStyle(
                                   fontSize: 19.0,
@@ -462,8 +461,6 @@ class _AddressState extends State<Address> {
                                           color: Color(0xFF413131),
                                           fontSize: 16,
                                           fontWeight: FontWeight.normal)),
-                                  textInputAction:
-                                      TextInputAction.continueAction,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       color: Color(0xFF413131),
@@ -503,8 +500,6 @@ class _AddressState extends State<Address> {
                                           color: Color(0xFF413131),
                                           fontSize: 16,
                                           fontWeight: FontWeight.normal)),
-                                  textInputAction:
-                                      TextInputAction.continueAction,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       color: Color(0xFF413131),
@@ -600,7 +595,7 @@ class _AddressState extends State<Address> {
                           ],
                         )
                 ],
-              ),
+              ),),
             ),
           ],
         )));
@@ -611,6 +606,7 @@ class _AddressState extends State<Address> {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor:
           isInvalid ? Colors.white : isValid ? Color(0xFF1BD09A) : Colors.white,
       body: new Stack(fit: StackFit.expand, children: <Widget>[
@@ -703,21 +699,11 @@ class _AddressState extends State<Address> {
             escolha == false && isValid == false && isInvalid == false
                 ? SizedBox.shrink()
                 : isValid ? SizedBox.shrink() : Number(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Item()
-                : SizedBox.shrink(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Item()
-                : SizedBox.shrink(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Item()
-                : SizedBox.shrink(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Item()
-                : SizedBox.shrink(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Item()
-                : SizedBox.shrink(),
+            escolha == false && isValid == false && isInvalid == false ? Column(
+              children: listAdrreses.length > 0 ? listAdrreses
+          .map((produto) => Item(produto.name,produto.description,produto.cep))
+          .toList(): [SizedBox.shrink()],
+            ): SizedBox.shrink(),
             Container(
               height: 50,
             ),
@@ -732,7 +718,6 @@ class _AddressState extends State<Address> {
                 : isValid ? SizedBox.shrink() : NumberButton(),
           ],
         ),
-      ]),
-    );
+      ]),);
   }
 }

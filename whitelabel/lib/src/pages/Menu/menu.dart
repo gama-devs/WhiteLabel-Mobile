@@ -305,8 +305,7 @@ class _MenuState extends State<Menu> {
           childAspectRatio: 0.75,
       crossAxisCount: 2,
       children: burguers
-          .map((produto) => Container(
-            
+          .map((produto) => Container( 
                     child: Column(
                   children: <Widget>[
                     Container(

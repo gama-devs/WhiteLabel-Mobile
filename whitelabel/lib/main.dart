@@ -7,8 +7,10 @@ import 'package:whitelabel/src/pages/Menu/menu.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
 import 'package:whitelabel/src/pages/Splash/splash.dart';
 
+import 'src/pages/Splash/splash.dart';
+
 void main() {
   runApp(MaterialApp(
 /*      home: Cep() */
-      home: Menu()));
+      home: Splash()));
 }
