@@ -247,6 +247,7 @@ class _PasswordState extends State<Password> {
     );
 
     Card passwordChangeCard = Card(
+      elevation: 0,
       margin: EdgeInsets.all(0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
@@ -265,11 +266,11 @@ class _PasswordState extends State<Password> {
                       ),
                       textInstruction2,
                       SizedBox(
-                        height: 20,
+                        height: 15,
                       ),
                       senhaInput,
                       SizedBox(
-                        height: 20,
+                        height: 15,
                       ),
                       textInstruction3,
                       SizedBox(
@@ -298,15 +299,15 @@ class _PasswordState extends State<Password> {
                 children: <Widget>[
                   textPassword,
                   SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   textInstruction1,
                   SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   celInput,
                   SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                 ],
               ),
@@ -320,7 +321,10 @@ class _PasswordState extends State<Password> {
       margin: EdgeInsets.all(0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
+          decoration: BoxDecoration(
           color: Color(0xFF1BD09A),
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20), topLeft: Radius.circular(20))),
           width: MediaQuery.of(context).size.width,
           child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
@@ -363,8 +367,8 @@ class _PasswordState extends State<Password> {
                 AnimatedContainer(
                   duration: Duration(milliseconds: 700),
                   height: MediaQuery.of(context).viewInsets.bottom != 0
-                      ? 380
-                      : isSuccesfull ? 200 : 400,
+                      ? 400
+                      : isSuccesfull ? 300 : 375,
                   curve: Curves.easeInOutBack,
                   child: isPassword
                       ? passwordForgottenCard

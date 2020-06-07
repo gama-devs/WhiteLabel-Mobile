@@ -371,7 +371,7 @@ class _LoginState extends State<Login> {
     Material registerButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          topLeft: Radius.circular(12), topRight: Radius.circular(12)),
       color: Color(0xFFFF805D),
       child: MaterialButton(
         minWidth: double.infinity,
@@ -483,10 +483,14 @@ class _LoginState extends State<Login> {
     );
 
     Card error = Card(
+      elevation: 0,
+      color: Colors.transparent,
       margin: EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
-          color: Color(0xFFFA5C5C),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(12), topLeft: Radius.circular(12)),
+              color: Color(0xFFFA5C5C)),
           width: MediaQuery.of(context).size.width,
           child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
             Padding(
@@ -494,7 +498,7 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    "Ah, que pena.\nEmail ou senha incorretos",
+                    "Ah, que pena.\nE-mail ou senha incorretos",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
