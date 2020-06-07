@@ -113,8 +113,7 @@ class _AddressState extends State<Address> {
         color: Color(0xFFF8F6F8),
         height: MediaQuery.of(context).size.height / 5,
         child: Container(
-            padding: EdgeInsets.fromLTRB(
-                20, 0, 20, 0),
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -153,10 +152,9 @@ class _AddressState extends State<Address> {
                         borderRadius: BorderRadius.all(Radius.circular(12))),
                     width: displayWidth(context) * 0.7,
                     child: TextField(
-
                       controller: _textController,
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(top:5,bottom:5),
+                          contentPadding: EdgeInsets.only(top: 5, bottom: 5),
                           filled: true,
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12.0),
@@ -172,6 +170,13 @@ class _AddressState extends State<Address> {
                           prefixIcon: Icon(
                             Icons.search,
                             color: Color(0xFFFF805D),
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              _textController.clear();
+                            },
+                            icon: Icon(Icons.cancel),
+                            color: Color(0xFF868484),
                           ),
                           hintText: "Digite o endereço",
                           hintStyle: TextStyle(
@@ -341,6 +346,7 @@ class _AddressState extends State<Address> {
         ),
         new GestureDetector(
           onTap: () {
+            FocusScope.of(context).unfocus();
             setState(() {
               nameAddress = name;
               descriptionAddress = description;
@@ -656,7 +662,9 @@ class _AddressState extends State<Address> {
             ? Positioned.fill(
                 child: Card(),
               )
-            : new Positioned(
+            :             escolha == false && isValid == false && isInvalid == false
+                ? SizedBox.shrink()
+                : isValid ? SizedBox.shrink() : new Positioned(
                 child: new Align(
                     alignment: FractionalOffset.bottomCenter,
                     child: Container(
