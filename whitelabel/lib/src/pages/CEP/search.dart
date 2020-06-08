@@ -407,18 +407,17 @@ class _AddressState extends State<Address> {
                   ? displayHeight(context) * 1
                   : isInvalid
                       ? displayHeight(context) * 0.35
-                      : displayHeight(context) * 0.66,
+                      : displayHeight(context) * 0.72,
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.only(top: 43.0)),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         AnimatedContainer(
                           duration: Duration(milliseconds: 300),
-                          width: displayWidth(context) * 0.9,
+                          width: displayWidth(context) * 0.8,
                           child: Text(
                             isInvalid
                                 ? 'Ah, que pena.\nAinda não atendemos sua região.'
@@ -500,7 +499,7 @@ class _AddressState extends State<Address> {
                                   child: TextField(
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        hintText: "Complemento(caso tenha)",
+                                        hintText: "Complemento (caso tenha)",
                                         hintStyle: TextStyle(
                                             color: Color(0xFF413131),
                                             fontSize: 16,
@@ -569,7 +568,7 @@ class _AddressState extends State<Address> {
                             children: <Widget>[
                               Container(
                                 padding: EdgeInsets.only(
-                                    bottom: 20.0, left: 30, right: 30),
+                                    bottom: 10.0, left: 30, right: 30),
                                 child: Container(
                                     width: displayWidth(context) * 0.8,
                                     height: displayHeight(context) * 0.08,
@@ -655,8 +654,9 @@ class _AddressState extends State<Address> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor:
-          isInvalid ? Color(0xFFF8F6F8) : isValid ? Color(0xFF1BD09A) : Color(0xFFF8F6F8),
+      backgroundColor: isInvalid
+          ? Color(0xFFF8F6F8)
+          : isValid ? Color(0xFF1BD09A) : Color(0xFFF8F6F8),
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         Column(
           children: <Widget>[
@@ -669,25 +669,52 @@ class _AddressState extends State<Address> {
                 ? SizedBox.shrink()
                 : !isValid
                     ? SizedBox.shrink()
-                    : Container(
-                        height: 70,
-                        width: 70,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 14),
-                          child: Text(
-                            '🛵',
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black,
-                            ),
-                          ),
-                        )),
+                    : Container(padding: EdgeInsets.only(left:MediaQuery.of(context).size.width*0.05,right:MediaQuery.of(context).size.width*0.15),
+                    child:Row(
+                      children: <Widget>[
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          width: 40,
+                          height: 40,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.white,
+                              ),
+                              child: IconButton(
+                                onPressed: (){
+                                  setState(() {
+                                    escolha =false;
+                                    isValid = false;
+                                    isInvalid =false;
+                                  });
+                                },
+                                icon:Icon(
+                                Icons.arrow_back_ios,
+                                color: Color(0xFFFF805D),
+                          ))),
+                        ),
+                        Spacer(),
+                        Container(
+                            height: 70,
+                            width: 70,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 14),
+                              child: Text(
+                                '🛵',
+                                textAlign: TextAlign.center,
+                                style: new TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            )),Spacer(),
+                      ])),
             MediaQuery.of(context).viewInsets.bottom != 0
                 ? SizedBox.shrink()
                 : !isValid
@@ -710,7 +737,7 @@ class _AddressState extends State<Address> {
             Container(
                 height: MediaQuery.of(context).size.height * 0.8,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                    color: Colors.white,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(32),
                         topRight: Radius.circular(32))),
@@ -748,7 +775,7 @@ class _AddressState extends State<Address> {
                 )),
           ],
         ),
-      isValid
+        isValid
             ? Positioned.fill(
                 child: Card(),
               )
@@ -789,7 +816,8 @@ class _AddressState extends State<Address> {
                                             BorderRadius.circular(20)),
                                   )),
                             )),
-                      ),]),
+                      ),
+      ]),
     );
   }
 }
