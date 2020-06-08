@@ -218,6 +218,7 @@ class _AddressState extends State<Address> {
     ));
   }
 
+  var numberController = new TextEditingController();
   Widget NumberTextField() {
     return (Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,6 +233,7 @@ class _AddressState extends State<Address> {
           child: Padding(
             padding: EdgeInsets.only(left: 15.0, top: 5.0),
             child: TextField(
+              controller: numberController,
               decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "Número",
@@ -669,52 +671,55 @@ class _AddressState extends State<Address> {
                 ? SizedBox.shrink()
                 : !isValid
                     ? SizedBox.shrink()
-                    : Container(padding: EdgeInsets.only(left:MediaQuery.of(context).size.width*0.05,right:MediaQuery.of(context).size.width*0.15),
-                    child:Row(
-                      children: <Widget>[
-                        AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          width: 40,
-                          height: 40,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.white,
-                              ),
-                              child: IconButton(
-                                onPressed: (){
-                                  setState(() {
-                                    escolha =false;
-                                    isValid = false;
-                                    isInvalid =false;
-                                  });
-                                },
-                                icon:Icon(
-                                Icons.arrow_back_ios,
-                                color: Color(0xFFFF805D),
-                          ))),
-                        ),
-                        Spacer(),
-                        Container(
-                            height: 70,
-                            width: 70,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 14),
-                              child: Text(
-                                '🛵',
-                                textAlign: TextAlign.center,
-                                style: new TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.black,
+                    : Container(
+                        padding: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width * 0.05,
+                            right: MediaQuery.of(context).size.width * 0.15),
+                        child: Row(children: <Widget>[
+                          AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            width: 40,
+                            height: 40,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
                                 ),
-                              ),
-                            )),Spacer(),
-                      ])),
+                                child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        escolha = false;
+                                        isValid = false;
+                                        isInvalid = false;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_back_ios,
+                                      color: Color(0xFFFF805D),
+                                    ))),
+                          ),
+                          Spacer(),
+                          Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 14),
+                                child: Text(
+                                  '🛵',
+                                  textAlign: TextAlign.center,
+                                  style: new TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              )),
+                          Spacer(),
+                        ])),
             MediaQuery.of(context).viewInsets.bottom != 0
                 ? SizedBox.shrink()
                 : !isValid
@@ -793,14 +798,17 @@ class _AddressState extends State<Address> {
                                   width: displayWidth(context) * 0.8,
                                   height: displayHeight(context) * 0.08,
                                   child: FlatButton(
+                                    disabledColor: Color(0x99FF805D),
                                     color: Color(0xFFFF805D),
-                                    onPressed: () {
-                                      print('oi');
-
-                                      setState(() {
-                                        isValid = true;
-                                      });
-                                    },
+                                    onPressed: !rememberMe &&
+                                            numberController.text == ''
+                                        ? null
+                                        : () {
+                                            print('oi');
+                                            setState(() {
+                                              isValid = true;
+                                            });
+                                          },
                                     child: Text('Confirmar',
                                         style: TextStyle(
                                             color: Colors.white,
