@@ -117,7 +117,7 @@ class _AddressState extends State<Address> {
   Widget Descricao() {
     return (Container(
         color: Color(0xFFF8F6F8),
-        height: MediaQuery.of(context).size.height / 5,
+        height: MediaQuery.of(context).size.height * 0.2,
         child: Container(
             padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Row(
@@ -165,7 +165,7 @@ class _AddressState extends State<Address> {
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12.0),
                               borderSide: BorderSide(
-                                color: Color(0xFFEDF1F7),
+                                color: Color(0xFFF8F6F8),
                               )),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -224,6 +224,7 @@ class _AddressState extends State<Address> {
     ));
   }
 
+  var numberController = new TextEditingController();
   Widget NumberTextField() {
     return (Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,6 +239,7 @@ class _AddressState extends State<Address> {
           child: Padding(
             padding: EdgeInsets.only(left: 15.0, top: 5.0),
             child: TextField(
+              controller: numberController,
               decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "Número",
@@ -413,18 +415,17 @@ class _AddressState extends State<Address> {
                   ? displayHeight(context) * 1
                   : isInvalid
                       ? displayHeight(context) * 0.35
-                      : displayHeight(context) * 0.66,
+                      : displayHeight(context) * 0.72,
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    Padding(padding: EdgeInsets.only(top: 43.0)),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         AnimatedContainer(
                           duration: Duration(milliseconds: 300),
-                          width: displayWidth(context) * 0.9,
+                          width: displayWidth(context) * 0.8,
                           child: Text(
                             isInvalid
                                 ? 'Ah, que pena.\nAinda não atendemos sua região.'
@@ -507,7 +508,7 @@ class _AddressState extends State<Address> {
                                   child: TextField(
                                     decoration: InputDecoration(
                                         border: InputBorder.none,
-                                        hintText: "Complemento(caso tenha)",
+                                        hintText: "Complemento (caso tenha)",
                                         hintStyle: TextStyle(
                                             color: Color(0xFF413131),
                                             fontSize: 16,
@@ -576,7 +577,7 @@ class _AddressState extends State<Address> {
                             children: <Widget>[
                               Container(
                                 padding: EdgeInsets.only(
-                                    bottom: 20.0, left: 30, right: 30),
+                                    bottom: 10.0, left: 30, right: 30),
                                 child: Container(
                                     width: displayWidth(context) * 0.8,
                                     height: displayHeight(context) * 0.08,
@@ -662,51 +663,10 @@ class _AddressState extends State<Address> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor:
-          isInvalid ? Colors.white : isValid ? Color(0xFF1BD09A) : Colors.white,
+      backgroundColor: isInvalid
+          ? Color(0xFFF8F6F8)
+          : isValid ? Color(0xFF1BD09A) : Color(0xFFF8F6F8),
       body: new Stack(fit: StackFit.expand, children: <Widget>[
-        isValid
-            ? Positioned.fill(
-                child: Card(),
-              )
-            : escolha == false && isValid == false && isInvalid == false
-                ? SizedBox.shrink()
-                : isValid
-                    ? SizedBox.shrink()
-                    : new Positioned(
-                        child: new Align(
-                            alignment: FractionalOffset.bottomCenter,
-                            child: Container(
-                              padding: EdgeInsets.only(
-                                  bottom: 70.0, left: 30, right: 30),
-                              child: Container(
-                                  width: displayWidth(context) * 0.8,
-                                  height: displayHeight(context) * 0.08,
-                                  child: FlatButton(
-                                    color: Color(0xFFFF805D),
-                                    onPressed: () {
-                                      print('oi');
-
-                                      setState(() {
-                                        isValid = true;
-                                      });
-                                    },
-                                    child: Text('Confirmar',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700)),
-                                    textColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Color(0xFFFF805D),
-                                            width: 1,
-                                            style: BorderStyle.solid),
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
-                                  )),
-                            )),
-                      ),
         Column(
           children: <Widget>[
             !isValid
@@ -719,24 +679,54 @@ class _AddressState extends State<Address> {
                 : !isValid
                     ? SizedBox.shrink()
                     : Container(
-                        height: 70,
-                        width: 70,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 14),
-                          child: Text(
-                            '🛵',
-                            textAlign: TextAlign.center,
-                            style: new TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.normal,
-                              color: Color(0xFF413131),
-                            ),
+                        padding: EdgeInsets.only(
+                            left: MediaQuery.of(context).size.width * 0.05,
+                            right: MediaQuery.of(context).size.width * 0.15),
+                        child: Row(children: <Widget>[
+                          AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            width: 40,
+                            height: 40,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                ),
+                                child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        escolha = false;
+                                        isValid = false;
+                                        isInvalid = false;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.arrow_back_ios,
+                                      color: Color(0xFFFF805D),
+                                    ))),
                           ),
-                        )),
+                          Spacer(),
+                          Container(
+                              height: 70,
+                              width: 70,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20))),
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 14),
+                                child: Text(
+                                  '🛵',
+                                  textAlign: TextAlign.center,
+                                  style: new TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              )),
+                          Spacer(),
+                        ])),
             MediaQuery.of(context).viewInsets.bottom != 0
                 ? SizedBox.shrink()
                 : !isValid
@@ -757,35 +747,91 @@ class _AddressState extends State<Address> {
                         )),
             isValid ? SizedBox.shrink() : Descricao(),
             Container(
-              height: 10,
-            ),
-            escolha == false && isValid == false && isInvalid == false
-                ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : Number(),
-            escolha == false && isValid == false && isInvalid == false
-                ? Column(
-                    children: listAdrreses.length > 0
-                        ? listAdrreses
-                            .map((produto) => Item(
-                                produto.name, produto.description, produto.cep))
-                            .toList()
-                        : [SizedBox.shrink()],
-                  )
-                : SizedBox.shrink(),
-            Container(
-              height: 50,
-            ),
-            escolha == false
-                ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : NumberTextField(),
-            Container(
-              height: 20,
-            ),
-            escolha == false
-                ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : NumberButton(),
+                height: MediaQuery.of(context).size.height * 0.8,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(32),
+                        topRight: Radius.circular(32))),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 10,
+                    ),
+                    escolha == false && isValid == false && isInvalid == false
+                        ? SizedBox.shrink()
+                        : isValid ? SizedBox.shrink() : Number(),
+                    escolha == false && isValid == false && isInvalid == false
+                        ? Column(
+                            children: listAdrreses.length > 0
+                                ? listAdrreses
+                                    .map((produto) => Item(produto.name,
+                                        produto.description, produto.cep))
+                                    .toList()
+                                : [SizedBox.shrink()],
+                          )
+                        : SizedBox.shrink(),
+                    Container(
+                      height: 50,
+                    ),
+                    escolha == false
+                        ? SizedBox.shrink()
+                        : isValid ? SizedBox.shrink() : NumberTextField(),
+                    Container(
+                      height: 20,
+                    ),
+                    escolha == false
+                        ? SizedBox.shrink()
+                        : isValid ? SizedBox.shrink() : NumberButton(),
+                  ],
+                )),
           ],
         ),
+        isValid
+            ? Positioned.fill(
+                child: Card(),
+              )
+            : escolha == false && isValid == false && isInvalid == false
+                ? SizedBox.shrink()
+                : isValid
+                    ? SizedBox.shrink()
+                    : new Positioned(
+                        child: new Align(
+                            alignment: FractionalOffset.bottomCenter,
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  bottom: 70.0, left: 30, right: 30),
+                              child: Container(
+                                  width: displayWidth(context) * 0.8,
+                                  height: displayHeight(context) * 0.08,
+                                  child: FlatButton(
+                                    disabledColor: Color(0x99FF805D),
+                                    color: Color(0xFFFF805D),
+                                    onPressed: !rememberMe &&
+                                            numberController.text == ''
+                                        ? null
+                                        : () {
+                                            print('oi');
+                                            setState(() {
+                                              isValid = true;
+                                            });
+                                          },
+                                    child: Text('Confirmar',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700)),
+                                    textColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Color(0xFFFF805D),
+                                            width: 1,
+                                            style: BorderStyle.solid),
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                  )),
+                            )),
+                      ),
       ]),
     );
   }
