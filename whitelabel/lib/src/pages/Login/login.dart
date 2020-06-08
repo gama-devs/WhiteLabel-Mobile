@@ -19,7 +19,7 @@ TextEditingController celInputController = new TextEditingController();
 TextEditingController passwordInputController = new TextEditingController();
 TextEditingController nameInputController = new TextEditingController();
 var maskFormatter = new MaskTextInputFormatter(
-    mask: '#####-####', filter: {"#": RegExp(r'[0-9]')});
+    mask: '(##)#####-####', filter: {"#": RegExp(r'[0-9]')});
 
 class _LoginState extends State<Login> {
   final formKey = new GlobalKey<FormState>();
@@ -113,6 +113,7 @@ class _LoginState extends State<Login> {
 
     TextFormField celInput = TextFormField(
       controller: celInputController,
+      keyboardType: TextInputType.number,
       inputFormatters: [maskFormatter],
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       decoration: InputDecoration(
@@ -198,7 +199,7 @@ class _LoginState extends State<Login> {
             style: TextStyle(
                 color: Color(0xFFFF805D),
                 fontSize: 14,
-                fontWeight: FontWeight.w900),
+                fontWeight: FontWeight.w800),
           ),
         ],
       ),
@@ -579,9 +580,9 @@ class _LoginState extends State<Login> {
                         height: loginFail
                             ? 250
                             : isLogin
-                                ? 355
+                                ? 390
                                 : MediaQuery.of(context).viewInsets.bottom == 0
-                                    ? 475
+                                    ? 500
                                     : 550,
                         curve: Curves.easeInOutBack,
                         child: loginFail

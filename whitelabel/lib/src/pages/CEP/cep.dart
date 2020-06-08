@@ -14,6 +14,8 @@ class Cep extends StatefulWidget {
 }
 
 class _CepState extends State<Cep> {
+  var _pretextController = new TextEditingController();
+
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -243,6 +245,8 @@ class _CepState extends State<Cep> {
                                                               context) *
                                                           0.02),
                                                   child: TextField(
+                                                    controller:
+                                                        _pretextController,
                                                     decoration: InputDecoration(
                                                         border:
                                                             InputBorder.none,
@@ -285,11 +289,12 @@ class _CepState extends State<Cep> {
                                                 Timer(
                                                     Duration(seconds: 0),
                                                     () => Navigator.of(context)
-                                                        .pushReplacement(
-                                                            MaterialPageRoute(
-                                                                builder: (BuildContext
-                                                                        context) =>
-                                                                    Address())));
+                                                        .pushReplacement(MaterialPageRoute(
+                                                            builder: (BuildContext
+                                                                    context) =>
+                                                                Address(
+                                                                    value: _pretextController
+                                                                        .text))));
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(

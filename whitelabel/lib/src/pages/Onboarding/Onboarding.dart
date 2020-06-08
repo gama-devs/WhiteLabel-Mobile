@@ -102,7 +102,7 @@ class _OnboardingState extends State<Onboarding> {
     ;
 
     final nextButton = Material(
-      borderRadius: BorderRadius.circular(10.0),
+      borderRadius: BorderRadius.circular(12.0),
       color: Color(0xFFFF805D),
       child: Padding(
           padding: EdgeInsets.only(left: 20, right: 20),

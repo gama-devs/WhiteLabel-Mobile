@@ -18,6 +18,8 @@ class AddressFields {
 }
 
 class Address extends StatefulWidget {
+  final String value;
+  Address({Key key, this.value}) : super(key: key);
   @override
   _AddressState createState() => new _AddressState();
 }
@@ -74,19 +76,23 @@ class _AddressState extends State<Address> {
   void initState() {
     _textController.addListener(() {
       //here you have the changes of your textfield
-      print("value: ${_textController.text}");
       texto = Uri.encodeFull(_textController.text);
-      print(texto);
 
       //use setState to rebuild the widget
       setState(() {
         getData(context);
       });
     });
+
+    setState(() {
+      _textController.text = widget.value;
+      texto = Uri.encodeFull(_textController.text);
+    });
     super.initState();
   }
 
   Future getData(BuildContext context) async {
+    print(texto);
     try {
       http.Response response = await http.get(
         Uri.encodeFull("https://api.mapbox.com/geocoding/v5/mapbox.places/" +
@@ -429,7 +435,8 @@ class _AddressState extends State<Address> {
                             style: new TextStyle(
                               fontSize: 19.0,
                               fontWeight: FontWeight.bold,
-                              color: isInvalid ? Colors.white : Color(0xFF413131),
+                              color:
+                                  isInvalid ? Colors.white : Color(0xFF413131),
                             ),
                           ),
                         ),
@@ -595,7 +602,7 @@ class _AddressState extends State<Address> {
                                               width: 1,
                                               style: BorderStyle.solid),
                                           borderRadius:
-                                              BorderRadius.circular(20)),
+                                              BorderRadius.circular(12)),
                                     )),
                               )
                             ],
@@ -662,41 +669,44 @@ class _AddressState extends State<Address> {
             ? Positioned.fill(
                 child: Card(),
               )
-            :             escolha == false && isValid == false && isInvalid == false
+            : escolha == false && isValid == false && isInvalid == false
                 ? SizedBox.shrink()
-                : isValid ? SizedBox.shrink() : new Positioned(
-                child: new Align(
-                    alignment: FractionalOffset.bottomCenter,
-                    child: Container(
-                      padding:
-                          EdgeInsets.only(bottom: 70.0, left: 30, right: 30),
-                      child: Container(
-                          width: displayWidth(context) * 0.8,
-                          height: displayHeight(context) * 0.08,
-                          child: FlatButton(
-                            color: Color(0xFFFF805D),
-                            onPressed: () {
-                              print('oi');
-
-                              setState(() {
-                                isValid = true;
-                              });
-                            },
-                            child: Text('Confirmar',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700)),
-                            textColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                side: BorderSide(
+                : isValid
+                    ? SizedBox.shrink()
+                    : new Positioned(
+                        child: new Align(
+                            alignment: FractionalOffset.bottomCenter,
+                            child: Container(
+                              padding: EdgeInsets.only(
+                                  bottom: 70.0, left: 30, right: 30),
+                              child: Container(
+                                  width: displayWidth(context) * 0.8,
+                                  height: displayHeight(context) * 0.08,
+                                  child: FlatButton(
                                     color: Color(0xFFFF805D),
-                                    width: 1,
-                                    style: BorderStyle.solid),
-                                borderRadius: BorderRadius.circular(20)),
-                          )),
-                    )),
-              ),
+                                    onPressed: () {
+                                      print('oi');
+
+                                      setState(() {
+                                        isValid = true;
+                                      });
+                                    },
+                                    child: Text('Confirmar',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700)),
+                                    textColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        side: BorderSide(
+                                            color: Color(0xFFFF805D),
+                                            width: 1,
+                                            style: BorderStyle.solid),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                  )),
+                            )),
+                      ),
         Column(
           children: <Widget>[
             !isValid
