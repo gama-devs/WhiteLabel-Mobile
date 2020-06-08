@@ -154,7 +154,6 @@ class _AddressState extends State<Address> {
                     height: 50,
                     duration: Duration(milliseconds: 700),
                     decoration: BoxDecoration(
-                        color: Color(0xFFEDF1F7),
                         borderRadius: BorderRadius.all(Radius.circular(12))),
                     width: displayWidth(context) * 0.7,
                     child: TextField(
