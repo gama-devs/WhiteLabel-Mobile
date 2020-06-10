@@ -48,27 +48,26 @@ class _MenuState extends State<Menu> {
   getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('tolken_code');
-    print(token);
-    authToken = token;
   }
 
   var loading = false;
 
   Future<String> getProducts(BuildContext context) async {
-    getToken();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('tolken_code');
     try {
       setState(() {
         loading = true;
       });
       print("Teste menus");
-      print(authToken.toString());
+      print(token);
       http.Response response = await http.get(
         Uri.encodeFull("http://50.16.146.1/api/products?company_id=2"),
         headers: {
           "Accept": "application/json",
           "content-type": "application/json",
           "Authorization": "Bearer " +
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNTZiMTYwYjkxOGU1ZWEwMTgxODY4YmJkMzFkOTlhMjBiNGI1NzE5MWMzN2RlNmQwZWVmODBjM2FiOTI0YjU5YTQ2ZTcwYjViNTI3ZGFiZTIiLCJpYXQiOjE1OTE2NjM1NTEsIm5iZiI6MTU5MTY2MzU1MSwiZXhwIjoxNjIzMTk5NTUxLCJzdWIiOiIzOCIsInNjb3BlcyI6W119.fMQVyl6pk_937IShaFH4iEqlM9tK3F5GRlJgz_7c8-xSrqM87b1YABPllSrritM-ozYre8lHOJkkI-rX6KIjOY3EinFsjT6PXgJlF7ygZtBZqMz6BvGo3IppY9XzdnKc6I3GGWEBAKwvR7lArEe1P2Q1myudz4rJC8fDz5LmJ8Yy2knIldh9kQsrtAYbvLltHccvhIBC47rjxJgOVmQV0BqHSRIXRD5Xc06ozYuzHxbLwdXqXvaewWfcpd3OxRXKs7mk0ipEd87aEBhwSdreER14PcgyxRBXTTf26VTPkLlR0HYrmokDGE6uubmpeharwSvSkEvw-dLeEtEHp8ON2lYmksr5dLUQrB5upEVupE6zcvrc0m8q5Fey7JHol-nLjNbjMIcJG08U0Bt5GLkoLvszDA-g7ht3esFAM_tKwLSGGTYJ_PynpsaNcvgtUqK6EaiK6tGOQ60ToiHnFKP8Ky0Jsbqv0d37zm-4JMnmPGGiJyQiJbOrV5m0MYrjCZ4avA7AyCwiXknRlITawlk9zHOUvqTebR-Ri9vKza1TEnWUAtXdz9SnADa4ZYhTD1mZKuFmeOq4omLzXcojW2SVOt-_7jCbb9RPtQqoG2hMqvM_EKgUlcPYWJ8JlIg1gYanzr-EaXoNPDuAvsTVQu57oRnHCRe-rmNp-ukmuB372T8"
+              token
         },
       );
       var jsonData = json.decode(response.body);
@@ -90,7 +89,7 @@ class _MenuState extends State<Menu> {
                       product["option_categories"].length.toString() +
                       " sabores!"
                   : "",
-              price: (product['price'] / 100).toString()));
+              price: "R\$:" + (product['price'] / 100).toStringAsFixed(2).replaceAll('.',',')));
         }
         categories.add(Category(
             name: categoryName,
@@ -107,8 +106,8 @@ class _MenuState extends State<Menu> {
   }
 
   void initState() {
-    getProducts(context);
     super.initState();
+    getProducts(context);
   }
 
   List<Category> categories = [];
@@ -448,7 +447,6 @@ class _MenuState extends State<Menu> {
     }
 
     Container listCategories(categoriesList) {
-      print("OI");
       loading ? print("loading"):categoriesList.map((category) => print(category));
       return (loading
           ? Container()
