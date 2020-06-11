@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +11,7 @@ class Produto {
   String name;
   String description;
   String options;
-  String price;
+  var price;
 
   Produto({this.name, this.description, this.options, this.price, this.image});
 }
