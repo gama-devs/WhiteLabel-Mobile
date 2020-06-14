@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:whitelabel/src/pages/Menu/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class searchMenu extends StatefulWidget {
   @override
@@ -12,8 +15,72 @@ class searchMenu extends StatefulWidget {
 
 class _searchMenuState extends State<searchMenu> {
   //Abrindo o bottomSheet ao iniciar a tela
+  var tolken;
+
+  final List<Produto> produtos = [
+    Produto(
+        name: 'Familia',
+        description: 'A perfeita para dividir com todo mundo',
+        options: 'Até 4 sabores',
+        price: "R\$:66,90",
+        image: 'assets/pizzaGrande.png'),
+    Produto(
+        name: 'Grande',
+        description: 'Feita pra juntar a galera e aproveitar!',
+        options: 'Até 3 sabores',
+        price: 'R\$:58,90',
+        image: 'assets/pizzaMedia.png'),
+    Produto(
+        name: 'Pequena',
+        description: 'Pra não se sentir solitario',
+        options: 'Até 3 sabores',
+        price: 'R\$:25,90',
+        image: 'assets/pizzaGrande.png')
+  ];
+
+  List<Category> categories = [
+    Category(description: 'teste', name: 'teste', products: [
+      Produto(
+          name: 'Familia',
+          description: 'A perfeita para dividir com todo mundo',
+          options: 'Até 4 sabores',
+          price: "R\$:66,90",
+          image: 'assets/pizzaGrande.png'),
+      Produto(
+          name: 'Grande',
+          description: 'Feita pra juntar a galera e aproveitar!',
+          options: 'Até 3 sabores',
+          price: 'R\$:58,90',
+          image: 'assets/pizzaMedia.png'),
+      Produto(
+          name: 'Pequena',
+          description: 'Pra não se sentir solitario',
+          options: 'Até 3 sabores',
+          price: 'R\$:25,90',
+          image: 'assets/pizzaGrande.png')
+    ]),
+  ];
+
+
+  String searchString = "";
+
   @override
-  void initState() {}
+  void initState() {
+    inputController.addListener(() {
+      //here you have the changes of your textfield
+      texto = Uri.encodeFull(inputController.text);
+
+      //use setState to rebuild the widget
+      setState(() {
+        searchString = inputController.text;
+      });
+    });
+
+    setState(() {
+      texto = Uri.encodeFull(inputController.text);
+    });
+    super.initState();
+  }
 
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
@@ -26,6 +93,11 @@ class _searchMenuState extends State<searchMenu> {
   double displayWidth(BuildContext context) {
     return displaySize(context).width;
   }
+
+  bool input = true;
+  final String value = "";
+  var inputController = new TextEditingController();
+  String texto = "";
 
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -58,6 +130,7 @@ class _searchMenuState extends State<searchMenu> {
                       height: displayHeight(context) * 0.06,
                       width: displayWidth(context) * 0.7,
                       child: TextField(
+                        controller: inputController,
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(top: 5, bottom: 5),
                             filled: true,
@@ -115,17 +188,68 @@ class _searchMenuState extends State<searchMenu> {
                     ),
                   ),
                   Padding(
-                padding: EdgeInsets.only(top: 0),
-                  child:Container(
-                      height: displayHeight(context) * 0.5,
-                      width: displayWidth(context) * 0.8,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/mulhercelular.png'),
-                          fit: BoxFit.fill,
-                        ),
-                      )))
+                      padding: EdgeInsets.only(top: 0),
+                      child: Container(
+                          height: displayHeight(context) * 0.5,
+                          width: displayWidth(context) * 0.8,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/mulhercelular.png'),
+                              fit: BoxFit.fill,
+                            ),
+                          )))
                 ]))));
+
+    Padding fillCard(category, text) {
+      List<Produto> productList = [];
+      List<Widget> children = [];
+      children.add(Padding(
+          padding: EdgeInsets.only(top: 0, left: 0),
+          child: Container(
+              width: displayWidth(context) * .6,
+              child: Text(
+                category.name,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: Color(0xFF413131),
+                ),
+              ),
+            ),
+          ));
+      for (var product in category.products) {
+        if (product.name.contains(text)) children.add(Padding(
+          padding: EdgeInsets.only(top: 0, left: 0),
+          child: Container(
+              width: displayWidth(context) * .6,
+              child: Text(
+                product.name,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF413131),
+                ),
+              ),
+            ),
+          ));
+      }
+
+      return Padding(
+          padding: EdgeInsets.only(
+            top: 0,
+          ),
+          child: Container(
+              width: displayWidth(context),
+              height: displayHeight(context) * 0.76,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Colors.white,
+              ),
+              child: Column(
+                children: children,
+              )));
+    }
 
     return Scaffold(
       body: Center(
@@ -140,7 +264,9 @@ class _searchMenuState extends State<searchMenu> {
                 children: <Widget>[
                   topBar,
                   SizedBox(height: 0),
-                  emptyCard,
+                  Container(
+                    child: input ? Column(children : categories.map((category) => fillCard(category,searchString)).toList()) : emptyCard,
+                  ),
                   SizedBox(height: 0),
                 ],
               )
