@@ -7,12 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whitelabel/src/pages/Search/searchMenu.dart';
 
-class Category {
+class ProductCategory {
   String name;
   String description;
   List<Produto> products;
-  Category({this.name, this.description, this.products});
+  ProductCategory({this.name, this.description, this.products});
 }
 
 class Produto {
@@ -20,7 +21,7 @@ class Produto {
   String name;
   String description;
   String options;
-  String price;
+  var price;
 
   Produto({this.name, this.description, this.options, this.price, this.image});
 }
@@ -66,8 +67,7 @@ class _MenuState extends State<Menu> {
         headers: {
           "Accept": "application/json",
           "content-type": "application/json",
-          "Authorization": "Bearer " +
-              token
+          "Authorization": "Bearer " + token
         },
       );
       var jsonData = json.decode(response.body);
@@ -89,9 +89,9 @@ class _MenuState extends State<Menu> {
                       product["option_categories"].length.toString() +
                       " sabores!"
                   : "",
-              price: "R\$:" + (product['price'] / 100).toStringAsFixed(2).replaceAll('.',',')));
+              price: "R\$:" + (product['price'])));
         }
-        categories.add(Category(
+        categories.add(ProductCategory(
             name: categoryName,
             description: categoryDescription,
             products: products));
@@ -110,7 +110,7 @@ class _MenuState extends State<Menu> {
     getProducts(context);
   }
 
-  List<Category> categories = [];
+  List<ProductCategory> categories = [];
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -152,7 +152,13 @@ class _MenuState extends State<Menu> {
           decoration: InputDecoration(
               fillColor: Color(0xFFEDF1F7),
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-              suffixIcon: Icon(Icons.search),
+              suffixIcon: GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => searchMenu(categories: categories,)));
+                },
+                child: Icon(Icons.search),
+              ),
               enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(50.0),
                   borderSide: BorderSide(
@@ -300,7 +306,10 @@ class _MenuState extends State<Menu> {
                                       Container(
                                         padding: EdgeInsets.only(right: 3),
                                         child: Text(
-                                          produto.price,
+                                          "R\$:" +
+                                              (produto.price / 100)
+                                                  .toStringAsFixed(2)
+                                                  .replaceAll('.', ','),
                                           style: TextStyle(
                                               color: Color(0XFF413131),
                                               fontSize: 17,
@@ -329,125 +338,130 @@ class _MenuState extends State<Menu> {
     );
 
     Container textCategory(name, description) {
-    
-    return Container(
-          child: name == null ? Container(): Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-            name == null ? Container():Container(
-              padding: EdgeInsets.only(bottom: 5),
-              child: Text(
-                name,
-                style: TextStyle(
-                    color: Color(0xFF413131),
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800),
-              ),
-            ),
-            description == null ? Container():Container(
-              child: Text(
-                description,
-                style: TextStyle(color: Color(0xFF413131), fontSize: 14),
-              ),
-            )
-          ]));
+      return Container(
+          child: name == null
+              ? Container()
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                      name == null
+                          ? Container()
+                          : Container(
+                              padding: EdgeInsets.only(bottom: 5),
+                              child: Text(
+                                name,
+                                style: TextStyle(
+                                    color: Color(0xFF413131),
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                      description == null
+                          ? Container()
+                          : Container(
+                              child: Text(
+                                description,
+                                style: TextStyle(
+                                    color: Color(0xFF413131), fontSize: 14),
+                              ),
+                            )
+                    ]));
     }
 
     Container gridCategory(productList) {
       return Container(
-          height: productList.length > 2 ? 500:250,
-          child:GridView.count(
-                scrollDirection: Axis.vertical,
-                
-                childAspectRatio: 0.75,
-                crossAxisCount: 2,
-                children: productList
-                    .map<Widget>((product) => Container(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                  child: Container(
-                                padding: EdgeInsets.only(right: 10),
-                                width: MediaQuery.of(context).size.width / 2.0,
-                                child: Column(
-                                  children: <Widget>[
-                                    Container(
-                                      width: MediaQuery.of(context).size.width /
-                                          2.0,
-                                      decoration:
-                                          BoxDecoration(border: Border()),
-                                      child: product.image == null
-                                          ? Image.asset("assets/burg1.png",
-                                              fit: BoxFit.cover)
-                                          : Image.asset(product.image,
-                                              fit: BoxFit.cover),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              product.name,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Color(0XFFFF805D),
-                                                  fontWeight: FontWeight.w800),
-                                            ),
-                                            Container(
-                                                height: 40,
-                                                child:
-                                                    product.description == null
-                                                        ? Text(
-                                                            "Descricao do produto",
-                                                            style: TextStyle(
-                                                                color: Color(
-                                                                    0xFF413131),
-                                                                fontSize: 12),
-                                                          )
-                                                        : Text(
-                                                            product.description,
-                                                            style: TextStyle(
-                                                                color: Color(
-                                                                    0xFF413131),
-                                                                fontSize: 12),
-                                                          )),
-                                            Row(
-                                              children: <Widget>[
-                                                Container(
-                                                  padding:
-                                                      EdgeInsets.only(right: 3),
-                                                  child: Text(
-                                                    product.price,
+          height: productList.length > 2 ? 500 : 250,
+          child: GridView.count(
+            scrollDirection: Axis.vertical,
+            childAspectRatio: 0.75,
+            crossAxisCount: 2,
+            children: productList
+                .map<Widget>((product) => Container(
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                              child: Container(
+                            padding: EdgeInsets.only(right: 10),
+                            width: MediaQuery.of(context).size.width / 2.0,
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 2.0,
+                                  decoration: BoxDecoration(border: Border()),
+                                  child: product.image == null
+                                      ? Image.asset("assets/burg1.png",
+                                          fit: BoxFit.cover)
+                                      : Image.asset(product.image,
+                                          fit: BoxFit.cover),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          product.name,
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Color(0XFFFF805D),
+                                              fontWeight: FontWeight.w800),
+                                        ),
+                                        Container(
+                                            height: 40,
+                                            child: product.description == null
+                                                ? Text(
+                                                    "Descricao do produto",
                                                     style: TextStyle(
                                                         color:
-                                                            Color(0XFF413131),
-                                                        fontSize: 17,
-                                                        fontWeight:
-                                                            FontWeight.w800),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ]),
-                                    ),
-                                  ],
+                                                            Color(0xFF413131),
+                                                        fontSize: 12),
+                                                  )
+                                                : Text(
+                                                    product.description,
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0xFF413131),
+                                                        fontSize: 12),
+                                                  )),
+                                        Row(
+                                          children: <Widget>[
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.only(right: 3),
+                                              child: Text(
+                                                "R\$: " +
+                                                    (product.price / 100)
+                                                        .toStringAsFixed(2)
+                                                        .replaceAll('.', ','),
+                                                style: TextStyle(
+                                                    color: Color(0XFF413131),
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.w800),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ]),
                                 ),
-                              )),
-                            ],
-                          ),
-                        ))
-                    .toList(),
-              )
-            
-          );
+                              ],
+                            ),
+                          )),
+                        ],
+                      ),
+                    ))
+                .toList(),
+          ));
     }
 
     Container listCategories(categoriesList) {
-      loading ? print("loading"):categoriesList.map((category) => print(category));
+      loading
+          ? print("loading")
+          : categoriesList.map((category) => print(category));
       return (loading
           ? Container()
           : Container(
@@ -458,7 +472,8 @@ class _MenuState extends State<Menu> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                textCategory(category.name, category.description),
+                                textCategory(
+                                    category.name, category.description),
                                 gridCategory(category.products),
                               ],
                             ),

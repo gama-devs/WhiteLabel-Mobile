@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +10,9 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class searchMenu extends StatefulWidget {
+
+  List<ProductCategory> categories;
+   searchMenu({Key key, @required this.categories}) : super(key: key);
   @override
   _searchMenuState createState() => new _searchMenuState();
 }
@@ -38,8 +42,8 @@ class _searchMenuState extends State<searchMenu> {
         image: 'assets/pizzaGrande.png')
   ];
 
-  List<Category> categories = [
-    Category(description: 'teste', name: 'teste', products: [
+  List<ProductCategory> categories = [
+    ProductCategory(description: 'teste', name: 'teste', products: [
       Produto(
           name: 'Familia',
           description: 'A perfeita para dividir com todo mundo',
@@ -200,7 +204,7 @@ class _searchMenuState extends State<searchMenu> {
                           )))
                 ]))));
 
-    Padding fillCard(category, text) {
+    Padding fillCard(ProductCategory, text) {
       List<Produto> productList = [];
       List<Widget> children = [];
       children.add(Padding(
@@ -208,7 +212,7 @@ class _searchMenuState extends State<searchMenu> {
           child: Container(
               width: displayWidth(context) * .6,
               child: Text(
-                category.name,
+                ProductCategory.name,
                 textAlign: TextAlign.left,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -218,7 +222,7 @@ class _searchMenuState extends State<searchMenu> {
               ),
             ),
           ));
-      for (var product in category.products) {
+      for (var product in ProductCategory.products) {
         if (product.name.contains(text)) children.add(Padding(
           padding: EdgeInsets.only(top: 0, left: 0),
           child: Container(
@@ -265,7 +269,7 @@ class _searchMenuState extends State<searchMenu> {
                   topBar,
                   SizedBox(height: 0),
                   Container(
-                    child: input ? Column(children : categories.map((category) => fillCard(category,searchString)).toList()) : emptyCard,
+                    child: input ? Column(children : categories.map((ProductCategory) => fillCard(ProductCategory,searchString)).toList()) : emptyCard,
                   ),
                   SizedBox(height: 0),
                 ],
