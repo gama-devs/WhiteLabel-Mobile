@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Search/searchMenu.dart';
-
+import 'package:whitelabel/src/pages/Menu/categoryAll.dart';
 class ProductCategory {
   String name;
   String description;
@@ -97,7 +97,7 @@ class _MenuState extends State<Menu> {
             name: categoryName,
             description: categoryDescription,
             products: products,
-            showItems: 2));
+            showItems: 4));
         print(categoryName);
       }
     } catch (e) {
@@ -346,7 +346,7 @@ class _MenuState extends State<Menu> {
 
     Container textCategory(category) {
       String name = category.name;
-      String description =  category.description;
+      String description = category.description;
       return Container(
           child: name == null
               ? Container()
@@ -365,30 +365,37 @@ class _MenuState extends State<Menu> {
                                     fontWeight: FontWeight.w800),
                               ),
                             ),
-                      Row(children: <Widget>[description == null
-                          ? Container()
-                          : Container(
-                              child: Text(
-                                description,
-                                style: TextStyle(
-                                    color: Color(0xFF413131), fontSize: 14),
-                              ),
-                            ),
-                            Spacer(),
-                            Container(child: GestureDetector(
-                              onTap:(){
-                                setState(() {
-                                  category.showItems = category.products.length;
-                                });
+                      Row(
+                        children: <Widget>[
+                          description == null
+                              ? Container()
+                              : Container(
+                                  child: Text(
+                                    description,
+                                    style: TextStyle(
+                                        color: Color(0xFF413131), fontSize: 14),
+                                  ),
+                                ),
+                          Spacer(),
+                          Container(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CategoryAll(
+                                              productCategories: category,
+                                            )));
                               },
                               child: Text(
                                 "Ver todos",
                                 style: TextStyle(
                                     color: Color(0xFFFF805D), fontSize: 14),
-                              ),),)
-                            ],)
-                      
-                          
+                              ),
+                            ),
+                          )
+                        ],
+                      )
                     ]));
     }
 
@@ -396,18 +403,18 @@ class _MenuState extends State<Menu> {
       List<Widget> itemsWidgets = [];
       for (int i = 0; i < numItems; i += 2) {
         List<Widget> row = [];
-        for (int j = i; j < i+2 && j < productList.length; j++) {
+        for (int j = i; j < i + 2 && j < productList.length; j++) {
           row.add(Container(
             child: Column(
               children: <Widget>[
                 Container(
                     child: Container(
                   padding: EdgeInsets.only(right: 10),
-                  width: MediaQuery.of(context).size.width *0.45,
+                  width: MediaQuery.of(context).size.width * 0.45,
                   child: Column(
                     children: <Widget>[
                       Container(
-                        width: MediaQuery.of(context).size.width *0.45,
+                        width: MediaQuery.of(context).size.width * 0.45,
                         decoration: BoxDecoration(border: Border()),
                         child: productList[j].image == null
                             ? Image.asset("assets/burg1.png", fit: BoxFit.cover)
@@ -473,7 +480,7 @@ class _MenuState extends State<Menu> {
 
       return Container(
           height: (itemsWidgets.length * 250).toDouble(),
-          padding: EdgeInsets.only(top:10),
+          padding: EdgeInsets.only(top: 10),
           child: Column(children: itemsWidgets));
     }
 
@@ -491,9 +498,12 @@ class _MenuState extends State<Menu> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                textCategory(
-                                    category),
-                                gridCategory(category.products,category.products.length > 2?category.showItems : 2),
+                                textCategory(category),
+                                gridCategory(
+                                    category.products,
+                                    category.products.length > 2
+                                        ? category.showItems
+                                        : 2),
                               ],
                             ),
                           ))
