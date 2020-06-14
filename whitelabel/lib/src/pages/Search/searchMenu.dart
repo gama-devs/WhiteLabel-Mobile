@@ -9,62 +9,17 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class searchMenu extends StatefulWidget {
+class SearchMenu extends StatefulWidget {
 
-  List<ProductCategory> categories;
-   searchMenu({Key key, @required this.categories}) : super(key: key);
+  final List<ProductCategory> productCategories;
+   SearchMenu({Key key, @required this.productCategories}) : super(key: key);
   @override
-  _searchMenuState createState() => new _searchMenuState();
+  _SearchMenuState createState() => new _SearchMenuState();
 }
 
-class _searchMenuState extends State<searchMenu> {
+class _SearchMenuState extends State<SearchMenu> {
   //Abrindo o bottomSheet ao iniciar a tela
   var tolken;
-
-  final List<Produto> produtos = [
-    Produto(
-        name: 'Familia',
-        description: 'A perfeita para dividir com todo mundo',
-        options: 'Até 4 sabores',
-        price: "R\$:66,90",
-        image: 'assets/pizzaGrande.png'),
-    Produto(
-        name: 'Grande',
-        description: 'Feita pra juntar a galera e aproveitar!',
-        options: 'Até 3 sabores',
-        price: 'R\$:58,90',
-        image: 'assets/pizzaMedia.png'),
-    Produto(
-        name: 'Pequena',
-        description: 'Pra não se sentir solitario',
-        options: 'Até 3 sabores',
-        price: 'R\$:25,90',
-        image: 'assets/pizzaGrande.png')
-  ];
-
-  List<ProductCategory> categories = [
-    ProductCategory(description: 'teste', name: 'teste', products: [
-      Produto(
-          name: 'Familia',
-          description: 'A perfeita para dividir com todo mundo',
-          options: 'Até 4 sabores',
-          price: "R\$:66,90",
-          image: 'assets/pizzaGrande.png'),
-      Produto(
-          name: 'Grande',
-          description: 'Feita pra juntar a galera e aproveitar!',
-          options: 'Até 3 sabores',
-          price: 'R\$:58,90',
-          image: 'assets/pizzaMedia.png'),
-      Produto(
-          name: 'Pequena',
-          description: 'Pra não se sentir solitario',
-          options: 'Até 3 sabores',
-          price: 'R\$:25,90',
-          image: 'assets/pizzaGrande.png')
-    ]),
-  ];
-
 
   String searchString = "";
 
@@ -104,6 +59,8 @@ class _searchMenuState extends State<searchMenu> {
   String texto = "";
 
   Widget build(BuildContext context) {
+
+  List<ProductCategory> categories = widget.productCategories;
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     Padding topBar = Padding(
@@ -122,11 +79,16 @@ class _searchMenuState extends State<searchMenu> {
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.white,
                     ),
-                    child: Icon(
+                    child: GestureDetector(
+                      onTap: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => Menu()));
+                },
+                      child:Icon(
                       Icons.arrow_back_ios,
                       color: Color(0xFFFF805D),
                       size: 20,
-                    )),
+                    ))),
               ),
               Padding(
                   padding: EdgeInsets.only(top: 0, left: 20),
@@ -208,9 +170,8 @@ class _searchMenuState extends State<searchMenu> {
       List<Produto> productList = [];
       List<Widget> children = [];
       children.add(Padding(
-          padding: EdgeInsets.only(top: 0, left: 0),
+          padding: EdgeInsets.only(bottom: 10),
           child: Container(
-              width: displayWidth(context) * .6,
               child: Text(
                 ProductCategory.name,
                 textAlign: TextAlign.left,
@@ -223,10 +184,10 @@ class _searchMenuState extends State<searchMenu> {
             ),
           ));
       for (var product in ProductCategory.products) {
-        if (product.name.contains(text)) children.add(Padding(
+        if (product.name.toLowerCase().contains(text.toLowerCase())) children.add(Padding(
           padding: EdgeInsets.only(top: 0, left: 0),
           child: Container(
-              width: displayWidth(context) * .6,
+              padding: EdgeInsets.only(bottom:10),
               child: Text(
                 product.name,
                 textAlign: TextAlign.left,
@@ -245,39 +206,38 @@ class _searchMenuState extends State<searchMenu> {
           ),
           child: Container(
               width: displayWidth(context),
-              height: displayHeight(context) * 0.76,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
                 color: Colors.white,
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: children,
               )));
     }
 
+    List <Widget> productsList = [];
+    for (var category in categories) productsList.add(fillCard(category, searchString));
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: Container(
           color: Color(0xFFF8F6F8),
-          child: Padding(
-            padding: const EdgeInsets.only(),
-            child: ListView(children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  topBar,
-                  SizedBox(height: 0),
-                  Container(
-                    child: input ? Column(children : categories.map((ProductCategory) => fillCard(ProductCategory,searchString)).toList()) : emptyCard,
-                  ),
-                  SizedBox(height: 0),
-                ],
-              )
-            ]),
+            
+            child: Column(children: <Widget>[
+              topBar,
+              Container(
+                padding: EdgeInsets.only(left:15),
+                decoration: BoxDecoration(color: Colors.white,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(32),topRight: Radius.circular(32))),
+                height: MediaQuery.of(context).size.height * 0.8,
+                child:searchString == ''? emptyCard :ListView(children: productsList))
+            ]
+            )
           ),
         ),
-      ),
+
     );
   }
 }

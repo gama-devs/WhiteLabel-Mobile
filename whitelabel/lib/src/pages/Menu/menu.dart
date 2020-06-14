@@ -13,7 +13,9 @@ class ProductCategory {
   String name;
   String description;
   List<Produto> products;
-  ProductCategory({this.name, this.description, this.products});
+  int showItems;
+  ProductCategory(
+      {this.name, this.description, this.products, this.showItems = 4});
 }
 
 class Produto {
@@ -89,12 +91,13 @@ class _MenuState extends State<Menu> {
                       product["option_categories"].length.toString() +
                       " sabores!"
                   : "",
-              price: "R\$:" + (product['price'])));
+              price: (product['price'])));
         }
         categories.add(ProductCategory(
             name: categoryName,
             description: categoryDescription,
-            products: products));
+            products: products,
+            showItems: 2));
         print(categoryName);
       }
     } catch (e) {
@@ -106,8 +109,8 @@ class _MenuState extends State<Menu> {
   }
 
   void initState() {
-    super.initState();
     getProducts(context);
+    super.initState();
   }
 
   List<ProductCategory> categories = [];
@@ -125,19 +128,19 @@ class _MenuState extends State<Menu> {
           name: 'Familia',
           description: 'A perfeita para dividir com todo mundo',
           options: 'Até 4 sabores',
-          price: "R\$:66,90",
+          price: 66.90,
           image: 'assets/pizzaGrande.png'),
       Produto(
           name: 'Grande',
           description: 'Feita pra juntar a galera e aproveitar!',
           options: 'Até 3 sabores',
-          price: 'R\$:58,90',
+          price: 58.90,
           image: 'assets/pizzaMedia.png'),
       Produto(
           name: 'Pequena',
           description: 'Pra não se sentir solitario',
           options: 'Até 3 sabores',
-          price: 'R\$:25,90',
+          price: 25.90,
           image: 'assets/pizzaGrande.png')
     ];
     Container containerLogo = Container(
@@ -154,8 +157,12 @@ class _MenuState extends State<Menu> {
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               suffixIcon: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => searchMenu(categories: categories,)));
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SearchMenu(
+                                productCategories: categories,
+                              )));
                 },
                 child: Icon(Icons.search),
               ),
@@ -337,7 +344,9 @@ class _MenuState extends State<Menu> {
           .toList(),
     );
 
-    Container textCategory(name, description) {
+    Container textCategory(category) {
+      String name = category.name;
+      String description =  category.description;
       return Container(
           child: name == null
               ? Container()
@@ -356,7 +365,7 @@ class _MenuState extends State<Menu> {
                                     fontWeight: FontWeight.w800),
                               ),
                             ),
-                      description == null
+                      Row(children: <Widget>[description == null
                           ? Container()
                           : Container(
                               child: Text(
@@ -364,98 +373,108 @@ class _MenuState extends State<Menu> {
                                 style: TextStyle(
                                     color: Color(0xFF413131), fontSize: 14),
                               ),
-                            )
+                            ),
+                            Spacer(),
+                            Container(child: GestureDetector(
+                              onTap:(){
+                                setState(() {
+                                  category.showItems = category.products.length;
+                                });
+                              },
+                              child: Text(
+                                "Ver todos",
+                                style: TextStyle(
+                                    color: Color(0xFFFF805D), fontSize: 14),
+                              ),),)
+                            ],)
+                      
+                          
                     ]));
     }
 
-    Container gridCategory(productList) {
-      return Container(
-          height: productList.length > 2 ? 500 : 250,
-          child: GridView.count(
-            scrollDirection: Axis.vertical,
-            childAspectRatio: 0.75,
-            crossAxisCount: 2,
-            children: productList
-                .map<Widget>((product) => Container(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                              child: Container(
-                            padding: EdgeInsets.only(right: 10),
-                            width: MediaQuery.of(context).size.width / 2.0,
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width / 2.0,
-                                  decoration: BoxDecoration(border: Border()),
-                                  child: product.image == null
-                                      ? Image.asset("assets/burg1.png",
-                                          fit: BoxFit.cover)
-                                      : Image.asset(product.image,
-                                          fit: BoxFit.cover),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          product.name,
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Color(0XFFFF805D),
-                                              fontWeight: FontWeight.w800),
-                                        ),
-                                        Container(
-                                            height: 40,
-                                            child: product.description == null
-                                                ? Text(
-                                                    "Descricao do produto",
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF413131),
-                                                        fontSize: 12),
-                                                  )
-                                                : Text(
-                                                    product.description,
-                                                    style: TextStyle(
-                                                        color:
-                                                            Color(0xFF413131),
-                                                        fontSize: 12),
-                                                  )),
-                                        Row(
-                                          children: <Widget>[
-                                            Container(
-                                              padding:
-                                                  EdgeInsets.only(right: 3),
-                                              child: Text(
-                                                "R\$: " +
-                                                    (product.price / 100)
-                                                        .toStringAsFixed(2)
-                                                        .replaceAll('.', ','),
-                                                style: TextStyle(
-                                                    color: Color(0XFF413131),
-                                                    fontSize: 17,
-                                                    fontWeight:
-                                                        FontWeight.w800),
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      ]),
-                                ),
-                              ],
-                            ),
-                          )),
-                        ],
+    Container gridCategory(productList, numItems) {
+      List<Widget> itemsWidgets = [];
+      for (int i = 0; i < numItems; i += 2) {
+        List<Widget> row = [];
+        for (int j = i; j < i+2 && j < productList.length; j++) {
+          row.add(Container(
+            child: Column(
+              children: <Widget>[
+                Container(
+                    child: Container(
+                  padding: EdgeInsets.only(right: 10),
+                  width: MediaQuery.of(context).size.width *0.45,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width *0.45,
+                        decoration: BoxDecoration(border: Border()),
+                        child: productList[j].image == null
+                            ? Image.asset("assets/burg1.png", fit: BoxFit.cover)
+                            : Image.asset(productList[j].image,
+                                fit: BoxFit.cover),
                       ),
-                    ))
-                .toList(),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                productList[j].name,
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0XFFFF805D),
+                                    fontWeight: FontWeight.w800),
+                              ),
+                              Container(
+                                  height: 40,
+                                  child: productList[j].description == null
+                                      ? Text(
+                                          "Descricao do produto",
+                                          style: TextStyle(
+                                              color: Color(0xFF413131),
+                                              fontSize: 12),
+                                        )
+                                      : Text(
+                                          productList[j].description,
+                                          style: TextStyle(
+                                              color: Color(0xFF413131),
+                                              fontSize: 12),
+                                        )),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    padding: EdgeInsets.only(right: 3),
+                                    child: Text(
+                                      "R\$: " +
+                                          (productList[j].price / 100)
+                                              .toStringAsFixed(2)
+                                              .replaceAll('.', ','),
+                                      style: TextStyle(
+                                          color: Color(0XFF413131),
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w800),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ]),
+                      ),
+                    ],
+                  ),
+                )),
+              ],
+            ),
           ));
+        }
+        itemsWidgets.add(Row(children: row));
+      }
+
+      return Container(
+          height: (itemsWidgets.length * 250).toDouble(),
+          padding: EdgeInsets.only(top:10),
+          child: Column(children: itemsWidgets));
     }
 
     Container listCategories(categoriesList) {
@@ -473,8 +492,8 @@ class _MenuState extends State<Menu> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 textCategory(
-                                    category.name, category.description),
-                                gridCategory(category.products),
+                                    category),
+                                gridCategory(category.products,category.products.length > 2?category.showItems : 2),
                               ],
                             ),
                           ))
@@ -521,7 +540,7 @@ class _MenuState extends State<Menu> {
                       child: carouselPizzas,
                     ),
                     Container(
-                      padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+                      padding: EdgeInsets.only(top: 20, left: 20, right: 10),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [listCategories(categories)]),
