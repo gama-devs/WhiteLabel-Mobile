@@ -1,8 +1,19 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Category {
+  String name;
+  String description;
+  List<Produto> products;
+  Category({this.name, this.description, this.products});
+}
 
 class Produto {
   String image;
@@ -15,11 +26,13 @@ class Produto {
 }
 
 class Menu extends StatefulWidget {
+  var authToken;
   @override
   _MenuState createState() => new _MenuState();
 }
 
 class _MenuState extends State<Menu> {
+  var authToken;
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -32,10 +45,76 @@ class _MenuState extends State<Menu> {
     return displaySize(context).width;
   }
 
+  getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('tolken_code');
+  }
+
+  var loading = false;
+
+  Future<String> getProducts(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('tolken_code');
+    try {
+      setState(() {
+        loading = true;
+      });
+      print("Teste menus");
+      print(token);
+      http.Response response = await http.get(
+        Uri.encodeFull("http://50.16.146.1/api/products?company_id=2"),
+        headers: {
+          "Accept": "application/json",
+          "content-type": "application/json",
+          "Authorization": "Bearer " +
+              token
+        },
+      );
+      var jsonData = json.decode(response.body);
+      List<Produto> products = [];
+      categories = [];
+      for (int i = 0; i < jsonData['data'].length; i++) {
+        print(jsonData['data'].length);
+        products = [];
+        var categoryName = jsonData['data'][i]['name'];
+        var categoryDescription = jsonData['data'][i]['description'];
+        for (int j = 0; j < jsonData['data'][i]['products'].length; j++) {
+          var product = jsonData['data'][i]['products'][j];
+          products.add(Produto(
+              description: product['description'],
+              image: product['image'],
+              name: product['name'],
+              options: product["option_categories"].length > 0
+                  ? "Até " +
+                      product["option_categories"].length.toString() +
+                      " sabores!"
+                  : "",
+              price: "R\$:" + (product['price'] / 100).toStringAsFixed(2).replaceAll('.',',')));
+        }
+        categories.add(Category(
+            name: categoryName,
+            description: categoryDescription,
+            products: products));
+        print(categoryName);
+      }
+    } catch (e) {
+      print(e);
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
+  void initState() {
+    super.initState();
+    getProducts(context);
+  }
+
+  List<Category> categories = [];
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    final List<String> images = [
+    final List<String> promoImages = [
       'assets/promo.png',
       'assets/promo.png',
       'assets/promo.png'
@@ -61,34 +140,6 @@ class _MenuState extends State<Menu> {
           price: 'R\$:25,90',
           image: 'assets/pizzaGrande.png')
     ];
-
-    final List<Produto> burguers = [
-      Produto(
-          name: "Smash Meat",
-          description: "180g de picanha, cheddar, rúcula e pão de brioche",
-          price: "28,90",
-          image: "assets/burg1.png",
-          options: ''),
-      Produto(
-          name: "Triple Angus",
-          description: "180g de picanha, cheddar, rúcula e pão de brioche",
-          price: "32,90",
-          image: "assets/burg2.png",
-          options: ''),
-      Produto(
-          name: "Cheddar Souce",
-          description: "180g de picanha, cheddar, rúcula e pão de brioche",
-          price: "25,90",
-          image: "assets/burg3.png",
-          options: ''),
-      Produto(
-          name: "Crispy Chicken",
-          description: "180g de picanha, cheddar, rúcula e pão de brioche",
-          price: "31,90",
-          image: "assets/burg4.png",
-          options: ''),
-    ];
-
     Container containerLogo = Container(
       width: MediaQuery.of(context).size.width / 4,
       child: Image.asset('assets/logo.png'),
@@ -133,7 +184,7 @@ class _MenuState extends State<Menu> {
 
     CarouselSlider carouselPromos = CarouselSlider(
       options: CarouselOptions(height: 160, viewportFraction: 0.8),
-      items: images
+      items: promoImages
           .map((item) => Container(
                 padding: EdgeInsets.only(right: 5, left: 5),
                 child: Center(
@@ -277,95 +328,144 @@ class _MenuState extends State<Menu> {
           .toList(),
     );
 
-    Container textBurger = Container(
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(bottom: 5),
-            child: Text(
-              'Especiais',
-              style: TextStyle(
-                  color: Color(0xFF413131),
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800),
+    Container textCategory(name, description) {
+    
+    return Container(
+          child: name == null ? Container(): Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+            name == null ? Container():Container(
+              padding: EdgeInsets.only(bottom: 5),
+              child: Text(
+                name,
+                style: TextStyle(
+                    color: Color(0xFF413131),
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800),
+              ),
             ),
-          ),
-          Container(
-            child: Text(
-              'Aqueles que quem conhece ama',
-              style: TextStyle(color: Color(0xFF413131), fontSize: 14),
-            ),
-          )
-        ]));
+            description == null ? Container():Container(
+              child: Text(
+                description,
+                style: TextStyle(color: Color(0xFF413131), fontSize: 14),
+              ),
+            )
+          ]));
+    }
 
-    Container gridBurguer = Container(
-      height: 500,
-        child: GridView.count(
-          childAspectRatio: 0.75,
-      crossAxisCount: 2,
-      children: burguers
-          .map((produto) => Container( 
-                    child: Column(
-                  children: <Widget>[
-                    Container(
-                        child: Container(
-                      padding: EdgeInsets.only(right: 10),
-                      width: MediaQuery.of(context).size.width / 2.0,
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            width: MediaQuery.of(context).size.width / 2.0,
-                            decoration: BoxDecoration(border: Border()),
-                            child:
-                                Image.asset(produto.image, fit: BoxFit.cover),
+    Container gridCategory(productList) {
+      return Container(
+          height: productList.length > 2 ? 500:250,
+          child:GridView.count(
+                scrollDirection: Axis.vertical,
+                
+                childAspectRatio: 0.75,
+                crossAxisCount: 2,
+                children: productList
+                    .map<Widget>((product) => Container(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                  child: Container(
+                                padding: EdgeInsets.only(right: 10),
+                                width: MediaQuery.of(context).size.width / 2.0,
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(
+                                      width: MediaQuery.of(context).size.width /
+                                          2.0,
+                                      decoration:
+                                          BoxDecoration(border: Border()),
+                                      child: product.image == null
+                                          ? Image.asset("assets/burg1.png",
+                                              fit: BoxFit.cover)
+                                          : Image.asset(product.image,
+                                              fit: BoxFit.cover),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                                      child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              product.name,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Color(0XFFFF805D),
+                                                  fontWeight: FontWeight.w800),
+                                            ),
+                                            Container(
+                                                height: 40,
+                                                child:
+                                                    product.description == null
+                                                        ? Text(
+                                                            "Descricao do produto",
+                                                            style: TextStyle(
+                                                                color: Color(
+                                                                    0xFF413131),
+                                                                fontSize: 12),
+                                                          )
+                                                        : Text(
+                                                            product.description,
+                                                            style: TextStyle(
+                                                                color: Color(
+                                                                    0xFF413131),
+                                                                fontSize: 12),
+                                                          )),
+                                            Row(
+                                              children: <Widget>[
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.only(right: 3),
+                                                  child: Text(
+                                                    product.price,
+                                                    style: TextStyle(
+                                                        color:
+                                                            Color(0XFF413131),
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.w800),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          ]),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                            ],
                           ),
-                          Container(
-                            padding: EdgeInsets.all(10),
+                        ))
+                    .toList(),
+              )
+            
+          );
+    }
+
+    Container listCategories(categoriesList) {
+      loading ? print("loading"):categoriesList.map((category) => print(category));
+      return (loading
+          ? Container()
+          : Container(
+              child: Column(
+                  children: categoriesList
+                      .map<Widget>((category) => Container(
                             child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    produto.name,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0XFFFF805D),
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                  Container(
-                                      height: 40,
-                                      child: Text(
-                                        produto.description,
-                                        style: TextStyle(
-                                            color: Color(0xFF413131),
-                                            fontSize: 12),
-                                      )),
-                                  
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.only(right: 3),
-                                        child: Text(
-                                          produto.price,
-                                          style: TextStyle(
-                                              color: Color(0XFF413131),
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w800),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ]),
-                          ),
-                        ],
-                      ),
-                    )),
-                  ],
-                ),
-              ))
-          .toList(),
-    ));
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                textCategory(category.name, category.description),
+                                gridCategory(category.products),
+                              ],
+                            ),
+                          ))
+                      .toList()),
+            ));
+    }
 
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
@@ -408,12 +508,8 @@ class _MenuState extends State<Menu> {
                     Container(
                       padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          textBurger,
-                          gridBurguer,
-                        ],
-                      ),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [listCategories(categories)]),
                     )
                   ],
                 )),
