@@ -10,15 +10,13 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchMenu extends StatefulWidget {
-
   final List<ProductCategory> productCategories;
-   SearchMenu({Key key, @required this.productCategories}) : super(key: key);
+  SearchMenu({Key key, @required this.productCategories}) : super(key: key);
   @override
   _SearchMenuState createState() => new _SearchMenuState();
 }
 
 class _SearchMenuState extends State<SearchMenu> {
-  //Abrindo o bottomSheet ao iniciar a tela
   var tolken;
 
   String searchString = "";
@@ -59,8 +57,7 @@ class _SearchMenuState extends State<SearchMenu> {
   String texto = "";
 
   Widget build(BuildContext context) {
-
-  List<ProductCategory> categories = widget.productCategories;
+    List<ProductCategory> categories = widget.productCategories;
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     Padding topBar = Padding(
@@ -80,15 +77,15 @@ class _SearchMenuState extends State<SearchMenu> {
                       color: Colors.white,
                     ),
                     child: GestureDetector(
-                      onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => Menu()));
-                },
-                      child:Icon(
-                      Icons.arrow_back_ios,
-                      color: Color(0xFFFF805D),
-                      size: 20,
-                    ))),
+                        onTap: () {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) => Menu()));
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: Color(0xFFFF805D),
+                          size: 20,
+                        ))),
               ),
               Padding(
                   padding: EdgeInsets.only(top: 0, left: 20),
@@ -170,24 +167,25 @@ class _SearchMenuState extends State<SearchMenu> {
       List<Produto> productList = [];
       List<Widget> children = [];
       children.add(Padding(
-          padding: EdgeInsets.only(bottom: 10),
-          child: Container(
-              child: Text(
-                ProductCategory.name,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Color(0xFF413131),
-                ),
-              ),
+        padding: EdgeInsets.only(bottom: 10),
+        child: Container(
+          child: Text(
+            ProductCategory.name,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Color(0xFF413131),
             ),
-          ));
+          ),
+        ),
+      ));
       for (var product in ProductCategory.products) {
-        if (product.name.toLowerCase().contains(text.toLowerCase())) children.add(Padding(
-          padding: EdgeInsets.only(top: 0, left: 0),
-          child: Container(
-              padding: EdgeInsets.only(bottom:10),
+        if (product.name.toLowerCase().contains(text.toLowerCase()))
+          children.add(Padding(
+            padding: EdgeInsets.only(top: 0, left: 0),
+            child: Container(
+              padding: EdgeInsets.only(bottom: 10),
               child: Text(
                 product.name,
                 textAlign: TextAlign.left,
@@ -216,28 +214,30 @@ class _SearchMenuState extends State<SearchMenu> {
               )));
     }
 
-    List <Widget> productsList = [];
-    for (var category in categories) productsList.add(fillCard(category, searchString));
+    List<Widget> productsList = [];
+    for (var category in categories)
+      productsList.add(fillCard(category, searchString));
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Center(
         child: Container(
-          color: Color(0xFFF8F6F8),
-            
+            color: Color(0xFFF8F6F8),
             child: Column(children: <Widget>[
               topBar,
               Container(
-                padding: EdgeInsets.only(left:15),
-                decoration: BoxDecoration(color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(32),topRight: Radius.circular(32))),
-                height: MediaQuery.of(context).size.height * 0.8,
-                child:searchString == ''? emptyCard :ListView(children: productsList))
-            ]
-            )
-          ),
-        ),
-
+                  padding: EdgeInsets.only(left: 15),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32))),
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: searchString == ''
+                      ? emptyCard
+                      : ListView(children: productsList))
+            ])),
+      ),
     );
   }
 }
