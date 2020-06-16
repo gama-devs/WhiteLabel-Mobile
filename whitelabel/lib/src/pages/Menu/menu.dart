@@ -538,8 +538,7 @@ class _MenuState extends State<Menu> {
       work = true;
     else if (nowTime.hour < 4) {
       work = true;
-    }
-    else
+    } else
       work = false;
     print(work);
 
@@ -592,10 +591,10 @@ class _MenuState extends State<Menu> {
                             clicked = true;
                           });
                         },
-                        child: Text('Desejo acessar mesmo assim',
+                        child: Text('Quero receber um aviso quando abrir.',
                             style: TextStyle(
                                 color: Color(0xFF413131),
-                                fontSize: 16,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w700)),
                         textColor: Colors.white,
                         shape: RoundedRectangleBorder(
@@ -702,18 +701,22 @@ class _MenuState extends State<Menu> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [listCategories(categories)]),
                     ),
-                    
-                AnimatedContainer(
-                  color: Colors.transparent,
-                  duration: Duration(milliseconds: 700),
-                  height: work ? 220 : 200,
-                  curve: Curves.easeInOutBack,
-                  child: clicked ? notification : closed,
-                ),
                   ],
                 )),
               ])),
         ),
+        Container(
+          padding: EdgeInsets.only(
+            top: 500,
+          ),
+          child: AnimatedContainer(
+            color: Colors.transparent,
+            duration: Duration(milliseconds: 700),
+            height: work ? 0 : 0,
+            curve: Curves.easeInOutBack,
+            child: clicked ? notification : closed,
+          ),
+        )
       ]),
     );
   }
