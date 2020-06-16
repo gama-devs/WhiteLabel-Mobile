@@ -246,7 +246,7 @@ class _LoginState extends State<Login> {
     Future<String> postLoginButton(BuildContext context) async {
       print(passwordInputController.text);
       print(nameInputController.text);
-      print(celInputController.text);
+      print(celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''));
       print(emailInputController.text);
       print("TESTE");
       var jsonLogin = json.encode({
