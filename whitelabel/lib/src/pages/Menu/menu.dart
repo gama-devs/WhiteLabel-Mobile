@@ -61,6 +61,7 @@ class _MenuState extends State<Menu> {
     String token = prefs.getString('tolken_code');
   }
 
+  bool clicked = false;
   var loading = false;
 
   Future<String> getProducts(BuildContext context) async {
@@ -416,10 +417,12 @@ class _MenuState extends State<Menu> {
           row.add(Container(
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(context,MaterialPageRoute(
-                    builder: (context) => Product(
-                          selectedProduct: productList[j],
-                        )));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Product(
+                              selectedProduct: productList[j],
+                            )));
                 print("tapped");
               },
               child: Container(
@@ -434,7 +437,9 @@ class _MenuState extends State<Menu> {
                       decoration: BoxDecoration(border: Border()),
                       child: productList[j].image == null
                           ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
-                          : Image.network("http://50.16.146.1/storage/" +productList[j].image,
+                          : Image.network(
+                              "http://50.16.146.1/storage/" +
+                                  productList[j].image,
                               fit: BoxFit.cover),
                     ),
                     Container(
@@ -526,6 +531,133 @@ class _MenuState extends State<Menu> {
             ));
     }
 
+    var nowTime = DateTime.now();
+    bool work;
+    print(nowTime.hour);
+    if (nowTime.hour >= 20)
+      work = true;
+    else if (nowTime.hour < 4) {
+      work = true;
+    }
+    else
+      work = false;
+    print(work);
+
+    Card closed = Card(
+      elevation: 0,
+      color: Colors.transparent,
+      margin: EdgeInsets.all(0),
+      child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+              color: Color(0xFFFA5C5C)),
+          width: MediaQuery.of(context).size.width,
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              child: Column(children: <Widget>[
+                Text(
+                  "O estabelecimento encontra-se fechado",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      height: 1,
+                      fontWeight: FontWeight.w700),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: RichText(
+                      text: new TextSpan(
+                        text: 'Abre às 20h |',
+                        children: <TextSpan>[
+                          new TextSpan(
+                              text: ' Horários',
+                              style: new TextStyle(
+                                decoration: TextDecoration.underline,
+                              )),
+                        ],
+                      ),
+                    )),
+                Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Container(
+                      height: displayHeight(context) * 0.08,
+                      child: FlatButton(
+                        color: Colors.white,
+                        onPressed: () {
+                          print('oi');
+                          setState(() {
+                            clicked = true;
+                          });
+                        },
+                        child: Text('Desejo acessar mesmo assim',
+                            style: TextStyle(
+                                color: Color(0xFF413131),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700)),
+                        textColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                                color: Colors.white,
+                                width: 1,
+                                style: BorderStyle.solid),
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ))
+              ]),
+            )
+          ])),
+    );
+
+    Card notification = Card(
+      elevation: 0,
+      color: Colors.transparent,
+      margin: EdgeInsets.all(0),
+      child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+              color: Color(0xFF1BD09A)),
+          width: MediaQuery.of(context).size.width,
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(left: 30, right: 30, top: 30),
+              child: Column(children: <Widget>[
+                Icon(
+                  Icons.alarm,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: Text(
+                    "Pronto, você será avisado assim que o estabelecimento abrir",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        height: 1,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    "Enquanto isso você pode ver todos nossos produtos e já por tudo no pedido",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        height: 1,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ),
+              ]),
+            )
+          ])),
+    );
+    print(clicked);
+
     return Scaffold(
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         SingleChildScrollView(
@@ -569,11 +701,19 @@ class _MenuState extends State<Menu> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [listCategories(categories)]),
-                    )
+                    ),
+                    
+                AnimatedContainer(
+                  color: Colors.transparent,
+                  duration: Duration(milliseconds: 700),
+                  height: work ? 220 : 200,
+                  curve: Curves.easeInOutBack,
+                  child: clicked ? notification : closed,
+                ),
                   ],
                 )),
               ])),
-        )
+        ),
       ]),
     );
   }
