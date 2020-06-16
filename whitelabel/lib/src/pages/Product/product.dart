@@ -198,6 +198,8 @@ class _ProductState extends State<Product> {
       ]));
     }
 
+
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Center(
@@ -206,7 +208,7 @@ class _ProductState extends State<Product> {
             child: Column(children: <Widget>[
               topBar(product.name),
               details,
-              optionsContainer(product.jsonData['option_categories'][0]),
+              
             ])),
       ),
     );

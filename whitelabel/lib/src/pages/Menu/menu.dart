@@ -430,10 +430,11 @@ class _MenuState extends State<Menu> {
                   children: <Widget>[
                     Container(
                       width: MediaQuery.of(context).size.width * 0.45,
+                      height: MediaQuery.of(context).size.width * 0.35,
                       decoration: BoxDecoration(border: Border()),
                       child: productList[j].image == null
-                          ? Image.asset("assets/burg1.png", fit: BoxFit.cover)
-                          : Image.asset(productList[j].image,
+                          ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
+                          : Image.network("http://50.16.146.1/storage/" +productList[j].image,
                               fit: BoxFit.cover),
                     ),
                     Container(
