@@ -9,6 +9,8 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Search/searchMenu.dart';
 import 'package:whitelabel/src/pages/Menu/categoryAll.dart';
+import 'package:whitelabel/src/pages/Product/product.dart';
+
 class ProductCategory {
   String name;
   String description;
@@ -24,8 +26,14 @@ class Produto {
   String description;
   String options;
   var price;
-
-  Produto({this.name, this.description, this.options, this.price, this.image});
+  var jsonData;
+  Produto(
+      {this.name,
+      this.description,
+      this.options,
+      this.price,
+      this.image,
+      this.jsonData = ''});
 }
 
 class Menu extends StatefulWidget {
@@ -91,7 +99,8 @@ class _MenuState extends State<Menu> {
                       product["option_categories"].length.toString() +
                       " sabores!"
                   : "",
-              price: (product['price'])));
+              price: (product['price']),
+              jsonData: product));
         }
         categories.add(ProductCategory(
             name: categoryName,
@@ -405,73 +414,78 @@ class _MenuState extends State<Menu> {
         List<Widget> row = [];
         for (int j = i; j < i + 2 && j < productList.length; j++) {
           row.add(Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                    child: Container(
-                  padding: EdgeInsets.only(right: 10),
-                  width: MediaQuery.of(context).size.width * 0.45,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        decoration: BoxDecoration(border: Border()),
-                        child: productList[j].image == null
-                            ? Image.asset("assets/burg1.png", fit: BoxFit.cover)
-                            : Image.asset(productList[j].image,
-                                fit: BoxFit.cover),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                productList[j].name,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0XFFFF805D),
-                                    fontWeight: FontWeight.w800),
-                              ),
-                              Container(
-                                  height: 40,
-                                  child: productList[j].description == null
-                                      ? Text(
-                                          "Descricao do produto",
-                                          style: TextStyle(
-                                              color: Color(0xFF413131),
-                                              fontSize: 12),
-                                        )
-                                      : Text(
-                                          productList[j].description,
-                                          style: TextStyle(
-                                              color: Color(0xFF413131),
-                                              fontSize: 12),
-                                        )),
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    padding: EdgeInsets.only(right: 3),
-                                    child: Text(
-                                      "R\$: " +
-                                          (productList[j].price / 100)
-                                              .toStringAsFixed(2)
-                                              .replaceAll('.', ','),
-                                      style: TextStyle(
-                                          color: Color(0XFF413131),
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w800),
-                                    ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(context,MaterialPageRoute(
+                    builder: (context) => Product(
+                          selectedProduct: productList[j],
+                        )));
+                print("tapped");
+              },
+              child: Container(
+                  child: Container(
+                padding: EdgeInsets.only(right: 10),
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      decoration: BoxDecoration(border: Border()),
+                      child: productList[j].image == null
+                          ? Image.asset("assets/burg1.png", fit: BoxFit.cover)
+                          : Image.asset(productList[j].image,
+                              fit: BoxFit.cover),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              productList[j].name,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0XFFFF805D),
+                                  fontWeight: FontWeight.w800),
+                            ),
+                            Container(
+                                height: 40,
+                                child: productList[j].description == null
+                                    ? Text(
+                                        "Descricao do produto",
+                                        style: TextStyle(
+                                            color: Color(0xFF413131),
+                                            fontSize: 12),
+                                      )
+                                    : Text(
+                                        productList[j].description,
+                                        style: TextStyle(
+                                            color: Color(0xFF413131),
+                                            fontSize: 12),
+                                      )),
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.only(right: 3),
+                                  child: Text(
+                                    "R\$: " +
+                                        (productList[j].price / 100)
+                                            .toStringAsFixed(2)
+                                            .replaceAll('.', ','),
+                                    style: TextStyle(
+                                        color: Color(0XFF413131),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w800),
                                   ),
-                                ],
-                              )
-                            ]),
-                      ),
-                    ],
-                  ),
-                )),
-              ],
+                                ),
+                              ],
+                            )
+                          ]),
+                    ),
+                  ],
+                ),
+              )),
             ),
           ));
         }

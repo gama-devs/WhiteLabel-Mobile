@@ -9,7 +9,15 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class Options {
+  int selectedOption;
+  List<String> options;
+  Options({this.selectedOption,options});
+}
+
 class Product extends StatefulWidget {
+    final Produto selectedProduct;
+   Product({Key key, @required this.selectedProduct}) : super(key: key);
   @override
   _ProductState createState() => new _ProductState();
 }
@@ -36,7 +44,9 @@ class _ProductState extends State<Product> {
   }
 
   Widget build(BuildContext context) {
-    Padding topBar = Padding(
+    Produto product = widget.selectedProduct;
+    print(product.jsonData);
+    Padding topBar (name) { return Padding(
         padding: EdgeInsets.only(top: 50, bottom: 0),
         child: Container(
             color: Color(0xFFF8F6F8),
@@ -66,13 +76,13 @@ class _ProductState extends State<Product> {
               Padding(
                 padding: EdgeInsets.only(top: 0, left: 75),
                 child: Container(
-                    child: Text('Pizza',
+                    child: Text(name,
                         style: TextStyle(
                             color: Colors.orange,
                             fontSize: 22,
                             fontWeight: FontWeight.w800))),
               ),
-            ])));
+            ])));}
 
     Padding details = Padding(
       padding: EdgeInsets.only(top: 0, left: 0),
@@ -100,7 +110,10 @@ class _ProductState extends State<Product> {
                     width: displayWidth(context) * 0.5,
                     height: displayHeight(context) * 0.03,
                     color: Colors.transparent,
-                    child: Text("RS66,90",
+                    child: Text("R\$: " +
+                                        (product.price / 100)
+                                            .toStringAsFixed(2)
+                                            .replaceAll('.', ','),
                         style: TextStyle(
                             color: Color(0xFF413131),
                             fontSize: 17,
@@ -111,7 +124,7 @@ class _ProductState extends State<Product> {
                         width: displayWidth(context) * 0.5,
                         height: displayHeight(context) * 0.05,
                         color: Colors.transparent,
-                        child: Text('A perfeita para dividir com todo mundo',
+                        child: Text(product.description == null? "Descrição do produto" : product.description,
                             style: TextStyle(
                                 color: Color(0xFF413131),
                                 fontSize: 14,
@@ -149,14 +162,51 @@ class _ProductState extends State<Product> {
       ),
     );
 
+    Container optionsCheckbox(name,index, selectedIndex){
+      return Container(child: Row(children:<Widget>[
+        Text(name),
+        Spacer(),
+        Container(height: 20,
+        width: 20,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          color: index == selectedIndex? Color(0xFFFF805D) : Color(0xFFDEDEDF)),
+        child: index == selectedIndex? Icon(Icons.check):Container(),),
+      ]),);
+    }
+    Container optionsContainer(options) {
+      int selectedIndex = 1;
+      var optionCategory = options['name'];
+      List<Widget> listOptions = [];
+      for(int i = 0; i< options['options'].length;i++){
+        listOptions.add(GestureDetector(
+          onTap: (){
+            setState(() {
+              selectedIndex = i;
+            });
+          },
+          child:optionsCheckbox(options['options'][i]['name'], i, selectedIndex)));
+      }
+      return Container(child: Column(children: <Widget>[
+        Row(children: <Widget>[
+          Text(optionCategory),
+          Spacer(),
+          Container(color: Color(0xFFFF805D),
+          child: Text("1 de 1"),)
+        ],),
+        Column(children: listOptions,)
+      ]));
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Center(
         child: Container(
             color: Color(0xFFF8F6F8),
             child: Column(children: <Widget>[
-              topBar,
+              topBar(product.name),
               details,
+              optionsContainer(product.jsonData['option_categories'][0]),
             ])),
       ),
     );
