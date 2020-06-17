@@ -107,8 +107,7 @@ class FinalProductList {
     List<FinalProduct> finalProductObjs = finalProductObjsJson
         .map((finalProductJson) => FinalProduct.fromJson(finalProductJson))
         .toList();
-    return FinalProductList(
-        listProducts: finalProductObjs);
+    return FinalProductList(listProducts: finalProductObjs);
   }
   FinalProductList({this.listProducts});
 }
@@ -415,19 +414,36 @@ class _ProductState extends State<Product> {
           child: Column(children: <Widget>[
         Row(
           children: <Widget>[
-            Text(optionCategory),
+            Padding(
+              padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+              child: Text(
+                "Escolha o tipo de " + optionCategory,
+                style: TextStyle(
+                    color: Color(0xFF413131),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800),
+              ),
+            ),
             Spacer(),
-            Container(
-              color: Color(0xFFFF805D),
-              child: Text(options.nOptionsSelected.toString() +
-                  "de" +
-                  options.max.toString()),
-            )
+            Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                child: Container(
+                  height: 20,
+                  width: 45,
+                  decoration: BoxDecoration(
+                      color: Color(0xFFFF805D),
+                      borderRadius: BorderRadius.circular(4)),
+                  child: Text(" " +
+                      options.nOptionsSelected.toString() +
+                      " de " +
+                      options.max.toString()),
+                ))
           ],
         ),
-        Column(
+        Container(
+            child: Column(
           children: listOptions,
-        )
+        ))
       ]));
     }
 
@@ -442,14 +458,21 @@ class _ProductState extends State<Product> {
         child: Row(children: <Widget>[
           Column(
             children: <Widget>[
-              Text(option.name),
+              Padding(
+                  padding: EdgeInsets.only(bottom: 5, left: 5),
+                  child: Text(
+                    option.name,
+                    style: TextStyle(color: Color(0xFF413131), fontSize: 16),
+                  )),
               option.price != 0
-                  ? Text(
-                      "+ R\$: " +
-                          (option.price / 100)
-                              .toStringAsFixed(2)
-                              .replaceAll('.', ','),
-                    )
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: 5, right: 0),
+                      child: Text(
+                        " + R\$: " +
+                            (option.price / 100)
+                                .toStringAsFixed(2)
+                                .replaceAll('.', ','),
+                      ))
                   : Container()
             ],
           ),
@@ -512,18 +535,32 @@ class _ProductState extends State<Product> {
           child: Column(children: <Widget>[
         Row(
           children: <Widget>[
-            Text(optionCategory),
+            Padding(
+              padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+              child: Text(optionCategory,
+                  style: TextStyle(
+                      color: Color(0xFF413131),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800)),
+            ),
             Spacer(),
-            Container(
-              color: Color(0xFFFF805D),
-              child: Text(selectedOptions[selectedOptions.indexWhere(
-                          (listOption) => listOption.name == optionCategory)]
-                      .options
-                      .length
-                      .toString() +
-                  "de" +
-                  options.max.toString()),
-            )
+            Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                child: Container(
+                  height: 20,
+                  width: 45,
+                  decoration: BoxDecoration(
+                      color: Color(0xFFFF805D),
+                      borderRadius: BorderRadius.circular(4)),
+                  child: Text(" " +
+                      selectedOptions[selectedOptions.indexWhere((listOption) =>
+                              listOption.name == optionCategory)]
+                          .options
+                          .length
+                          .toString() +
+                      " de " +
+                      options.max.toString()),
+                ))
           ],
         ),
         Column(
@@ -559,29 +596,38 @@ class _ProductState extends State<Product> {
       return GestureDetector(
           onTap: () {
             print(json.encode(finalProductList));
-            finalProductList.listProducts.add(FinalProduct(product: product,selectedOptions: selectedOptions));
-            save(
-                'cartItems',
-                finalProductList);
+            finalProductList.listProducts.add(FinalProduct(
+                product: product, selectedOptions: selectedOptions));
+            save('cartItems', finalProductList);
             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Menu()));
+                context, MaterialPageRoute(builder: (context) => Menu()));
           },
-          child: Container(
-            color: Colors.orange,
-            height: 100,
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: Text(
-                "R\$" +
-                    ((product.price + optionAddValue) / 100)
-                        .toStringAsFixed(2)
-                        .replaceAll('.', ',') +
-                    " Adicionar a sacola",
+          child: Padding(
+              padding: EdgeInsets.only(
+                top: 50.0,
               ),
-            ),
-          ));
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Color(0xFFFF805D),
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20))),
+                height: 100,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Text(
+                    "R\$" +
+                        ((product.price + optionAddValue) / 100)
+                            .toStringAsFixed(2)
+                            .replaceAll('.', ',') +
+                        " • Adicionar a sacola",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800),
+                  ),
+                ),
+              )));
     }
 
     return Scaffold(
