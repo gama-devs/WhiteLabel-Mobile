@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:whitelabel/src/pages/Menu/menu.dart';
-import 'package:whitelabel/src/pages/Product/product.dart';
-
 import '../Menu/menu.dart';
+class PaymentMethod {
+  String description;
+  String name;
+  bool needInput;
+  PaymentMethod(
+      {this.description = 'Descricao',
+      this.name = 'name',
+      this.needInput = false});
+}
 
 class CartItem {
   int quantity;
@@ -53,6 +60,11 @@ List<Address> addresses = [
 
 String customerName = "Bianca Lima";
 
+List<PaymentMethod> paymentMethods = [
+  PaymentMethod(name: "Pagamento na entrega", description: "Débito"),
+  PaymentMethod(name: "Pagamento na entrega", description: "Dinheiro"),
+];
+
 List<CartItem> items = [];
 class Cart extends StatefulWidget {
   @override
@@ -60,6 +72,7 @@ class Cart extends StatefulWidget {
 }
 
 bool loaded = false;
+class _CartState extends State<Cart> {
 
 FinalProductList finalProductList;
 
@@ -90,12 +103,19 @@ class _CartState extends State<Cart> {
   double displayWidth(BuildContext context) {
     return displaySize(context).width;
   }
-
+  List<String> flagOptions = ["VISA", "MASTERCARD", "ELO"];
   pullContainer() async {
-    await new Future.delayed(const Duration(milliseconds: 1500));
-    setState(() {
+    await new Future.delayed(const Duration(milliseconds: 1000), (){
+          setState(() {
       loaded = true;
     });
+            WidgetsBinding.instance.addPostFrameCallback((_) { //Para iniciar com o listView na parte de cima
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent,
+      );
+    });
+    });
+
   }
   @override
   void initState() {
@@ -381,43 +401,105 @@ class _CartState extends State<Cart> {
     );
   }
 
-  Card method(name, description) {
-    return Card(
-      elevation: 0.5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-                padding: EdgeInsets.all(10),
-                child: Text(
-                  name,
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xff413131),
-                      fontWeight: FontWeight.w800),
-                )),
-            Container(
-                padding: EdgeInsets.all(10),
-                child: Text(
-                  description,
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xff413131),
-                      fontWeight: FontWeight.w300),
-                ))
-          ],
-        ),
-      ),
-    );
+  String dropDownValue = '';
+  Container dropDownCreditCard(options) {
+    return Container(
+        decoration: BoxDecoration(
+            color: Color(0xFFEDF1F7), borderRadius: BorderRadius.circular(12)),
+        child: Container(
+            padding: EdgeInsets.all(5),
+            child: DropdownButton(
+              underline: SizedBox(),
+              value: dropDownValue == '' ? null : dropDownValue,
+              isExpanded: true,
+              hint: Text("Informe a bandeira do cartão"),
+              onChanged: (newValue) {
+                setState(() {
+                  dropDownValue = newValue;
+                });
+              },
+              items: options.map<DropdownMenuItem<String>>((value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            )));
   }
-TextFormField cpfInput() {
+
+  AnimatedContainer method(paymentMethod, indexCard) {
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 700),
+        curve: Curves.easeInOutBack,
+        height: indexCard == selectedPayment ? 161 : 100,
+        child: GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedPayment = indexCard;
+                dropDownValue = '';
+              });
+            },
+            child: Column(children: <Widget>[
+              Card(
+                elevation: 0.5,
+                shape: indexCard == selectedPayment
+                    ? RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: Color(0xffFF805D),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      )
+                    : RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            paymentMethod.name,
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xff413131),
+                                fontWeight: FontWeight.w800),
+                          )),
+                      Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            paymentMethod.description,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff413131),
+                                fontWeight: FontWeight.w300),
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+              indexCard == selectedPayment
+                  ? Center(
+                      child: Container(
+                      padding: EdgeInsets.fromLTRB(15, 0, 15, 5),
+                      child: dropDownCreditCard(flagOptions),
+                    ))
+                  : Container(),
+            ])));
+  }
+
+  Column allPaymentList() {
+    List<Widget> cardList = [];
+    for (int i = 0; i < paymentMethods.length; i++) {
+      cardList.add(Center(child: method(paymentMethods[i], i)));
+    }
+    return Column(children: cardList);
+  }
+
+  TextFormField cpfInput() {
     return TextFormField(
       controller: cpfInputController,
       validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
@@ -455,27 +537,103 @@ TextFormField cpfInput() {
           )),
     );
   }
-  Container finishButton() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.2,
+  ScrollController _scrollController = new ScrollController();
+  AnimatedContainer errorButton() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {//Para animar o botão crescendo pra cima, ao invés de pra baixo, eu rolo o listView até o final
+      _scrollController.animateTo(
+        0.0,
+        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 300),
+      );
+    });
+
+    return AnimatedContainer(
+      curve: Curves.easeInOutBack,
+      duration: Duration(milliseconds: 700),
+      height: !creditCardError ? 0 : MediaQuery.of(context).size.height * 0.25,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        color: Color(0Xff1BD09A),
+        color: Color(0XffFA5C5C),
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32), topRight: Radius.circular(32)),
       ),
-      child: Center(
-        child: Container(
-          padding: EdgeInsets.only(bottom: 15),
-          child: Text(
-            totalPrice.toStringAsFixed(2).replaceAll('.', ',') +
-                " Confirmar pedido",
-            style: TextStyle(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.w800),
-          ),
-        ),
-      ),
+      child: Container(
+          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(bottom: 15),
+                  child: Container(
+                      child: Text(
+                    "Parece que algo deu errado e não \n conseguimos validar seu cartão de crédito.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800),
+                  )),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      creditCardError = false;
+                    });
+                  },
+                  child: Container(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: 55,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Cadastrar novo cartão",
+                          style: TextStyle(
+                              color: Color(0xFF413131),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800),
+                        ),
+                      )),
+                )
+              ])),
     );
+  }
+
+  AnimatedContainer finishButton() {
+    return AnimatedContainer(
+        curve: Curves.easeInOutBack,
+        duration: Duration(milliseconds: 700),
+        height: creditCardError ? 0 : MediaQuery.of(context).size.height * 0.2,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Color(0Xff1BD09A),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(32), topRight: Radius.circular(32)),
+        ),
+        child: GestureDetector(
+          onTap: () {
+            dropDownValue == ''
+                ? setState(() {
+                    creditCardError = true;
+                  })
+                : print('oi');
+          },
+          child: Center(
+            child: Container(
+              padding: EdgeInsets.only(bottom: 15),
+              child: Text(
+                totalPrice.toStringAsFixed(2).replaceAll('.', ',') +
+                    " Confirmar pedido",
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+        ));
   }
 
   AnimatedContainer cardCart() {
@@ -489,8 +647,10 @@ TextFormField cpfInput() {
               topLeft: Radius.circular(32), topRight: Radius.circular(32))),
       height: loaded ? MediaQuery.of(context).size.height * 0.8 : 0,
       width: MediaQuery.of(context).size.width,
-      duration: Duration(milliseconds: 700),
-      child: SingleChildScrollView(
+      duration: Duration(milliseconds: 1200),
+      child: Container(padding: EdgeInsets.only(top:10),child:SingleChildScrollView(
+        reverse: true,
+        controller: _scrollController,
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -548,8 +708,7 @@ TextFormField cpfInput() {
                 ),
               ),
               finalPrice(items, 10),
-              Center(child: method("Pagamento na entrega", "Débito")),
-              Center(child: method("Pagamento na entrega", "Dinheiro")),
+              allPaymentList(),
               Container(
                 padding: EdgeInsets.all(20),
                 child: Text(
@@ -559,19 +718,18 @@ TextFormField cpfInput() {
                       fontSize: 16,
                       fontWeight: FontWeight.w800),
                 ),
-
               ),
               Center(
                 child: Container(
-                  padding: EdgeInsets.only(bottom:50),
+                  padding: EdgeInsets.only(bottom: 50),
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: cpfInput(),
                 ),
               ),
-              finishButton()
+              creditCardError ? errorButton() : finishButton(),
             ]),
       ),
-    );
+    ));
   }
 
   @override
@@ -582,13 +740,28 @@ TextFormField cpfInput() {
       backgroundColor: Color(0xFF1BD09A),
       body: new Stack(fit: StackFit.expand, children: <Widget>[
         Container(
-          padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).size.height * 0.1, 0, 0),
+          padding: EdgeInsets.fromLTRB(
+              20, MediaQuery.of(context).size.height * 0.1, 0, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-            Text("Pedido de", style: TextStyle(fontSize: 16,color:Colors.white,),),
-            Text(customerName, style: TextStyle(fontSize: 22,color:Colors.white, fontWeight: FontWeight.w800),)
-          ],),),
+              Text(
+                "Pedido de",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                customerName,
+                style: TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800),
+              )
+            ],
+          ),
+        ),
         Align(alignment: Alignment.bottomCenter, child: cardCart()),
       ]),
     );
