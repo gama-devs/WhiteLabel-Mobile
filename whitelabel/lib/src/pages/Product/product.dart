@@ -9,6 +9,16 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+save(String key, value) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString(key, json.encode(value));
+}
+
+read(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  return json.decode(prefs.getString(key));
+}
+
 class OptionCategory {
   int selected;
   String name;
@@ -17,7 +27,6 @@ class OptionCategory {
   int nOptionsSelected;
   int required;
   List<Option> options;
-
   OptionCategory(
       {this.name,
       this.min,
@@ -26,6 +35,29 @@ class OptionCategory {
       this.selected = -1,
       this.options,
       this.nOptionsSelected = 0});
+  Map<String, dynamic> toJson() => {
+        'selected': selected,
+        'name': name,
+        'min': min,
+        'max': max,
+        'nOptionsSelected': nOptionsSelected,
+        'required': required,
+        'options': json.encode(options),
+      };
+  factory OptionCategory.fromJson(dynamic json) {
+    var optionObjsJson = json['options'] as List;
+    List<Option> optionObjs = optionObjsJson
+        .map((optionJson) => Option.fromJson(optionJson))
+        .toList();
+    return OptionCategory(
+        options: optionObjs,
+        name: json['name'],
+        max: json['max'],
+        required: json['required'],
+        min: json['min'],
+        selected: json['selected'],
+        nOptionsSelected: json['nOptionsSelected']);
+  }
 }
 
 class Option {
@@ -33,6 +65,52 @@ class Option {
   String description;
   double price;
   Option({this.name, this.description, this.price});
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+        'price': price,
+      };
+  factory Option.fromJson(dynamic json) {
+    return Option(
+        description: json['description'],
+        name: json['name'],
+        price: json['price']);
+  }
+}
+
+class FinalProduct {
+  Produto product;
+  List<OptionCategory> selectedOptions;
+  FinalProduct({this.product, this.selectedOptions});
+  Map<String, dynamic> toJson() => {
+        'product': product.toJson(),
+        'selectedOptions': json.encode(selectedOptions)
+      };
+  factory FinalProduct.fromJson(dynamic json) {
+    var selectedOptionsObjsJson = json['selectedOptions'] as List;
+    List<OptionCategory> selectedOptionsObjs = selectedOptionsObjsJson
+        .map((optionJson) => OptionCategory.fromJson(optionJson))
+        .toList();
+    return FinalProduct(
+        product: Produto.fromJson(json['product']),
+        selectedOptions: selectedOptionsObjs);
+  }
+}
+
+class FinalProductList {
+  List<FinalProduct> listProducts;
+  Map<String, dynamic> toJson() => {
+        'listProducts': json.encode(listProducts),
+      };
+  factory FinalProductList.fromJson(dynamic json) {
+    var finalProductObjsJson = json['listProducts'] as List;
+    List<FinalProduct> finalProductObjs = finalProductObjsJson
+        .map((finalProductJson) => FinalProduct.fromJson(finalProductJson))
+        .toList();
+    return FinalProductList(
+        listProducts: finalProductObjs);
+  }
+  FinalProductList({this.listProducts});
 }
 
 class Product extends StatefulWidget {
@@ -43,6 +121,16 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
+  FinalProductList finalProductList;
+
+  loadSharedPrefs() async {
+    try {
+      finalProductList = FinalProductList.fromJson(await read("cartItems"));
+    } catch (Excepetion) {
+      finalProductList = FinalProductList(listProducts: []);
+    }
+  }
+
   //Abrindo o bottomSheet ao iniciar a tela
   var tolken;
   List<OptionCategory> selectedOptions = [];
@@ -50,6 +138,7 @@ class _ProductState extends State<Product> {
   List<OptionCategory> listCategories = [];
   @override
   void initState() {
+    loadSharedPrefs();
     List<OptionCategory> optionCategories = [];
     for (int i = 0;
         i < widget.selectedProduct.jsonData['option_categories'].length;
@@ -235,7 +324,19 @@ class _ProductState extends State<Product> {
     Container optionsCheckbox(categoryName, option) {
       return Container(
         child: Row(children: <Widget>[
-          Text(option.name),
+          Column(
+            children: <Widget>[
+              Text(option.name),
+              option.price != 0
+                  ? Text(
+                      "+ R\$: " +
+                          (option.price / 100)
+                              .toStringAsFixed(2)
+                              .replaceAll('.', ','),
+                    )
+                  : Container()
+            ],
+          ),
           Spacer(),
           Container(
             height: 20,
@@ -339,7 +440,19 @@ class _ProductState extends State<Product> {
       }
       return Container(
         child: Row(children: <Widget>[
-          Text(option.name),
+          Column(
+            children: <Widget>[
+              Text(option.name),
+              option.price != 0
+                  ? Text(
+                      "+ R\$: " +
+                          (option.price / 100)
+                              .toStringAsFixed(2)
+                              .replaceAll('.', ','),
+                    )
+                  : Container()
+            ],
+          ),
           Spacer(),
           Row(
             children: <Widget>[
@@ -352,12 +465,11 @@ class _ProductState extends State<Product> {
                       onTap: () {
                         setState(() {
                           selectedOptions[selectedOptions.indexWhere(
-                                (listOption) =>
-                                    listOption.name == optionCategory)]
-                            .options
-                            .remove(option);
+                                  (listOption) =>
+                                      listOption.name == optionCategory)]
+                              .options
+                              .remove(option);
                         });
-                        
                       },
                       child: Icon(Icons.remove),
                     )
@@ -371,14 +483,14 @@ class _ProductState extends State<Product> {
                               listOption.name == optionCategory)]
                           .max
                   ? GestureDetector(
-                      onTap: () {setState(() {
-                        selectedOptions[selectedOptions.indexWhere(
-                                (listOption) =>
-                                    listOption.name == optionCategory)]
-                            .options
-                            .add(option);
-                      });
-                        
+                      onTap: () {
+                        setState(() {
+                          selectedOptions[selectedOptions.indexWhere(
+                                  (listOption) =>
+                                      listOption.name == optionCategory)]
+                              .options
+                              .add(option);
+                        });
                       },
                       child: Icon(Icons.add),
                     )
@@ -393,8 +505,8 @@ class _ProductState extends State<Product> {
       var optionCategory = options.name;
       List<Widget> listOptions = [];
       for (int i = 0; i < options.options.length; i++) {
-          listOptions.add(Container(
-              child: optionsCounter(optionCategory, options.options[i])));
+        listOptions.add(Container(
+            child: optionsCounter(optionCategory, options.options[i])));
       }
       return Container(
           child: Column(children: <Widget>[
@@ -404,9 +516,11 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
               color: Color(0xFFFF805D),
-              child: Text(selectedOptions[selectedOptions
-              .indexWhere((listOption) => listOption.name == optionCategory)]
-          .options.length.toString() +
+              child: Text(selectedOptions[selectedOptions.indexWhere(
+                          (listOption) => listOption.name == optionCategory)]
+                      .options
+                      .length
+                      .toString() +
                   "de" +
                   options.max.toString()),
             )
@@ -422,11 +536,11 @@ class _ProductState extends State<Product> {
       List<Widget> listRequiredOptions = [];
       for (var option in optionList) {
         if (option.required == 1)
-        listRequiredOptions.add(optionsCheckBoxContainer(option));
+          listRequiredOptions.add(optionsCheckBoxContainer(option));
       }
       for (var option in optionList) {
         if (option.required != 1)
-        listRequiredOptions.add(optionsCounterContainer(option));
+          listRequiredOptions.add(optionsCounterContainer(option));
       }
       return Container(
         child: Column(
@@ -435,15 +549,54 @@ class _ProductState extends State<Product> {
       );
     }
 
+    GestureDetector buttonCart() {
+      double optionAddValue = 0;
+      for (var category in selectedOptions) {
+        for (var option in category.options) {
+          optionAddValue += option.price;
+        }
+      }
+      return GestureDetector(
+          onTap: () {
+            print(json.encode(finalProductList));
+            finalProductList.listProducts.add(FinalProduct(product: product,selectedOptions: selectedOptions));
+            save(
+                'cartItems',
+                finalProductList);
+            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Menu()));
+          },
+          child: Container(
+            color: Colors.orange,
+            height: 100,
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+              child: Text(
+                "R\$" +
+                    ((product.price + optionAddValue) / 100)
+                        .toStringAsFixed(2)
+                        .replaceAll('.', ',') +
+                    " Adicionar a sacola",
+              ),
+            ),
+          ));
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Center(
+      body: SingleChildScrollView(
         child: Container(
             color: Color(0xFFF8F6F8),
             child: Column(children: <Widget>[
               topBar(product.name),
               details,
-              requiredOptions(listCategories)
+              requiredOptions(listCategories),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: buttonCart(),
+              )
             ])),
       ),
     );

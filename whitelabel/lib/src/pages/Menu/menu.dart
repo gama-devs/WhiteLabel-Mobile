@@ -18,6 +18,17 @@ class ProductCategory {
   int showItems;
   ProductCategory(
       {this.name, this.description, this.products, this.showItems = 4});
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+        'products': json.encode(products),
+        'showItems': showItems
+      };
+  factory ProductCategory.fromJson(dynamic json) {
+    var productObjsJson = json['products'] as List;
+    List<Produto> productObjs = productObjsJson.map((productJson) => Produto.fromJson(productJson)).toList();
+    return ProductCategory(name:json['name'],description: json['description'],products: productObjs,showItems: json['showItems']);
+  }
 }
 
 class Produto {
@@ -34,6 +45,11 @@ class Produto {
       this.price,
       this.image,
       this.jsonData = ''});
+  Map<String, dynamic> toJson() =>
+      {'image': image, 'name': name,'description':description,'options':options,'price':price,'jsonData':jsonData};
+  factory Produto.fromJson(dynamic json) {
+    return Produto(image: json['image'], name : json['name'],description:json['description'],options:json['options'],price:json['price'],jsonData:json['jsonData']);
+  }
 }
 
 class Menu extends StatefulWidget {
@@ -416,10 +432,12 @@ class _MenuState extends State<Menu> {
           row.add(Container(
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(context,MaterialPageRoute(
-                    builder: (context) => Product(
-                          selectedProduct: productList[j],
-                        )));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Product(
+                              selectedProduct: productList[j],
+                            )));
                 print("tapped");
               },
               child: Container(
@@ -434,7 +452,9 @@ class _MenuState extends State<Menu> {
                       decoration: BoxDecoration(border: Border()),
                       child: productList[j].image == null
                           ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
-                          : Image.network("http://50.16.146.1/storage/" +productList[j].image,
+                          : Image.network(
+                              "http://50.16.146.1/storage/" +
+                                  productList[j].image,
                               fit: BoxFit.cover),
                     ),
                     Container(
