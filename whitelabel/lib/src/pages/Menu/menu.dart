@@ -11,7 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Search/searchMenu.dart';
 import 'package:whitelabel/src/pages/Menu/categoryAll.dart';
 import 'package:whitelabel/src/pages/Product/product.dart';
+import 'package:whitelabel/src/pages/Orders/cart.dart';
 
+import '../Orders/cart.dart';
 class ProductCategory {
   String name;
   String description;
@@ -206,9 +208,13 @@ class _MenuState extends State<Menu> {
 
     GestureDetector profileButton = GestureDetector(
       onTap: () {
-        setState(() {});
+        Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Cart(
+                              )));
       },
-      child: Container(
+        child: Container(
         width: MediaQuery.of(context).size.width / 7.5,
         height: MediaQuery.of(context).size.width / 7.5,
         alignment: Alignment.center,
