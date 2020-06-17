@@ -22,17 +22,21 @@ class ProductCategory {
   int showItems;
   ProductCategory(
       {this.name, this.description, this.products, this.showItems = 4});
-  Map<String, dynamic> toJson() => {
+  Map toJson() => {
         'name': name,
         'description': description,
         'products': json.encode(products),
         'showItems': showItems
       };
   factory ProductCategory.fromJson(dynamic json) {
-    var productObjsJson = json['products'] as List;
+    var productObjsJson = jsonDecode(json['products']) as List;
     List<Produto> productObjs = productObjsJson.map((productJson) => Produto.fromJson(productJson)).toList();
     return ProductCategory(name:json['name'],description: json['description'],products: productObjs,showItems: json['showItems']);
   }
+      @override
+  String toString() {
+    return '{ ${this.name}, ${this.description}, ${this.products}, ${this.showItems} }';
+  } 
 }
 
 class Produto {
@@ -49,11 +53,16 @@ class Produto {
       this.price,
       this.image,
       this.jsonData = ''});
-  Map<String, dynamic> toJson() =>
+  Map toJson() =>
       {'image': image, 'name': name,'description':description,'options':options,'price':price,'jsonData':jsonData};
   factory Produto.fromJson(dynamic json) {
-    return Produto(image: json['image'], name : json['name'],description:json['description'],options:json['options'],price:json['price'],jsonData:json['jsonData']);
+    return Produto(image: json['image'] as String, name : json['name'] as String,description:json['description']as String,options:json['options'] as String ,price:json['price'],jsonData:json['jsonData']);
   }
+    @override
+  String toString() {
+    return '{ ${this.name}, ${this.description}, ${this.options}, ${this.price}, ${this.image}, ${this.jsonData} }';
+  }
+
 }
 
 class Menu extends StatefulWidget {

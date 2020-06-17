@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
+import 'package:whitelabel/src/pages/Product/product.dart';
 import '../Menu/menu.dart';
+  remove(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove(key);
+  }
 class PaymentMethod {
   String description;
   String name;
@@ -12,29 +18,33 @@ class PaymentMethod {
       this.name = 'name',
       this.needInput = false});
 }
-
+int selectedPayment = 1;
+bool creditCardError = false;
 class CartItem {
   int quantity;
   FinalProduct product;
   CartItem({this.quantity, this.product});
 
-  getFinalPrice() {
+  double getFinalPrice() {
     double optionAddValue = 0;
-      for (var category in product.selectedOptions) {
+      for (var category in this.product.selectedOptions) {
         for (var option in category.options) {
           optionAddValue += option.price;
         }
       }
-    return ((this.product.product.price + optionAddValue));
+    return ((this.product.product.price + optionAddValue) * quantity);
   }
   getAllOptions(){
+    print(this.product);
     String selectedOptions = '';
-    for (var category in product.selectedOptions) {
+    for (var category in this.product.selectedOptions) {
         for (var option in category.options) {
-          selectedOptions += option.name+ ', ';
+          print(option);
+          selectedOptions += option.name + ', ';
         }
       }
-    return selectedOptions.substring(0,selectedOptions.length-3);
+    print(selectedOptions);
+    return selectedOptions;
   }
 }
 
@@ -75,21 +85,24 @@ bool loaded = false;
 class _CartState extends State<Cart> {
 
 FinalProductList finalProductList;
-
-class _CartState extends State<Cart> {
     loadSharedPrefs() async {
     try {
       finalProductList = FinalProductList.fromJson(await read("cartItems"));
-      for(var finalProduct in finalProductList.listProducts){
-        int quantity = 1;
-        while(finalProductList.listProducts.indexOf(finalProduct) != -1){
-          quantity +=1;
-          finalProductList.listProducts.removeAt(finalProductList.listProducts.indexOf(finalProduct));
+      print("Ihul");
+      var noDuplicates = finalProductList.listProducts.toSet().toList();
+      for(var finalProduct in noDuplicates){
+        int quantity = 0;
+        for(var duplicate in finalProductList.listProducts){
+          if (finalProduct == duplicate) {quantity+=1;
+          print(quantity);}
         }
-        items.add(CartItem(product:  finalProduct, quantity: quantity));
+        setState(() {
+          items.add(CartItem(product:  finalProduct, quantity: quantity));
+        }); 
       }
     } catch (Excepetion) {
       print("Erro");
+      print(Excepetion);
     }
   }
   Size displaySize(BuildContext context) {
@@ -147,7 +160,7 @@ class _CartState extends State<Cart> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   padding: EdgeInsets.only(bottom: 3),
                   child: Text(
-                    cardItem.getAllOptions,
+                    cardItem.getAllOptions(),
                     style: TextStyle(color: Color(0xFF413131), fontSize: 12),
                   ),
                 ),
@@ -155,8 +168,8 @@ class _CartState extends State<Cart> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: Text(
                     "R\$: " +
-                        cardItem
-                            .getFinalPrice()
+                        (cardItem
+                            .getFinalPrice()/100)
                             .toStringAsFixed(2)
                             .replaceAll('.', ','),
                     style: TextStyle(
@@ -347,7 +360,7 @@ class _CartState extends State<Cart> {
               ),
               Spacer(),
               Text(
-                "R\$: " + productsPrice.toStringAsFixed(2).replaceAll('.', ','),
+                "R\$: " + (productsPrice/100).toStringAsFixed(2).replaceAll('.', ','),
                 style: TextStyle(
                   color: Color(0xFF413131),
                   fontSize: 16,
@@ -366,7 +379,7 @@ class _CartState extends State<Cart> {
               ),
               Spacer(),
               Text(
-                "R\$: " + deliveryPrice.toStringAsFixed(2).replaceAll('.', ','),
+                "R\$: " + (deliveryPrice/100).toStringAsFixed(2).replaceAll('.', ','),
                 style: TextStyle(
                   color: Color(0xFF413131),
                   fontSize: 16,
@@ -388,7 +401,7 @@ class _CartState extends State<Cart> {
               ),
               Spacer(),
               Text(
-                "R\$: " + totalPrice.toStringAsFixed(2).replaceAll('.', ','),
+                "R\$: " + (totalPrice/100).toStringAsFixed(2).replaceAll('.', ','),
                 style: TextStyle(
                     color: Color(0xFFFF805D),
                     fontSize: 18,
@@ -577,8 +590,16 @@ class _CartState extends State<Cart> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
+                      items.clear();
                       creditCardError = false;
+                      remove("cartItems");
                     });
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Menu(
+                              )));
                   },
                   child: Container(
                       width: MediaQuery.of(context).size.width * 0.7,
@@ -624,7 +645,7 @@ class _CartState extends State<Cart> {
             child: Container(
               padding: EdgeInsets.only(bottom: 15),
               child: Text(
-                totalPrice.toStringAsFixed(2).replaceAll('.', ',') +
+                (totalPrice/100).toStringAsFixed(2).replaceAll('.', ',') +
                     " Confirmar pedido",
                 style: TextStyle(
                     fontSize: 20,
@@ -707,7 +728,7 @@ class _CartState extends State<Cart> {
                       fontWeight: FontWeight.w800),
                 ),
               ),
-              finalPrice(items, 10),
+              finalPrice(items, 1000),
               allPaymentList(),
               Container(
                 padding: EdgeInsets.all(20),

@@ -10,6 +10,8 @@ import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 save(String key, value) async {
+  print("SAVE");
+  print(value.runtimeType);
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(key, json.encode(value));
 }
@@ -45,7 +47,7 @@ class OptionCategory {
         'options': json.encode(options),
       };
   factory OptionCategory.fromJson(dynamic json) {
-    var optionObjsJson = json['options'] as List;
+    var optionObjsJson = jsonDecode(json['options']) as List;
     List<Option> optionObjs = optionObjsJson
         .map((optionJson) => Option.fromJson(optionJson))
         .toList();
@@ -57,6 +59,9 @@ class OptionCategory {
         min: json['min'],
         selected: json['selected'],
         nOptionsSelected: json['nOptionsSelected']);
+  }
+  String toString() {
+    return '{ ${this.name}, ${this.min}, ${this.max}, ${this.required}, ${this.selected}, ${this.options}, ${this.nOptionsSelected} }';
   }
 }
 
@@ -76,6 +81,9 @@ class Option {
         name: json['name'],
         price: json['price']);
   }
+  String toString() {
+    return '{ ${this.name}, ${this.description}, ${this.price} }';
+  }
 }
 
 class FinalProduct {
@@ -87,13 +95,16 @@ class FinalProduct {
         'selectedOptions': json.encode(selectedOptions)
       };
   factory FinalProduct.fromJson(dynamic json) {
-    var selectedOptionsObjsJson = json['selectedOptions'] as List;
+    var selectedOptionsObjsJson = jsonDecode(json['selectedOptions']) as List;
     List<OptionCategory> selectedOptionsObjs = selectedOptionsObjsJson
         .map((optionJson) => OptionCategory.fromJson(optionJson))
         .toList();
     return FinalProduct(
         product: Produto.fromJson(json['product']),
         selectedOptions: selectedOptionsObjs);
+  }
+  String toString() {
+    return '{ ${this.product}, ${this.selectedOptions} }';
   }
 }
 
@@ -102,15 +113,17 @@ class FinalProductList {
   Map<String, dynamic> toJson() => {
         'listProducts': json.encode(listProducts),
       };
-  factory FinalProductList.fromJson(dynamic json) {
-    var finalProductObjsJson = json['listProducts'] as List;
-    List<FinalProduct> finalProductObjs = finalProductObjsJson
-        .map((finalProductJson) => FinalProduct.fromJson(finalProductJson))
+  factory FinalProductList.fromJson(Map<String, dynamic> json) {
+    var selectedOptionsObjsJson = jsonDecode(json['listProducts']) as List;
+    List<FinalProduct> selectedOptionsObjs = selectedOptionsObjsJson
+        .map((optionJson) => FinalProduct.fromJson(optionJson))
         .toList();
-    return FinalProductList(
-        listProducts: finalProductObjs);
+    return FinalProductList(listProducts: selectedOptionsObjs);
   }
   FinalProductList({this.listProducts});
+  String toString() {
+    return '{ ${this.listProducts} }';
+  }
 }
 
 class Product extends StatefulWidget {
@@ -122,11 +135,13 @@ class Product extends StatefulWidget {
 
 class _ProductState extends State<Product> {
   FinalProductList finalProductList;
-
+  int necessarySelected = 0;
+  int fullSelected = 0;
   loadSharedPrefs() async {
     try {
       finalProductList = FinalProductList.fromJson(await read("cartItems"));
     } catch (Excepetion) {
+      print(Excepetion);
       finalProductList = FinalProductList(listProducts: []);
     }
   }
@@ -144,8 +159,6 @@ class _ProductState extends State<Product> {
         i < widget.selectedProduct.jsonData['option_categories'].length;
         i++) {
       List<Option> optionList = [];
-      print("Option");
-      print(widget.selectedProduct.jsonData['option_categories'][i]);
       for (int j = 0;
           j <
               widget.selectedProduct.jsonData['option_categories'][i]['options']
@@ -196,7 +209,6 @@ class _ProductState extends State<Product> {
 
   Widget build(BuildContext context) {
     Produto product = widget.selectedProduct;
-    print(product.jsonData);
     Padding topBar(name) {
       return Padding(
           padding: EdgeInsets.only(top: 50, bottom: 0),
@@ -366,6 +378,15 @@ class _ProductState extends State<Product> {
     Container optionsCheckBoxContainer(options) {
       var optionCategory = options.name;
       List<Widget> listOptions = [];
+      if (selectedOptions[selectedOptions.indexWhere(
+                  (listOption) => listOption.name == optionCategory)]
+              .options
+              .length ==
+          options.max) {
+        setState(() {
+          fullSelected += 1;
+        });
+      }
       for (int i = 0; i < options.options.length; i++) {
         if (options.required == 1)
           listOptions.add(GestureDetector(
@@ -508,6 +529,15 @@ class _ProductState extends State<Product> {
         listOptions.add(Container(
             child: optionsCounter(optionCategory, options.options[i])));
       }
+      if (selectedOptions[selectedOptions.indexWhere(
+                  (listOption) => listOption.name == optionCategory)]
+              .options
+              .length ==
+          options.max) {
+        setState(() {
+          fullSelected += 1;
+        });
+      }
       return Container(
           child: Column(children: <Widget>[
         Row(
@@ -537,6 +567,9 @@ class _ProductState extends State<Product> {
       for (var option in optionList) {
         if (option.required == 1)
           listRequiredOptions.add(optionsCheckBoxContainer(option));
+        setState(() {
+          necessarySelected += 1;
+        });
       }
       for (var option in optionList) {
         if (option.required != 1)
@@ -556,21 +589,24 @@ class _ProductState extends State<Product> {
           optionAddValue += option.price;
         }
       }
+      print(necessarySelected);
+      print(fullSelected);
       return GestureDetector(
           onTap: () {
-            print(json.encode(finalProductList));
-            finalProductList.listProducts.add(FinalProduct(product: product,selectedOptions: selectedOptions));
-            save(
-                'cartItems',
-                finalProductList);
+            print("tappedGEsture");
+            finalProductList.listProducts.add(FinalProduct(
+                product: product, selectedOptions: selectedOptions));
+            print(finalProductList.toJson()['listProducts']);
+            save('cartItems', (finalProductList));
             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Menu()));
+                context, MaterialPageRoute(builder: (context) => Menu()));
           },
-          child: Container(
+          child:Container(height:110 , alignment: Alignment.bottomCenter,child: AnimatedContainer(
+            alignment: Alignment.bottomCenter,
+            curve: fullSelected == necessarySelected? Curves.easeOutBack:Curves.easeInBack,
+            duration: Duration(milliseconds: 700),
             color: Colors.orange,
-            height: 100,
+            height: fullSelected == necessarySelected? 100:0,
             width: MediaQuery.of(context).size.width,
             child: Center(
               child: Text(
@@ -581,24 +617,31 @@ class _ProductState extends State<Product> {
                     " Adicionar a sacola",
               ),
             ),
-          ));
+          )));
     }
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SingleChildScrollView(
-        child: Container(
-            color: Color(0xFFF8F6F8),
-            child: Column(children: <Widget>[
-              topBar(product.name),
-              details,
-              requiredOptions(listCategories),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: buttonCart(),
-              )
-            ])),
-      ),
-    );
+    Scaffold scaffold() {
+      necessarySelected = 0;
+      fullSelected = 0;
+      return Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SingleChildScrollView(
+          child: Container(
+              color: Color(0xFFF8F6F8),
+              child: Column(
+                
+                children: <Widget>[
+                topBar(product.name),
+                details,
+                requiredOptions(listCategories),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(children:<Widget>[buttonCart()]),
+                )
+              ])),
+        ),
+      );
+    }
+    return scaffold();
   }
 }
