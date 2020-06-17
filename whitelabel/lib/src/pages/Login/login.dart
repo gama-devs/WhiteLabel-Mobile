@@ -246,7 +246,7 @@ class _LoginState extends State<Login> {
     Future<String> postLoginButton(BuildContext context) async {
       print(passwordInputController.text);
       print(nameInputController.text);
-      print(celInputController.text);
+      print(celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''));
       print(emailInputController.text);
       print("TESTE");
       var jsonLogin = json.encode({
@@ -259,7 +259,6 @@ class _LoginState extends State<Login> {
         setState(() {
           loading = true;
         });
-        print("Teste login");
         http.Response response = await http.post(
             Uri.encodeFull("http://50.16.146.1/api/auth/login/app"),
             headers: {
@@ -278,10 +277,10 @@ class _LoginState extends State<Login> {
           });
           var token = parsedJson['data']["access_token"];
           var userId = parsedJson['data']['user']['id'];
+          saveTolken(token);
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Menu()));
 
-          saveTolken(token);
         } else {
           setState(() {
             loading = false;
