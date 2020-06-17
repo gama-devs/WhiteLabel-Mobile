@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:convert';
 import 'dart:ffi';
 
@@ -9,7 +10,11 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Search/searchMenu.dart';
+import 'package:whitelabel/src/pages/Menu/categoryAll.dart';
+import 'package:whitelabel/src/pages/Product/product.dart';
+import 'package:whitelabel/src/pages/Orders/cart.dart';
 
+import '../Orders/cart.dart';
 class ProductCategory {
   String name;
   String description;
@@ -17,6 +22,17 @@ class ProductCategory {
   int showItems;
   ProductCategory(
       {this.name, this.description, this.products, this.showItems = 4});
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+        'products': json.encode(products),
+        'showItems': showItems
+      };
+  factory ProductCategory.fromJson(dynamic json) {
+    var productObjsJson = json['products'] as List;
+    List<Produto> productObjs = productObjsJson.map((productJson) => Produto.fromJson(productJson)).toList();
+    return ProductCategory(name:json['name'],description: json['description'],products: productObjs,showItems: json['showItems']);
+  }
 }
 
 class Produto {
@@ -25,8 +41,19 @@ class Produto {
   String description;
   String options;
   var price;
-
-  Produto({this.name, this.description, this.options, this.price, this.image});
+  var jsonData;
+  Produto(
+      {this.name,
+      this.description,
+      this.options,
+      this.price,
+      this.image,
+      this.jsonData = ''});
+  Map<String, dynamic> toJson() =>
+      {'image': image, 'name': name,'description':description,'options':options,'price':price,'jsonData':jsonData};
+  factory Produto.fromJson(dynamic json) {
+    return Produto(image: json['image'], name : json['name'],description:json['description'],options:json['options'],price:json['price'],jsonData:json['jsonData']);
+  }
 }
 
 class Menu extends StatefulWidget {
@@ -92,13 +119,14 @@ class _MenuState extends State<Menu> {
                       product["option_categories"].length.toString() +
                       " sabores!"
                   : "",
-              price: (product['price'])));
+              price: (product['price']),
+              jsonData: product));
         }
         categories.add(ProductCategory(
             name: categoryName,
             description: categoryDescription,
             products: products,
-            showItems: 2));
+            showItems: 4));
         print(categoryName);
       }
     } catch (e) {
@@ -181,9 +209,13 @@ class _MenuState extends State<Menu> {
 
     GestureDetector profileButton = GestureDetector(
       onTap: () {
-        setState(() {});
+        Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Cart(
+                              )));
       },
-      child: Container(
+        child: Container(
         width: MediaQuery.of(context).size.width / 7.5,
         height: MediaQuery.of(context).size.width / 7.5,
         alignment: Alignment.center,
@@ -347,7 +379,7 @@ class _MenuState extends State<Menu> {
 
     Container textCategory(category) {
       String name = category.name;
-      String description =  category.description;
+      String description = category.description;
       return Container(
           child: name == null
               ? Container()
@@ -366,30 +398,37 @@ class _MenuState extends State<Menu> {
                                     fontWeight: FontWeight.w800),
                               ),
                             ),
-                      Row(children: <Widget>[description == null
-                          ? Container()
-                          : Container(
-                              child: Text(
-                                description,
-                                style: TextStyle(
-                                    color: Color(0xFF413131), fontSize: 14),
-                              ),
-                            ),
-                            Spacer(),
-                            Container(child: GestureDetector(
-                              onTap:(){
-                                setState(() {
-                                  category.showItems = category.products.length;
-                                });
+                      Row(
+                        children: <Widget>[
+                          description == null
+                              ? Container()
+                              : Container(
+                                  child: Text(
+                                    description,
+                                    style: TextStyle(
+                                        color: Color(0xFF413131), fontSize: 14),
+                                  ),
+                                ),
+                          Spacer(),
+                          Container(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CategoryAll(
+                                              productCategories: category,
+                                            )));
                               },
                               child: Text(
                                 "Ver todos",
                                 style: TextStyle(
                                     color: Color(0xFFFF805D), fontSize: 14),
-                              ),),)
-                            ],)
-                      
-                          
+                              ),
+                            ),
+                          )
+                        ],
+                      )
                     ]));
     }
 
@@ -397,75 +436,85 @@ class _MenuState extends State<Menu> {
       List<Widget> itemsWidgets = [];
       for (int i = 0; i < numItems; i += 2) {
         List<Widget> row = [];
-        for (int j = i; j < i+2 && j < productList.length; j++) {
+        for (int j = i; j < i + 2 && j < productList.length; j++) {
           row.add(Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                    child: Container(
-                  padding: EdgeInsets.only(right: 10),
-                  width: MediaQuery.of(context).size.width *0.45,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        width: MediaQuery.of(context).size.width *0.45,
-                        decoration: BoxDecoration(border: Border()),
-                        child: productList[j].image == null
-                            ? Image.asset("assets/burg1.png", fit: BoxFit.cover)
-                            : Image.asset(productList[j].image,
-                                fit: BoxFit.cover),
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                productList[j].name,
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0XFFFF805D),
-                                    fontWeight: FontWeight.w800),
-                              ),
-                              Container(
-                                  height: 40,
-                                  child: productList[j].description == null
-                                      ? Text(
-                                          "Descricao do produto",
-                                          style: TextStyle(
-                                              color: Color(0xFF413131),
-                                              fontSize: 12),
-                                        )
-                                      : Text(
-                                          productList[j].description,
-                                          style: TextStyle(
-                                              color: Color(0xFF413131),
-                                              fontSize: 12),
-                                        )),
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    padding: EdgeInsets.only(right: 3),
-                                    child: Text(
-                                      "R\$: " +
-                                          (productList[j].price / 100)
-                                              .toStringAsFixed(2)
-                                              .replaceAll('.', ','),
-                                      style: TextStyle(
-                                          color: Color(0XFF413131),
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w800),
-                                    ),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Product(
+                              selectedProduct: productList[j],
+                            )));
+                print("tapped");
+              },
+              child: Container(
+                  child: Container(
+                padding: EdgeInsets.only(right: 10),
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      height: MediaQuery.of(context).size.width * 0.35,
+                      decoration: BoxDecoration(border: Border()),
+                      child: productList[j].image == null
+                          ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
+                          : Image.network(
+                              "http://50.16.146.1/storage/" +
+                                  productList[j].image,
+                              fit: BoxFit.cover),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              productList[j].name,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0XFFFF805D),
+                                  fontWeight: FontWeight.w800),
+                            ),
+                            Container(
+                                height: 40,
+                                child: productList[j].description == null
+                                    ? Text(
+                                        "Descricao do produto",
+                                        style: TextStyle(
+                                            color: Color(0xFF413131),
+                                            fontSize: 12),
+                                      )
+                                    : Text(
+                                        productList[j].description,
+                                        style: TextStyle(
+                                            color: Color(0xFF413131),
+                                            fontSize: 12),
+                                      )),
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.only(right: 3),
+                                  child: Text(
+                                    "R\$: " +
+                                        (productList[j].price / 100)
+                                            .toStringAsFixed(2)
+                                            .replaceAll('.', ','),
+                                    style: TextStyle(
+                                        color: Color(0XFF413131),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w800),
                                   ),
-                                ],
-                              )
-                            ]),
-                      ),
-                    ],
-                  ),
-                )),
-              ],
+                                ),
+                              ],
+                            )
+                          ]),
+                    ),
+                  ],
+                ),
+              )),
             ),
           ));
         }
@@ -474,7 +523,7 @@ class _MenuState extends State<Menu> {
 
       return Container(
           height: (itemsWidgets.length * 250).toDouble(),
-          padding: EdgeInsets.only(top:10),
+          padding: EdgeInsets.only(top: 10),
           child: Column(children: itemsWidgets));
     }
 
@@ -492,9 +541,12 @@ class _MenuState extends State<Menu> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                textCategory(
-                                    category),
-                                gridCategory(category.products,category.products.length > 2?category.showItems : 2),
+                                textCategory(category),
+                                gridCategory(
+                                    category.products,
+                                    category.products.length > 2
+                                        ? category.showItems
+                                        : 2),
                               ],
                             ),
                           ))

@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:whitelabel/src/pages/Menu/menu.dart';
-
 import '../Menu/menu.dart';
-
 class PaymentMethod {
   String description;
   String name;
@@ -17,11 +15,26 @@ class PaymentMethod {
 
 class CartItem {
   int quantity;
-  Produto product;
+  FinalProduct product;
   CartItem({this.quantity, this.product});
 
   getFinalPrice() {
-    return ((this.product.price * this.quantity));
+    double optionAddValue = 0;
+      for (var category in product.selectedOptions) {
+        for (var option in category.options) {
+          optionAddValue += option.price;
+        }
+      }
+    return ((this.product.product.price + optionAddValue));
+  }
+  getAllOptions(){
+    String selectedOptions = '';
+    for (var category in product.selectedOptions) {
+        for (var option in category.options) {
+          selectedOptions += option.name+ ', ';
+        }
+      }
+    return selectedOptions.substring(0,selectedOptions.length-3);
   }
 }
 
@@ -47,41 +60,38 @@ List<Address> addresses = [
 
 String customerName = "Bianca Lima";
 
-List<CartItem> items = [
-  CartItem(
-      quantity: 2,
-      product: Produto(
-          description:
-              'Massa Tradicional, Borda recheada, Formaggi, Calabresa, Strogonoff e Frango com Catupity',
-          image: '',
-          name: 'Pizza Familia',
-          price: 60,
-          options: '')),
-  CartItem(
-      quantity: 1,
-      product: Produto(
-          description: "2 litros",
-          image: '',
-          name: 'Coca - cola',
-          options: '',
-          price: 6.50))
-];
-
 List<PaymentMethod> paymentMethods = [
   PaymentMethod(name: "Pagamento na entrega", description: "Débito"),
   PaymentMethod(name: "Pagamento na entrega", description: "Dinheiro"),
 ];
 
+List<CartItem> items = [];
 class Cart extends StatefulWidget {
   @override
   _CartState createState() => new _CartState();
 }
 
 bool loaded = false;
-int selectedPayment = 1;
-bool creditCardError = false;
+class _CartState extends State<Cart> {
+
+FinalProductList finalProductList;
 
 class _CartState extends State<Cart> {
+    loadSharedPrefs() async {
+    try {
+      finalProductList = FinalProductList.fromJson(await read("cartItems"));
+      for(var finalProduct in finalProductList.listProducts){
+        int quantity = 1;
+        while(finalProductList.listProducts.indexOf(finalProduct) != -1){
+          quantity +=1;
+          finalProductList.listProducts.removeAt(finalProductList.listProducts.indexOf(finalProduct));
+        }
+        items.add(CartItem(product:  finalProduct, quantity: quantity));
+      }
+    } catch (Excepetion) {
+      print("Erro");
+    }
+  }
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -93,11 +103,8 @@ class _CartState extends State<Cart> {
   double displayWidth(BuildContext context) {
     return displaySize(context).width;
   }
-
   List<String> flagOptions = ["VISA", "MASTERCARD", "ELO"];
-
   pullContainer() async {
-
     await new Future.delayed(const Duration(milliseconds: 1000), (){
           setState(() {
       loaded = true;
@@ -110,6 +117,10 @@ class _CartState extends State<Cart> {
     });
 
   }
+  @override
+  void initState() {
+    loadSharedPrefs();
+    super.initState();}
 
   Container cardItemContainer(cardItem) {
     return Container(
@@ -125,7 +136,7 @@ class _CartState extends State<Cart> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   padding: EdgeInsets.only(bottom: 3),
                   child: Text(
-                    cardItem.product.name,
+                    cardItem.product.product.name,
                     style: TextStyle(
                         color: Color(0xFFFF805D),
                         fontSize: 20,
@@ -136,7 +147,7 @@ class _CartState extends State<Cart> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   padding: EdgeInsets.only(bottom: 3),
                   child: Text(
-                    cardItem.product.description,
+                    cardItem.getAllOptions,
                     style: TextStyle(color: Color(0xFF413131), fontSize: 12),
                   ),
                 ),
@@ -526,7 +537,6 @@ class _CartState extends State<Cart> {
           )),
     );
   }
-
   ScrollController _scrollController = new ScrollController();
   AnimatedContainer errorButton() {
     WidgetsBinding.instance.addPostFrameCallback((_) {//Para animar o botão crescendo pra cima, ao invés de pra baixo, eu rolo o listView até o final
