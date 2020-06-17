@@ -709,13 +709,14 @@ class _MenuState extends State<Menu> {
           padding: EdgeInsets.only(
             top: 500,
           ),
-          child: AnimatedContainer(
+          child: work ?
+          Container(height:0)  :
+          AnimatedContainer(
             color: Colors.transparent,
             duration: Duration(milliseconds: 700),
-            height: work ? 0 : 0,
             curve: Curves.easeInOutBack,
             child: clicked ? notification : closed,
-          ),
+          ), 
         )
       ]),
     );
