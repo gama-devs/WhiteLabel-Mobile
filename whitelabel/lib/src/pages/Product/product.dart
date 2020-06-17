@@ -15,7 +15,6 @@ save(String key, value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(key, json.encode(value));
 }
-
 read(String key) async {
   final prefs = await SharedPreferences.getInstance();
   return json.decode(prefs.getString(key));
@@ -134,6 +133,17 @@ class Product extends StatefulWidget {
 }
 
 class _ProductState extends State<Product> {
+  ScrollController _scrollController = new ScrollController();
+  pullContainer() async {
+    await new Future.delayed(const Duration(milliseconds: 1000), () {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        //Para iniciar com o listView na parte de cima
+        _scrollController.jumpTo(
+          _scrollController.position.maxScrollExtent,
+        );
+      });
+    });
+  }
   FinalProductList finalProductList;
   int necessarySelected = 0;
   int fullSelected = 0;
@@ -210,8 +220,9 @@ class _ProductState extends State<Product> {
   Widget build(BuildContext context) {
     Produto product = widget.selectedProduct;
     Padding topBar(name) {
+      
       return Padding(
-          padding: EdgeInsets.only(top: 50, bottom: 0),
+          padding: EdgeInsets.only(top: 20, bottom: 0),
           child: Container(
               color: Color(0xFFF8F6F8),
               height: displayHeight(context) * 0.13,
@@ -259,7 +270,7 @@ class _ProductState extends State<Product> {
         height: displayHeight(context) * 0.2,
         child: Row(children: <Widget>[
           Padding(
-              padding: EdgeInsets.only(top: 0, left: 15),
+              padding: EdgeInsets.only(bottom:30, left: 15),
               child: Container(
                   width: displayWidth(context) * 0.3,
                   height: displayHeight(context) * 0.15,
@@ -269,7 +280,7 @@ class _ProductState extends State<Product> {
                           Image.asset("assets/burg1.png", fit: BoxFit.fill)))),
           Container(
               child: Padding(
-            padding: EdgeInsets.only(top: 20, left: 15),
+            padding: EdgeInsets.only(top: 0, left: 15),
             child: Container(
                 child: Column(
               children: <Widget>[
@@ -338,14 +349,21 @@ class _ProductState extends State<Product> {
         child: Row(children: <Widget>[
           Column(
             children: <Widget>[
-              Text(option.name),
+              Padding(
+                  padding: EdgeInsets.only(bottom: 5, left: 5),
+                  child: Text(
+                    option.name,
+                    style: TextStyle(color: Color(0xFF413131), fontSize: 16),
+                  )),
               option.price != 0
-                  ? Text(
-                      "+ R\$: " +
-                          (option.price / 100)
-                              .toStringAsFixed(2)
-                              .replaceAll('.', ','),
-                    )
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: 5, left: 5),
+                      child: Text(
+                        " + R\$: " +
+                            (option.price / 100)
+                                .toStringAsFixed(2)
+                                .replaceAll('.', ','),
+                      ))
                   : Container()
             ],
           ),
@@ -368,7 +386,11 @@ class _ProductState extends State<Product> {
                         .options
                         .indexOf(option) !=
                     -1
-                ? Icon(Icons.check)
+                ? Icon(
+                    Icons.check,
+                    size: 15,
+                    color: Colors.white,
+                  )
                 : Container(),
           ),
         ]),
@@ -436,14 +458,33 @@ class _ProductState extends State<Product> {
           child: Column(children: <Widget>[
         Row(
           children: <Widget>[
-            Text(optionCategory),
+            Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+                child: Text(
+                  "Escolha o tipo de " + optionCategory,
+                  style: TextStyle(
+                      color: Color(0xFF413131),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800),
+                )),
             Spacer(),
             Container(
-              color: Color(0xFFFF805D),
-              child: Text(options.nOptionsSelected.toString() +
-                  "de" +
-                  options.max.toString()),
-            )
+                child: Padding(
+                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                    child: Container(
+                      height: 20,
+                      width: 45,
+                      decoration: BoxDecoration(
+                          color: Color(0xFFFF805D),
+                          borderRadius: BorderRadius.circular(4)),
+                      child: Text(
+                        " " +
+                            options.nOptionsSelected.toString() +
+                            " de " +
+                            options.max.toString(),
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )))
           ],
         ),
         Column(
@@ -463,14 +504,21 @@ class _ProductState extends State<Product> {
         child: Row(children: <Widget>[
           Column(
             children: <Widget>[
-              Text(option.name),
+              Padding(
+                  padding: EdgeInsets.only(bottom: 5, left: 5),
+                  child: Text(
+                    option.name,
+                    style: TextStyle(color: Color(0xFF413131), fontSize: 16),
+                  )),
               option.price != 0
-                  ? Text(
-                      "+ R\$: " +
-                          (option.price / 100)
-                              .toStringAsFixed(2)
-                              .replaceAll('.', ','),
-                    )
+                  ? Padding(
+                      padding: EdgeInsets.only(bottom: 5, left: 5),
+                      child: Text(
+                        " + R\$: " +
+                            (option.price / 100)
+                                .toStringAsFixed(2)
+                                .replaceAll('.', ','),
+                      ))
                   : Container()
             ],
           ),
@@ -515,7 +563,7 @@ class _ProductState extends State<Product> {
                       },
                       child: Icon(Icons.add),
                     )
-                  : Container(),
+                  : Container(width: 20,),
             ],
           )
         ]),
@@ -542,18 +590,38 @@ class _ProductState extends State<Product> {
           child: Column(children: <Widget>[
         Row(
           children: <Widget>[
-            Text(optionCategory),
+            Padding(
+                padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+                child: Text(
+                  "Escolha os " + optionCategory,
+                  style: TextStyle(
+                      color: Color(0xFF413131),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800),
+                )),
             Spacer(),
             Container(
-              color: Color(0xFFFF805D),
-              child: Text(selectedOptions[selectedOptions.indexWhere(
-                          (listOption) => listOption.name == optionCategory)]
-                      .options
-                      .length
-                      .toString() +
-                  "de" +
-                  options.max.toString()),
-            )
+                child: Padding(
+                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                    child: Container(
+                        height: 20,
+                        width: 45,
+                        decoration: BoxDecoration(
+                            color: Color(0xFFFF805D),
+                            borderRadius: BorderRadius.circular(4)),
+                        child: Center(
+                          child: Text(
+                            selectedOptions[selectedOptions.indexWhere(
+                                        (listOption) =>
+                                            listOption.name == optionCategory)]
+                                    .options
+                                    .length
+                                    .toString() +
+                                " de " +
+                                options.max.toString(),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ))))
           ],
         ),
         Column(
@@ -601,23 +669,36 @@ class _ProductState extends State<Product> {
             Navigator.pushReplacement(
                 context, MaterialPageRoute(builder: (context) => Menu()));
           },
-          child:Container(height:110 , alignment: Alignment.bottomCenter,child: AnimatedContainer(
-            alignment: Alignment.bottomCenter,
-            curve: fullSelected == necessarySelected? Curves.easeOutBack:Curves.easeInBack,
-            duration: Duration(milliseconds: 700),
-            color: Colors.orange,
-            height: fullSelected == necessarySelected? 100:0,
-            width: MediaQuery.of(context).size.width,
-            child: Center(
-              child: Text(
-                "R\$" +
-                    ((product.price + optionAddValue) / 100)
-                        .toStringAsFixed(2)
-                        .replaceAll('.', ',') +
-                    " Adicionar a sacola",
-              ),
-            ),
-          )));
+          child: Container(
+              height: 110,
+              alignment: Alignment.bottomCenter,
+              child: AnimatedContainer(
+                decoration: BoxDecoration(
+                    color: Color(0xFFFF805D),
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20))),
+                alignment: Alignment.bottomCenter,
+                curve: fullSelected == necessarySelected
+                    ? Curves.easeOutBack
+                    : Curves.easeInBack,
+                duration: Duration(milliseconds: 700),
+                height: fullSelected == necessarySelected ? 100 : 0,
+                width: MediaQuery.of(context).size.width,
+                child: Center(
+                  child: Text(
+                    "R\$" +
+                        ((product.price + optionAddValue) / 100)
+                            .toStringAsFixed(2)
+                            .replaceAll('.', ',') +
+                        " • Adicionar a sacola",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800),
+                  ),
+                ),
+              )));
     }
 
     Scaffold scaffold() {
@@ -628,20 +709,36 @@ class _ProductState extends State<Product> {
         body: SingleChildScrollView(
           child: Container(
               color: Color(0xFFF8F6F8),
-              child: Column(
-                
-                children: <Widget>[
+              child: Column(children: <Widget>[
                 topBar(product.name),
                 details,
-                requiredOptions(listCategories),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(children:<Widget>[buttonCart()]),
-                )
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32))),
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: Align(alignment: Alignment.bottomCenter,child:SingleChildScrollView(
+                    
+                    controller: _scrollController,
+                    child: Column(
+                    
+                    children: <Widget>[
+                      Container(padding: EdgeInsets.all(10),child:requiredOptions(listCategories)),
+                      
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Column(children: <Widget>[buttonCart()]),
+                      )
+                    ],
+                  ),)
+                )),
               ])),
         ),
       );
     }
+
     return scaffold();
   }
 }

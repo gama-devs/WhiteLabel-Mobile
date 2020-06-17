@@ -5,10 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
 import 'package:whitelabel/src/pages/Product/product.dart';
 import '../Menu/menu.dart';
-  remove(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.remove(key);
-  }
+
+remove(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove(key);
+}
+
 class PaymentMethod {
   String description;
   String name;
@@ -18,8 +20,10 @@ class PaymentMethod {
       this.name = 'name',
       this.needInput = false});
 }
+
 int selectedPayment = 1;
 bool creditCardError = false;
+
 class CartItem {
   int quantity;
   FinalProduct product;
@@ -27,22 +31,23 @@ class CartItem {
 
   double getFinalPrice() {
     double optionAddValue = 0;
-      for (var category in this.product.selectedOptions) {
-        for (var option in category.options) {
-          optionAddValue += option.price;
-        }
+    for (var category in this.product.selectedOptions) {
+      for (var option in category.options) {
+        optionAddValue += option.price;
       }
+    }
     return ((this.product.product.price + optionAddValue) * quantity);
   }
-  getAllOptions(){
+
+  getAllOptions() {
     print(this.product);
     String selectedOptions = '';
     for (var category in this.product.selectedOptions) {
-        for (var option in category.options) {
-          print(option);
-          selectedOptions += option.name + ', ';
-        }
+      for (var option in category.options) {
+        print(option);
+        selectedOptions += option.name + ', ';
       }
+    }
     print(selectedOptions);
     return selectedOptions;
   }
@@ -76,35 +81,39 @@ List<PaymentMethod> paymentMethods = [
 ];
 
 List<CartItem> items = [];
+
 class Cart extends StatefulWidget {
   @override
   _CartState createState() => new _CartState();
 }
 
 bool loaded = false;
-class _CartState extends State<Cart> {
 
-FinalProductList finalProductList;
-    loadSharedPrefs() async {
+class _CartState extends State<Cart> {
+  FinalProductList finalProductList;
+  loadSharedPrefs() async {
     try {
       finalProductList = FinalProductList.fromJson(await read("cartItems"));
       print("Ihul");
       var noDuplicates = finalProductList.listProducts.toSet().toList();
-      for(var finalProduct in noDuplicates){
+      for (var finalProduct in noDuplicates) {
         int quantity = 0;
-        for(var duplicate in finalProductList.listProducts){
-          if (finalProduct == duplicate) {quantity+=1;
-          print(quantity);}
+        for (var duplicate in finalProductList.listProducts) {
+          if (finalProduct == duplicate) {
+            quantity += 1;
+            print(quantity);
+          }
         }
         setState(() {
-          items.add(CartItem(product:  finalProduct, quantity: quantity));
-        }); 
+          items.add(CartItem(product: finalProduct, quantity: quantity));
+        });
       }
     } catch (Excepetion) {
       print("Erro");
       print(Excepetion);
     }
   }
+
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -116,24 +125,27 @@ FinalProductList finalProductList;
   double displayWidth(BuildContext context) {
     return displaySize(context).width;
   }
+
   List<String> flagOptions = ["VISA", "MASTERCARD", "ELO"];
   pullContainer() async {
-    await new Future.delayed(const Duration(milliseconds: 1000), (){
-          setState(() {
-      loaded = true;
+    await new Future.delayed(const Duration(milliseconds: 1000), () {
+      setState(() {
+        loaded = true;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        //Para iniciar com o listView na parte de cima
+        _scrollController.jumpTo(
+          _scrollController.position.maxScrollExtent,
+        );
+      });
     });
-            WidgetsBinding.instance.addPostFrameCallback((_) { //Para iniciar com o listView na parte de cima
-      _scrollController.jumpTo(
-        _scrollController.position.maxScrollExtent,
-      );
-    });
-    });
-
   }
+
   @override
   void initState() {
     loadSharedPrefs();
-    super.initState();}
+    super.initState();
+  }
 
   Container cardItemContainer(cardItem) {
     return Container(
@@ -168,8 +180,7 @@ FinalProductList finalProductList;
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: Text(
                     "R\$: " +
-                        (cardItem
-                            .getFinalPrice()/100)
+                        (cardItem.getFinalPrice() / 100)
                             .toStringAsFixed(2)
                             .replaceAll('.', ','),
                     style: TextStyle(
@@ -360,7 +371,10 @@ FinalProductList finalProductList;
               ),
               Spacer(),
               Text(
-                "R\$: " + (productsPrice/100).toStringAsFixed(2).replaceAll('.', ','),
+                "R\$: " +
+                    (productsPrice / 100)
+                        .toStringAsFixed(2)
+                        .replaceAll('.', ','),
                 style: TextStyle(
                   color: Color(0xFF413131),
                   fontSize: 16,
@@ -379,7 +393,10 @@ FinalProductList finalProductList;
               ),
               Spacer(),
               Text(
-                "R\$: " + (deliveryPrice/100).toStringAsFixed(2).replaceAll('.', ','),
+                "R\$: " +
+                    (deliveryPrice / 100)
+                        .toStringAsFixed(2)
+                        .replaceAll('.', ','),
                 style: TextStyle(
                   color: Color(0xFF413131),
                   fontSize: 16,
@@ -401,7 +418,8 @@ FinalProductList finalProductList;
               ),
               Spacer(),
               Text(
-                "R\$: " + (totalPrice/100).toStringAsFixed(2).replaceAll('.', ','),
+                "R\$: " +
+                    (totalPrice / 100).toStringAsFixed(2).replaceAll('.', ','),
                 style: TextStyle(
                     color: Color(0xFFFF805D),
                     fontSize: 18,
@@ -550,9 +568,11 @@ FinalProductList finalProductList;
           )),
     );
   }
+
   ScrollController _scrollController = new ScrollController();
   AnimatedContainer errorButton() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {//Para animar o botão crescendo pra cima, ao invés de pra baixo, eu rolo o listView até o final
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      //Para animar o botão crescendo pra cima, ao invés de pra baixo, eu rolo o listView até o final
       _scrollController.animateTo(
         0.0,
         curve: Curves.easeOut,
@@ -593,13 +613,11 @@ FinalProductList finalProductList;
                       items.clear();
                       creditCardError = false;
                       remove("cartItems");
+                      loaded = false;
                     });
 
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Menu(
-                              )));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => Menu()));
                   },
                   child: Container(
                       width: MediaQuery.of(context).size.width * 0.7,
@@ -645,7 +663,7 @@ FinalProductList finalProductList;
             child: Container(
               padding: EdgeInsets.only(bottom: 15),
               child: Text(
-                (totalPrice/100).toStringAsFixed(2).replaceAll('.', ',') +
+                (totalPrice / 100).toStringAsFixed(2).replaceAll('.', ',') +
                     " Confirmar pedido",
                 style: TextStyle(
                     fontSize: 20,
@@ -661,96 +679,99 @@ FinalProductList finalProductList;
     if (!loaded) pullContainer();
 
     return AnimatedContainer(
-      curve: Curves.easeOutBack,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32), topRight: Radius.circular(32))),
-      height: loaded ? MediaQuery.of(context).size.height * 0.8 : 0,
-      width: MediaQuery.of(context).size.width,
-      duration: Duration(milliseconds: 1200),
-      child: Container(padding: EdgeInsets.only(top:10),child:SingleChildScrollView(
-        reverse: true,
-        controller: _scrollController,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "🍕 Itens",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Column(
-                  children:
-                      items.map((item) => cardItemContainer(item)).toList()),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "🛵 Endereço de entrega",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                child: listAddress(addAddressButton(), addresses),
-              ),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "🤑 Cupom de desconto",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: cupomInput(),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "😎 Pagamento",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              finalPrice(items, 1000),
-              allPaymentList(),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "📝 CPF ou CNPJ na nota fiscal",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Center(
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 50),
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: cpfInput(),
-                ),
-              ),
-              creditCardError ? errorButton() : finishButton(),
-            ]),
-      ),
-    ));
+        curve: Curves.easeOutBack,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(32), topRight: Radius.circular(32))),
+        height: loaded ? MediaQuery.of(context).size.height * 0.8 : 0,
+        width: MediaQuery.of(context).size.width,
+        duration: Duration(milliseconds: 1200),
+        child: Container(
+          padding: EdgeInsets.only(top: 10),
+          child: SingleChildScrollView(
+            reverse: true,
+            controller: _scrollController,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "🍕 Itens",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Column(
+                      children: items
+                          .map((item) => cardItemContainer(item))
+                          .toList()),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "🛵 Endereço de entrega",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    child: listAddress(addAddressButton(), addresses),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "🤑 Cupom de desconto",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: cupomInput(),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "😎 Pagamento",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  finalPrice(items, 1000),
+                  allPaymentList(),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "📝 CPF ou CNPJ na nota fiscal",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 50),
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: cpfInput(),
+                    ),
+                  ),
+                  creditCardError ? errorButton() : finishButton(),
+                ]),
+          ),
+        ));
   }
 
   @override
