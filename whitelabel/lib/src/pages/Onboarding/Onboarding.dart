@@ -45,7 +45,7 @@ class _OnboardingState extends State<Onboarding> {
     CarouselSlider carousel = CarouselSlider(
       carouselController: buttonCarouselController,
       options: CarouselOptions(
-          height: MediaQuery.of(context).size.height/2,
+          height: MediaQuery.of(context).size.height / 2,
           viewportFraction: 1,
           onPageChanged: (index, reason) {
             print(index);
@@ -62,7 +62,9 @@ class _OnboardingState extends State<Onboarding> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                        height:MediaQuery.of(context).size.height/2,
+                        height: item == 'assets/1.png'
+                            ? MediaQuery.of(context).size.height * 0.45
+                            : MediaQuery.of(context).size.height / 2,
                         child: Image.asset(
                           item,
                           fit: BoxFit.fitHeight,
@@ -100,7 +102,7 @@ class _OnboardingState extends State<Onboarding> {
     ;
 
     final nextButton = Material(
-      borderRadius: BorderRadius.circular(10.0),
+      borderRadius: BorderRadius.circular(12.0),
       color: Color(0xFFFF805D),
       child: Padding(
           padding: EdgeInsets.only(left: 20, right: 20),
@@ -126,27 +128,14 @@ class _OnboardingState extends State<Onboarding> {
                   textAlign: TextAlign.center,
                   style: TextStyle(fontFamily: 'Roboto', color: Colors.white),
                 ),
-                indexCarousel == 0 || indexCarousel == 1
-                    ? Container(
-                        width: 30,
-                        height: 30,
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          size: 18,
-                          color: Colors.white,
-                        ))
-                    : Container(
-                        width: 30,
-                        height: 30,
-                        child: Text(
-                          '🤤',
-                          textAlign: TextAlign.center,
-                          style: new TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black,
-                          ),
-                        )),
+                Container(
+                    width: 30,
+                    height: 30,
+                    child: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 18,
+                      color: Colors.white,
+                    ))
               ],
             ),
           )),
@@ -166,18 +155,14 @@ class _OnboardingState extends State<Onboarding> {
                 wordSpacing: 1),
             textAlign: TextAlign.center,
           ),
-          SizedBox(
-            height:MediaQuery.of(context).size.height/30
-          ),
+          SizedBox(height: MediaQuery.of(context).size.height / 30),
           Text(
             textGrey[indexCarousel],
             style: TextStyle(
                 color: Color(0xFF868484), fontSize: 16, wordSpacing: 1),
             textAlign: TextAlign.center,
           ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height/30
-          ),
+          SizedBox(height: MediaQuery.of(context).size.height / 30),
         ]));
 
     return Scaffold(
@@ -234,7 +219,7 @@ class _OnboardingState extends State<Onboarding> {
                     ],
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height/30,
+                    height: MediaQuery.of(context).size.height / 30,
                   ),
                   Center(child: carouselText)
                 ])),
