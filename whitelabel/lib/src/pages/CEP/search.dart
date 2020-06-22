@@ -414,7 +414,7 @@ class _AddressState extends State<Address> {
                   ? displayHeight(context) * 1
                   : isInvalid
                       ? displayHeight(context) * 0.35
-                      : displayHeight(context) * 0.72,
+                      : displayHeight(context) * 0.70,
               child: SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
@@ -425,6 +425,7 @@ class _AddressState extends State<Address> {
                         AnimatedContainer(
                           duration: Duration(milliseconds: 300),
                           width: displayWidth(context) * 0.8,
+                          
                           child: Text(
                             isInvalid
                                 ? 'Ah, que pena.\nAinda não atendemos sua região.'
@@ -680,6 +681,7 @@ class _AddressState extends State<Address> {
                     : Container(
                         padding: EdgeInsets.only(
                             left: MediaQuery.of(context).size.width * 0.05,
+                            top: 20,
                             right: MediaQuery.of(context).size.width * 0.15),
                         child: Row(children: <Widget>[
                           AnimatedContainer(
@@ -733,7 +735,7 @@ class _AddressState extends State<Address> {
                     : Container(
                         width: 300,
                         child: Padding(
-                          padding: EdgeInsets.only(top: 14),
+                          padding: EdgeInsets.only(top: 34, bottom: 30,),
                           child: Text(
                             'Maravilha!\n Nós atendemos sua região',
                             textAlign: TextAlign.center,

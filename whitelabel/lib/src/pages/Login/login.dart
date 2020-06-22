@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
+import 'package:whitelabel/src/pages/Menu/principal.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
 
 class Login extends StatefulWidget {
@@ -279,7 +280,7 @@ class _LoginState extends State<Login> {
           var userId = parsedJson['data']['user']['id'];
           saveTolken(token);
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Menu()));
+              context, MaterialPageRoute(builder: (context) => Principal()));
 
         } else {
           setState(() {

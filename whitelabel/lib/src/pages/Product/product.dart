@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whitelabel/src/pages/Menu/principal.dart';
 
 save(String key, value) async {
   print("SAVE");
@@ -242,7 +243,7 @@ class _ProductState extends State<Product> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Menu()));
+                                    builder: (context) => Principal()));
                           },
                           child: Icon(
                             Icons.arrow_back_ios,
@@ -667,7 +668,7 @@ class _ProductState extends State<Product> {
             print(finalProductList.toJson()['listProducts']);
             save('cartItems', (finalProductList));
             Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => Menu()));
+                context, MaterialPageRoute(builder: (context) => Principal()));
           },
           child: Container(
               height: 110,

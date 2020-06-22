@@ -1,5 +1,6 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:whitelabel/src/pages/Login/login.dart';
 import 'package:whitelabel/src/pages/Menu/categoryAll.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
 
@@ -35,9 +36,7 @@ class _PrincipalState extends State<Principal> {
           },
           children: <Widget>[
             Menu(),
-            Container(
-              color: Colors.green,
-            ),
+           Login(),
             Container(
               color: Colors.blue,
             ),
@@ -72,8 +71,9 @@ class _PrincipalState extends State<Principal> {
                   color: Colors.white,
                       fontSize: 18
                 ),),
-              icon: Icon(
-                Icons.apps,
+              icon:
+               Icon(
+                Icons.shopping_basket,
                 color: Colors.white,
                  size: 26,
               )),

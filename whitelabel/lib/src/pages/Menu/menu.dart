@@ -15,6 +15,7 @@ import 'package:whitelabel/src/pages/Product/product.dart';
 import 'package:whitelabel/src/pages/Orders/cart.dart';
 
 import '../Orders/cart.dart';
+
 class ProductCategory {
   String name;
   String description;
@@ -30,13 +31,19 @@ class ProductCategory {
       };
   factory ProductCategory.fromJson(dynamic json) {
     var productObjsJson = jsonDecode(json['products']) as List;
-    List<Produto> productObjs = productObjsJson.map((productJson) => Produto.fromJson(productJson)).toList();
-    return ProductCategory(name:json['name'],description: json['description'],products: productObjs,showItems: json['showItems']);
+    List<Produto> productObjs = productObjsJson
+        .map((productJson) => Produto.fromJson(productJson))
+        .toList();
+    return ProductCategory(
+        name: json['name'],
+        description: json['description'],
+        products: productObjs,
+        showItems: json['showItems']);
   }
-      @override
+  @override
   String toString() {
     return '{ ${this.name}, ${this.description}, ${this.products}, ${this.showItems} }';
-  } 
+  }
 }
 
 class Produto {
@@ -53,16 +60,27 @@ class Produto {
       this.price,
       this.image,
       this.jsonData = ''});
-  Map toJson() =>
-      {'image': image, 'name': name,'description':description,'options':options,'price':price,'jsonData':jsonData};
+  Map toJson() => {
+        'image': image,
+        'name': name,
+        'description': description,
+        'options': options,
+        'price': price,
+        'jsonData': jsonData
+      };
   factory Produto.fromJson(dynamic json) {
-    return Produto(image: json['image'] as String, name : json['name'] as String,description:json['description']as String,options:json['options'] as String ,price:json['price'],jsonData:json['jsonData']);
+    return Produto(
+        image: json['image'] as String,
+        name: json['name'] as String,
+        description: json['description'] as String,
+        options: json['options'] as String,
+        price: json['price'],
+        jsonData: json['jsonData']);
   }
-    @override
+  @override
   String toString() {
     return '{ ${this.name}, ${this.description}, ${this.options}, ${this.price}, ${this.image}, ${this.jsonData} }';
   }
-
 }
 
 class Menu extends StatefulWidget {
@@ -219,12 +237,9 @@ class _MenuState extends State<Menu> {
     GestureDetector profileButton = GestureDetector(
       onTap: () {
         Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Cart(
-                              )));
+            context, MaterialPageRoute(builder: (context) => Cart()));
       },
-        child: Container(
+      child: Container(
         width: MediaQuery.of(context).size.width / 7.5,
         height: MediaQuery.of(context).size.width / 7.5,
         alignment: Alignment.center,
@@ -293,93 +308,109 @@ class _MenuState extends State<Menu> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
+                        decoration: BoxDecoration(
+                          border: Border(),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                         child: Container(
-                      padding: EdgeInsets.only(right: 10),
-                      width: MediaQuery.of(context).size.width / 1.8,
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            width: MediaQuery.of(context).size.width / 1.8,
-                            decoration: BoxDecoration(border: Border()),
-                            child:
-                                Image.asset(produto.image, fit: BoxFit.cover),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    produto.name,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Color(0XFFFF805D),
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                  Container(
-                                      height: 40,
-                                      child: Text(
-                                        produto.description,
+                          padding: EdgeInsets.only(right: 10),
+                          width: MediaQuery.of(context).size.width / 1.8,
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                width: MediaQuery.of(context).size.width / 1.8,
+                                decoration: BoxDecoration(
+                                  border: Border(),
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Image.asset(produto.image,
+                                    fit: BoxFit.cover),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  border: Border.all(width: 1, color: Colors.grey),
+                                  borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(10.0),
+                                      bottomLeft: Radius.circular(10.0)
+                                      ),
+                                ),
+                                child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        produto.name,
                                         style: TextStyle(
-                                            color: Color(0xFF413131),
-                                            fontSize: 12),
-                                      )),
-                                  Row(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        height: 4,
-                                        width: 4,
-                                        child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              color: Color(0xFFFFC850)),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 5,
+                                            fontSize: 16,
+                                            color: Color(0XFFFF805D),
+                                            fontWeight: FontWeight.w800),
                                       ),
                                       Container(
-                                        child: Text(
-                                          produto.options,
-                                          style: TextStyle(
-                                              color: Color(0xFF625F6F),
-                                              fontSize: 11),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Row(
-                                    children: <Widget>[
-                                      Container(
-                                        padding: EdgeInsets.only(right: 3),
-                                        child: Text(
-                                          "R\$:" +
-                                              (produto.price / 100)
-                                                  .toStringAsFixed(2)
-                                                  .replaceAll('.', ','),
-                                          style: TextStyle(
-                                              color: Color(0XFF413131),
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w800),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.only(right: 3),
-                                        child: Text('A partir',
+                                          height: 40,
+                                          child: Text(
+                                            produto.description,
                                             style: TextStyle(
-                                              color: Color(0XFF413131),
-                                              fontSize: 11,
-                                            )),
+                                                color: Color(0xFF413131),
+                                                fontSize: 12),
+                                          )),
+                                      Row(
+                                        children: <Widget>[
+                                          SizedBox(
+                                            height: 4,
+                                            width: 4,
+                                            child: DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  color: Color(0xFFFFC850)),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Container(
+                                            child: Text(
+                                              produto.options,
+                                              style: TextStyle(
+                                                  color: Color(0xFF625F6F),
+                                                  fontSize: 11),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          Container(
+                                            padding: EdgeInsets.only(right: 3),
+                                            child: Text(
+                                              "R\$:" +
+                                                  (produto.price / 100)
+                                                      .toStringAsFixed(2)
+                                                      .replaceAll('.', ','),
+                                              style: TextStyle(
+                                                  color: Color(0XFF413131),
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w800),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.only(right: 3),
+                                            child: Text('A partir',
+                                                style: TextStyle(
+                                                  color: Color(0XFF413131),
+                                                  fontSize: 11,
+                                                )),
+                                          )
+                                        ],
                                       )
-                                    ],
-                                  )
-                                ]),
+                                    ]),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )),
+                        )),
                   ],
                 )),
               ))
@@ -466,7 +497,10 @@ class _MenuState extends State<Menu> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.45,
                       height: MediaQuery.of(context).size.width * 0.35,
-                      decoration: BoxDecoration(border: Border()),
+                      decoration: BoxDecoration(
+                        border: Border(),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
                       child: productList[j].image == null
                           ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
                           : Image.network(

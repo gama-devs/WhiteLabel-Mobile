@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
+import 'package:whitelabel/src/pages/Menu/principal.dart';
 import 'package:whitelabel/src/pages/Product/product.dart';
 import '../Menu/menu.dart';
 
@@ -617,7 +618,7 @@ class _CartState extends State<Cart> {
                     });
 
                     Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => Menu()));
+                        MaterialPageRoute(builder: (context) => Principal()));
                   },
                   child: Container(
                       width: MediaQuery.of(context).size.width * 0.7,
