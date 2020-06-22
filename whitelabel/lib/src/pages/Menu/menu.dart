@@ -89,6 +89,12 @@ class _MenuState extends State<Menu> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('tolken_code');
   }
+  
+  getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user = prefs.getString('currentUser');
+  }
+
 
   var loading = false;
 
