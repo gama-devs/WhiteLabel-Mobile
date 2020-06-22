@@ -34,6 +34,12 @@ class _LoginState extends State<Login> {
     // String to = prefs.getString('tolken_code');
     //print('$to');
   }
+  saveCurrenUser(user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('currentUser', user);
+    // String to = prefs.getString('tolken_code');
+    //print('$to');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +285,9 @@ class _LoginState extends State<Login> {
           var token = parsedJson['data']["access_token"];
           var userId = parsedJson['data']['user']['id'];
           saveTolken(token);
+          saveCurrenUser(parsedJson['data']['user']['name']);
+          print(parsedJson['data']['user']['name']);
+          print('USER');
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Principal()));
 
