@@ -15,6 +15,7 @@ save(String key, value) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setString(key, json.encode(value));
 }
+
 read(String key) async {
   final prefs = await SharedPreferences.getInstance();
   return json.decode(prefs.getString(key));
@@ -144,6 +145,7 @@ class _ProductState extends State<Product> {
       });
     });
   }
+
   FinalProductList finalProductList;
   int necessarySelected = 0;
   int fullSelected = 0;
@@ -220,7 +222,6 @@ class _ProductState extends State<Product> {
   Widget build(BuildContext context) {
     Produto product = widget.selectedProduct;
     Padding topBar(name) {
-      
       return Padding(
           padding: EdgeInsets.only(top: 20, bottom: 0),
           child: Container(
@@ -255,14 +256,16 @@ class _ProductState extends State<Product> {
                   child: Container(
                       child: Text(name,
                           style: TextStyle(
-                              color: Colors.orange,
+                              color: Color(0xFFFF805D),
                               fontSize: 22,
+                              fontFamily: 'Gilroy',
                               fontWeight: FontWeight.w800))),
                 ),
               ])));
     }
 
-    Padding details = Padding(
+    Padding details(name) {
+      return Padding(
       padding: EdgeInsets.only(top: 0, left: 0),
       child: Container(
         color: Color(0xFFF8F6F8),
@@ -270,33 +273,43 @@ class _ProductState extends State<Product> {
         height: displayHeight(context) * 0.2,
         child: Row(children: <Widget>[
           Padding(
-              padding: EdgeInsets.only(bottom:30, left: 15),
+              padding: EdgeInsets.only(bottom: 30, left: 15),
               child: Container(
                   width: displayWidth(context) * 0.3,
                   height: displayHeight(context) * 0.15,
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child:
-                          Image.asset("assets/burg1.png", fit: BoxFit.fill)))),
+                      child: Image.asset("assets/hamburguer.png",
+                          fit: BoxFit.cover)))),
           Container(
               child: Padding(
             padding: EdgeInsets.only(top: 0, left: 15),
             child: Container(
                 child: Column(
               children: <Widget>[
-                Container(
-                    width: displayWidth(context) * 0.5,
-                    height: displayHeight(context) * 0.03,
-                    color: Colors.transparent,
-                    child: Text(
-                        "R\$: " +
-                            (product.price / 100)
-                                .toStringAsFixed(2)
-                                .replaceAll('.', ','),
-                        style: TextStyle(
-                            color: Color(0xFF413131),
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700))),
+                Row(children: <Widget>[
+                  Container(
+                      width: displayWidth(context) * 0.5,
+                      height: displayHeight(context) * 0.03,
+                      color: Colors.transparent,
+                      child: Row(children: <Widget>[
+                        Text(
+                            "R\$ " +
+                                (product.price / 100)
+                                    .toStringAsFixed(2)
+                                    .replaceAll('.', ','),
+                            style: TextStyle(
+                                color: Color(0xFF413131),
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700)),
+                        Text(
+                          " A partir",
+                          style: TextStyle(
+                            fontSize: 11,
+                          ),
+                        )
+                      ])),
+                ]),
                 Padding(
                     padding: EdgeInsets.only(top: 5, bottom: 5),
                     child: Container(
@@ -342,7 +355,7 @@ class _ProductState extends State<Product> {
           ))
         ]),
       ),
-    );
+    );}
 
     Container optionsCheckbox(categoryName, option) {
       return Container(
@@ -350,7 +363,7 @@ class _ProductState extends State<Product> {
           Column(
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(bottom: 5, left: 5),
+                  padding: EdgeInsets.only(bottom: 10, left: 5),
                   child: Text(
                     option.name,
                     style: TextStyle(color: Color(0xFF413131), fontSize: 16),
@@ -459,7 +472,7 @@ class _ProductState extends State<Product> {
         Row(
           children: <Widget>[
             Padding(
-                padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+                padding: EdgeInsets.only(top: 5, bottom: 5, left: 0),
                 child: Text(
                   "Escolha o tipo de " + optionCategory,
                   style: TextStyle(
@@ -470,26 +483,44 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
                 child: Padding(
-                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 0),
                     child: Container(
-                      height: 20,
-                      width: 45,
-                      decoration: BoxDecoration(
-                          color: Color(0xFFFF805D),
-                          borderRadius: BorderRadius.circular(4)),
-                      child: Text(
-                        " " +
-                            options.nOptionsSelected.toString() +
-                            " de " +
-                            options.max.toString(),
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )))
+                        height: 20,
+                        width: 45,
+                        decoration: BoxDecoration(
+                            color: Color(0xFFFF805D),
+                            borderRadius: BorderRadius.circular(4)),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                " " +
+                                    options.nOptionsSelected.toString() +
+                                    " de " +
+                                    options.max.toString(),
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ]))))
           ],
         ),
-        Column(
-          children: listOptions,
-        )
+        Column(children: <Widget>[
+          Row(children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 5, bottom: 20, left: 10),
+              child: Text(
+                "Obrigatório",
+                style: TextStyle(
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ])
+        ]),
+        Padding(
+            padding: EdgeInsets.only(top: 5, bottom: 10, left: 0),
+            child: Column(
+              children: listOptions,
+            ))
       ]));
     }
 
@@ -505,14 +536,14 @@ class _ProductState extends State<Product> {
           Column(
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(bottom: 5, left: 5),
+                  padding: EdgeInsets.only(bottom: 10, left: 5),
                   child: Text(
                     option.name,
                     style: TextStyle(color: Color(0xFF413131), fontSize: 16),
                   )),
               option.price != 0
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 5, left: 5),
+                      padding: EdgeInsets.only(bottom: 5, left: 0),
                       child: Text(
                         " + R\$: " +
                             (option.price / 100)
@@ -540,10 +571,17 @@ class _ProductState extends State<Product> {
                               .remove(option);
                         });
                       },
-                      child: Icon(Icons.remove),
+                      child: Icon(Icons.remove, color: Color(0xFFFF805D)),
                     )
                   : Container(),
-              Text(numberOfItemsSelected.toString()),
+              Text(() {
+                if (numberOfItemsSelected > 0) {
+                  return numberOfItemsSelected.toString();
+                } else {
+                  return "";
+                }
+                // your code here
+              }()),
               selectedOptions[selectedOptions.indexWhere((listOption) =>
                               listOption.name == optionCategory)]
                           .options
@@ -561,9 +599,14 @@ class _ProductState extends State<Product> {
                               .add(option);
                         });
                       },
-                      child: Icon(Icons.add),
+                      child: Icon(
+                        Icons.add,
+                        color: Color(0xFFFF805D),
+                      ),
                     )
-                  : Container(width: 20,),
+                  : Container(
+                      width: 20,
+                    ),
             ],
           )
         ]),
@@ -591,7 +634,7 @@ class _ProductState extends State<Product> {
         Row(
           children: <Widget>[
             Padding(
-                padding: EdgeInsets.only(top: 5, bottom: 5, left: 10),
+                padding: EdgeInsets.only(top: 10, bottom: 10, left: 0),
                 child: Text(
                   "Escolha os " + optionCategory,
                   style: TextStyle(
@@ -602,7 +645,7 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
                 child: Padding(
-                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                    padding: EdgeInsets.only(top: 10, bottom: 10, right: 0),
                     child: Container(
                         height: 20,
                         width: 45,
@@ -624,9 +667,11 @@ class _ProductState extends State<Product> {
                         ))))
           ],
         ),
-        Column(
-          children: listOptions,
-        )
+        Padding(
+            padding: EdgeInsets.only(top: 5, bottom: 5, right: 0, left: 0),
+            child: Column(
+              children: listOptions,
+            ))
       ]));
     }
 
@@ -711,29 +756,30 @@ class _ProductState extends State<Product> {
               color: Color(0xFFF8F6F8),
               child: Column(children: <Widget>[
                 topBar(product.name),
-                details,
+                details(product.name),
                 Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32))),
-                  height: MediaQuery.of(context).size.height * 0.65,
-                  child: Align(alignment: Alignment.bottomCenter,child:SingleChildScrollView(
-                    
-                    controller: _scrollController,
-                    child: Column(
-                    
-                    children: <Widget>[
-                      Container(padding: EdgeInsets.all(10),child:requiredOptions(listCategories)),
-                      
-                      Align(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            topRight: Radius.circular(32))),
+                    height: MediaQuery.of(context).size.height * 0.65,
+                    child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: Column(children: <Widget>[buttonCart()]),
-                      )
-                    ],
-                  ),)
-                )),
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                  padding: EdgeInsets.all(10),
+                                  child: requiredOptions(listCategories)),
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Column(children: <Widget>[buttonCart()]),
+                              )
+                            ],
+                          ),
+                        ))),
               ])),
         ),
       );
