@@ -112,6 +112,7 @@ class _LoginState extends State<Login> {
         ));
 
     TextFormField celInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: celInputController,
       keyboardType: TextInputType.number,
       inputFormatters: [maskFormatter],
@@ -206,6 +207,7 @@ class _LoginState extends State<Login> {
     ));
 
     TextFormField emailInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: emailInputController,
       validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
       decoration: InputDecoration(
@@ -225,6 +227,7 @@ class _LoginState extends State<Login> {
     );
 
     TextFormField nameInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: nameInputController,
       validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
       decoration: InputDecoration(
@@ -246,7 +249,10 @@ class _LoginState extends State<Login> {
     Future<String> postLoginButton(BuildContext context) async {
       print(passwordInputController.text);
       print(nameInputController.text);
-      print(celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''));
+      print(celInputController.text
+          .replaceAll('(', '')
+          .replaceAll(')', '')
+          .replaceAll('-', ''));
       print(emailInputController.text);
       print("TESTE");
       var jsonLogin = json.encode({
@@ -280,7 +286,6 @@ class _LoginState extends State<Login> {
           saveTolken(token);
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Menu()));
-
         } else {
           setState(() {
             loading = false;
