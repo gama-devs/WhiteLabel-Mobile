@@ -120,6 +120,7 @@ class _LoginState extends State<Login> {
         ));
 
     TextFormField celInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: celInputController,
       keyboardType: TextInputType.number,
       inputFormatters: [maskFormatter],
@@ -214,6 +215,7 @@ class _LoginState extends State<Login> {
     ));
 
     TextFormField emailInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: emailInputController,
       validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
       decoration: InputDecoration(
@@ -233,6 +235,7 @@ class _LoginState extends State<Login> {
     );
 
     TextFormField nameInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: nameInputController,
       validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
       decoration: InputDecoration(
