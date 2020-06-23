@@ -28,6 +28,7 @@ class _LoginState extends State<Login> {
   bool hide = false;
   bool loginFail = false;
   bool loading = false;
+  String errorMessage = '';
   saveTolken(tolken) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('tolken_code', tolken);
@@ -292,6 +293,7 @@ class _LoginState extends State<Login> {
             loading = false;
           });
           setState(() {
+            errorMessage = response.body;
             loginFail = true;
           });
         }
@@ -366,6 +368,16 @@ class _LoginState extends State<Login> {
             body: jsao);
         print(response.body);
         print(jsao);
+        if(response.statusCode !=200){
+                    setState(() {
+            loading = false;
+          });
+          setState(() {
+            errorMessage = response.body;
+            loginFail = true;
+          });
+        }
+        
       } catch (e) {
         print(e);
       }
@@ -504,7 +516,7 @@ class _LoginState extends State<Login> {
               child: Column(
                 children: <Widget>[
                   Text(
-                    "Ah, que pena.\nE-mail ou senha incorretos",
+                    errorMessage,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
