@@ -271,7 +271,7 @@ class _ProductState extends State<Product> {
         height: displayHeight(context) * 0.2,
         child: Row(children: <Widget>[
           Padding(
-              padding: EdgeInsets.only(bottom: 30, left: 15),
+              padding: EdgeInsets.only(bottom: 30, left: 0),
               child: Container(
                   width: displayWidth(context) * 0.3,
                   height: displayHeight(context) * 0.15,
@@ -350,20 +350,22 @@ class _ProductState extends State<Product> {
 
     Container optionsCheckbox(categoryName, option) {
       return Container(
-        child: Row(children: <Widget>[
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
           Column(
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(bottom: 10, left: 20),
+                  padding: EdgeInsets.only(bottom: 10, right : 5),
                   child: Text(
                     option.name,
                     style: TextStyle(color: Color(0xFF413131), fontSize: 16),
                   )),
               option.price != 0
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 5, left: 20),
+                      padding: EdgeInsets.only(bottom: 5, left: 0, right: 5),
                       child: Text(
-                        " + R\$: " +
+                        "+ R\$: " +
                             (option.price / 100)
                                 .toStringAsFixed(2)
                                 .replaceAll('.', ','),
@@ -474,7 +476,7 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
                 child: Padding(
-                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 20),
                     child: Container(
                         height: 20,
                         width: 45,
@@ -497,7 +499,7 @@ class _ProductState extends State<Product> {
         Column(children: <Widget>[
           Row(children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 5, bottom: 20, left: 10),
+              padding: EdgeInsets.only(top: 5, bottom: 20, left: 0),
               child: Text(
                 "Obrigatório",
                 style: TextStyle(
@@ -508,7 +510,7 @@ class _ProductState extends State<Product> {
           ])
         ]),
         Padding(
-            padding: EdgeInsets.only(top: 5, bottom: 10, left: 0, right: 10),
+            padding: EdgeInsets.only(top: 5, bottom: 10, left: 0, right: 20),
             child: Column(
               children: listOptions,
             ))
@@ -523,24 +525,31 @@ class _ProductState extends State<Product> {
         if (optionSelected == option) numberOfItemsSelected += 1;
       }
       return Container(
+          child: Padding(
+        padding: EdgeInsets.only(top: 5, bottom: 10, left: 0, right: 0),
         child: Row(children: <Widget>[
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(bottom: 10, left: 20,),
-                  child: Text(
-                    option.name,
-                    style: TextStyle(color: Color(0xFF413131), fontSize: 16),
-                  )),
-              option.price != 0
+              Container(
+                  child: 
+                  Padding (
+                     padding: EdgeInsets.only( left: 0, right: 100),
+                    child:Text(
+                option.name,
+                style: TextStyle(color: Color(0xFF413131), fontSize: 16),
+              ))),
+                            option.price != 0
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 5, left: 20),
-                      child: Text(
+                      padding: EdgeInsets.only( left: 0, right: 0),
+                      child: Container(
+                          child: Text(
                         " + R\$: " +
                             (option.price / 100)
                                 .toStringAsFixed(2)
                                 .replaceAll('.', ','),
-                      ))
+                                textAlign: TextAlign.left,
+                      )))
                   : Container()
             ],
           ),
@@ -601,7 +610,7 @@ class _ProductState extends State<Product> {
             ],
           )
         ]),
-      );
+      ));
     }
 
     Container optionsCounterContainer(options) {
@@ -636,7 +645,7 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
                 child: Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10, right: 10),
+                    padding: EdgeInsets.only(top: 10, bottom: 10, right: 20),
                     child: Container(
                         height: 20,
                         width: 45,
@@ -659,7 +668,7 @@ class _ProductState extends State<Product> {
           ],
         ),
         Padding(
-            padding: EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 0),
+            padding: EdgeInsets.only(top: 5, bottom: 5, right: 20, left: 0),
             child: Column(
               children: listOptions,
             ))
@@ -680,10 +689,12 @@ class _ProductState extends State<Product> {
           listRequiredOptions.add(optionsCounterContainer(option));
       }
       return Container(
+          child: Padding(
+        padding: EdgeInsets.only(top: 5, bottom: 5, right: 20, left: 15),
         child: Column(
           children: listRequiredOptions,
         ),
-      );
+      ));
     }
 
     GestureDetector buttonCart() {
