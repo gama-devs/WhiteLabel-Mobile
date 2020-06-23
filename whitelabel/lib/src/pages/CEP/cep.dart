@@ -246,7 +246,7 @@ class _CepState extends State<Cep> {
                                                               context) *
                                                           0.02),
                                                   child: TextField(
-                                                     enabled: false, 
+                                                    enabled: false,
                                                     controller:
                                                         _pretextController,
                                                     decoration: InputDecoration(
@@ -276,9 +276,7 @@ class _CepState extends State<Cep> {
                                     ),
                                     Padding(
                                       padding: EdgeInsets.only(
-                                          top: isValid
-                                              ? 0
-                                              : 10,
+                                          top: isValid ? 0 : 10,
                                           left: isValid
                                               ? 0
                                               : displayWidth(context) * 0.12),

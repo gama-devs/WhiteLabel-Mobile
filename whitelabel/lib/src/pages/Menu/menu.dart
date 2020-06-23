@@ -107,12 +107,11 @@ class _MenuState extends State<Menu> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('tolken_code');
   }
-  
+
   getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String user = prefs.getString('currentUser');
   }
-
 
   var loading = false;
 
@@ -259,7 +258,7 @@ class _MenuState extends State<Menu> {
     );
 
     CarouselSlider carouselPromos = CarouselSlider(
-      options: CarouselOptions(height: 160, viewportFraction: 0.8),
+      options: CarouselOptions(height: 170, viewportFraction: 0.8),
       items: promoImages
           .map((item) => Container(
                 padding: EdgeInsets.only(right: 5, left: 5),
@@ -284,6 +283,7 @@ class _MenuState extends State<Menu> {
     Container textPizza = Container(
         child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
           Container(
             padding: EdgeInsets.only(bottom: 5),
@@ -335,11 +335,11 @@ class _MenuState extends State<Menu> {
                               Container(
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  border: Border.all(width: 1, color: Colors.grey),
+                                  border: Border.all(
+                                      width: 1, color: Color(0XFFF1F1F1)),
                                   borderRadius: BorderRadius.only(
                                       bottomRight: Radius.circular(10.0),
-                                      bottomLeft: Radius.circular(10.0)
-                                      ),
+                                      bottomLeft: Radius.circular(10.0)),
                                 ),
                                 child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -491,6 +491,7 @@ class _MenuState extends State<Menu> {
         List<Widget> row = [];
         for (int j = i; j < i + 2 && j < productList.length; j++) {
           row.add(Container(
+               padding: EdgeInsets.only(right: 15, bottom: 10),
             child: GestureDetector(
               onTap: () {
                 Navigator.pushReplacement(
@@ -503,8 +504,16 @@ class _MenuState extends State<Menu> {
               },
               child: Container(
                   child: Container(
-                padding: EdgeInsets.only(right: 10),
-                width: MediaQuery.of(context).size.width * 0.45,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Color(0XFFF1F1F1)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0)),
+                ),
+                padding: EdgeInsets.only(right:0),
+                width: MediaQuery.of(context).size.width * 0.42,
                 child: Column(
                   children: <Widget>[
                     Container(
@@ -512,15 +521,15 @@ class _MenuState extends State<Menu> {
                       height: MediaQuery.of(context).size.width * 0.35,
                       child: productList[j].image == null
                           ? ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(8),
-                                      topRight: Radius.circular(8)),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8)),
                               child: Image.asset("assets/burg1.png",
                                   fit: BoxFit.contain))
                           : ClipRRect(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(8),
-                                      topRight: Radius.circular(8)),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8)),
                               child: Image.network(
                                   "http://50.16.146.1/storage/" +
                                       productList[j].image,
@@ -540,7 +549,6 @@ class _MenuState extends State<Menu> {
                                   fontWeight: FontWeight.w800),
                             ),
                             Container(
-                                
                                 child: productList[j].description == null
                                     ? Text(
                                         "Descricao do produto\n",
