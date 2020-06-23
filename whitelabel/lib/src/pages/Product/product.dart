@@ -299,7 +299,10 @@ class _ProductState extends State<Product> {
                             fontSize: 17,
                             fontWeight: FontWeight.w700))),
                 Padding(
-                    padding: EdgeInsets.only(top: 5, bottom: 5),
+                    padding: EdgeInsets.only(
+                      top: 5,
+                      bottom: 5,
+                    ),
                     child: Container(
                         width: displayWidth(context) * 0.5,
                         height: displayHeight(context) * 0.05,
@@ -351,14 +354,14 @@ class _ProductState extends State<Product> {
           Column(
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(bottom: 10, left: 5),
+                  padding: EdgeInsets.only(bottom: 10, left: 20),
                   child: Text(
                     option.name,
                     style: TextStyle(color: Color(0xFF413131), fontSize: 16),
                   )),
               option.price != 0
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 5, left: 5),
+                      padding: EdgeInsets.only(bottom: 5, left: 20),
                       child: Text(
                         " + R\$: " +
                             (option.price / 100)
@@ -471,7 +474,7 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
                 child: Padding(
-                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 0),
+                    padding: EdgeInsets.only(top: 5, bottom: 5, right: 10),
                     child: Container(
                         height: 20,
                         width: 45,
@@ -505,7 +508,7 @@ class _ProductState extends State<Product> {
           ])
         ]),
         Padding(
-            padding: EdgeInsets.only(top: 5, bottom: 10, left: 0),
+            padding: EdgeInsets.only(top: 5, bottom: 10, left: 0, right: 10),
             child: Column(
               children: listOptions,
             ))
@@ -524,14 +527,14 @@ class _ProductState extends State<Product> {
           Column(
             children: <Widget>[
               Padding(
-                  padding: EdgeInsets.only(bottom: 10, left: 5),
+                  padding: EdgeInsets.only(bottom: 10, left: 20,),
                   child: Text(
                     option.name,
                     style: TextStyle(color: Color(0xFF413131), fontSize: 16),
                   )),
               option.price != 0
                   ? Padding(
-                      padding: EdgeInsets.only(bottom: 5, left: 0),
+                      padding: EdgeInsets.only(bottom: 5, left: 20),
                       child: Text(
                         " + R\$: " +
                             (option.price / 100)
@@ -633,7 +636,7 @@ class _ProductState extends State<Product> {
             Spacer(),
             Container(
                 child: Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10, right: 0),
+                    padding: EdgeInsets.only(top: 10, bottom: 10, right: 10),
                     child: Container(
                         height: 20,
                         width: 45,
@@ -656,7 +659,7 @@ class _ProductState extends State<Product> {
           ],
         ),
         Padding(
-            padding: EdgeInsets.only(top: 5, bottom: 5, right: 0, left: 0),
+            padding: EdgeInsets.only(top: 5, bottom: 5, right: 10, left: 0),
             child: Column(
               children: listOptions,
             ))
