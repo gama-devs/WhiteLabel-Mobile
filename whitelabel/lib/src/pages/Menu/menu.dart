@@ -244,7 +244,7 @@ class _MenuState extends State<Menu> {
     );
 
     CarouselSlider carouselPromos = CarouselSlider(
-      options: CarouselOptions(height: 160, viewportFraction: 0.8),
+      options: CarouselOptions(height: 175, viewportFraction: 0.8),
       items: promoImages
           .map((item) => Container(
                 padding: EdgeInsets.only(right: 5, left: 5),
@@ -293,14 +293,17 @@ class _MenuState extends State<Menu> {
           height: MediaQuery.of(context).size.height / 2.5),
       items: produtos
           .map((produto) => Container(
+            padding: EdgeInsets.only(right: 10),
+            child:
+            Container(
+            decoration: BoxDecoration(border: Border.all(color: Color(0xFFF1F1F1))),
                 child: Center(
                     child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  
                   children: <Widget>[
                     Container(
                         child: Container(
-                      padding: EdgeInsets.only(right: 10),
+                      
                       width: MediaQuery.of(context).size.width / 1.8,
                       child: Column(
                         children: <Widget>[
@@ -388,7 +391,7 @@ class _MenuState extends State<Menu> {
                     )),
                   ],
                 )),
-              ))
+              )))
           .toList(),
     );
 

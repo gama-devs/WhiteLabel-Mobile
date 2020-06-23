@@ -257,7 +257,7 @@ class _LoginState extends State<Login> {
       print("TESTE");
       var jsonLogin = json.encode({
         "company_id": 2,
-        "phone": celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''),
+        "phone": celInputController.text,
         "password": passwordInputController.text
       });
       var number = "2";
