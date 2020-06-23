@@ -346,12 +346,18 @@ class _MenuState extends State<Menu> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(
-                                        produto.name,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Color(0XFFFF805D),
-                                            fontWeight: FontWeight.w800),
+                                      Container(
+                                        padding: EdgeInsets.only(right: 3),
+                                        child: Text(
+                                          "R\$ " +
+                                              (produto.price / 100)
+                                                  .toStringAsFixed(2)
+                                                  .replaceAll('.', ','),
+                                          style: TextStyle(
+                                              color: Color(0XFF413131),
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w800),
+                                        ),
                                       ),
                                       Container(
                                           height: 40,
@@ -457,6 +463,7 @@ class _MenuState extends State<Menu> {
                                 ),
                           Spacer(),
                           Container(
+                            padding: EdgeInsets.only(right: 15),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.pushReplacement(
@@ -503,16 +510,21 @@ class _MenuState extends State<Menu> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.45,
                       height: MediaQuery.of(context).size.width * 0.35,
-                      decoration: BoxDecoration(
-                        border: Border(),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
                       child: productList[j].image == null
-                          ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
-                          : Image.network(
-                              "http://50.16.146.1/storage/" +
-                                  productList[j].image,
-                              fit: BoxFit.cover),
+                          ? ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8)),
+                              child: Image.asset("assets/burg1.png",
+                                  fit: BoxFit.contain))
+                          : ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8)),
+                              child: Image.network(
+                                  "http://50.16.146.1/storage/" +
+                                      productList[j].image,
+                                  fit: BoxFit.cover)),
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
@@ -528,10 +540,10 @@ class _MenuState extends State<Menu> {
                                   fontWeight: FontWeight.w800),
                             ),
                             Container(
-                                height: 40,
+                                
                                 child: productList[j].description == null
                                     ? Text(
-                                        "Descricao do produto",
+                                        "Descricao do produto\n",
                                         style: TextStyle(
                                             color: Color(0xFF413131),
                                             fontSize: 12),
@@ -547,7 +559,7 @@ class _MenuState extends State<Menu> {
                                 Container(
                                   padding: EdgeInsets.only(right: 3),
                                   child: Text(
-                                    "R\$: " +
+                                    "R\$ " +
                                         (productList[j].price / 100)
                                             .toStringAsFixed(2)
                                             .replaceAll('.', ','),

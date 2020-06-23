@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:whitelabel/src/pages/CEP/search.dart';
+import 'package:whitelabel/src/pages/CEP/search.dart';
 import 'package:whitelabel/src/pages/Login/login.dart';
 
 class Cep extends StatefulWidget {
@@ -245,6 +246,7 @@ class _CepState extends State<Cep> {
                                                               context) *
                                                           0.02),
                                                   child: TextField(
+                                                     enabled: false, 
                                                     controller:
                                                         _pretextController,
                                                     decoration: InputDecoration(
@@ -276,7 +278,7 @@ class _CepState extends State<Cep> {
                                       padding: EdgeInsets.only(
                                           top: isValid
                                               ? 0
-                                              : displayHeight(context) * 0.012,
+                                              : 10,
                                           left: isValid
                                               ? 0
                                               : displayWidth(context) * 0.12),

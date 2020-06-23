@@ -15,5 +15,5 @@ import 'src/pages/Splash/splash.dart';
 void main() {
   runApp(MaterialApp(
 /*      home: Cep() */
-      home: Principal()));
+      home: Splash()));
 }
