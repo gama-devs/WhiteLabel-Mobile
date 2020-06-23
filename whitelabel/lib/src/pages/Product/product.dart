@@ -256,16 +256,14 @@ class _ProductState extends State<Product> {
                   child: Container(
                       child: Text(name,
                           style: TextStyle(
-                              color: Color(0xFFFF805D),
+                              color: Colors.orange,
                               fontSize: 22,
-                              fontFamily: 'Gilroy',
                               fontWeight: FontWeight.w800))),
                 ),
               ])));
     }
 
-    Padding details(name) {
-      return Padding(
+    Padding details = Padding(
       padding: EdgeInsets.only(top: 0, left: 0),
       child: Container(
         color: Color(0xFFF8F6F8),
@@ -279,37 +277,27 @@ class _ProductState extends State<Product> {
                   height: displayHeight(context) * 0.15,
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
-                      child: Image.asset("assets/hamburguer.png",
-                          fit: BoxFit.cover)))),
+                      child:
+                          Image.asset("assets/burg1.png", fit: BoxFit.fill)))),
           Container(
               child: Padding(
             padding: EdgeInsets.only(top: 0, left: 15),
             child: Container(
                 child: Column(
               children: <Widget>[
-                Row(children: <Widget>[
-                  Container(
-                      width: displayWidth(context) * 0.5,
-                      height: displayHeight(context) * 0.03,
-                      color: Colors.transparent,
-                      child: Row(children: <Widget>[
-                        Text(
-                            "R\$ " +
-                                (product.price / 100)
-                                    .toStringAsFixed(2)
-                                    .replaceAll('.', ','),
-                            style: TextStyle(
-                                color: Color(0xFF413131),
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700)),
-                        Text(
-                          " A partir",
-                          style: TextStyle(
-                            fontSize: 11,
-                          ),
-                        )
-                      ])),
-                ]),
+                Container(
+                    width: displayWidth(context) * 0.5,
+                    height: displayHeight(context) * 0.03,
+                    color: Colors.transparent,
+                    child: Text(
+                        "R\$: " +
+                            (product.price / 100)
+                                .toStringAsFixed(2)
+                                .replaceAll('.', ','),
+                        style: TextStyle(
+                            color: Color(0xFF413131),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700))),
                 Padding(
                     padding: EdgeInsets.only(top: 5, bottom: 5),
                     child: Container(
@@ -355,7 +343,7 @@ class _ProductState extends State<Product> {
           ))
         ]),
       ),
-    );}
+    );
 
     Container optionsCheckbox(categoryName, option) {
       return Container(
@@ -751,37 +739,37 @@ class _ProductState extends State<Product> {
       fullSelected = 0;
       return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
-          child: Container(
-              color: Color(0xFFF8F6F8),
-              child: Column(children: <Widget>[
-                topBar(product.name),
-                details(product.name),
-                Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32))),
-                    height: MediaQuery.of(context).size.height * 0.65,
-                    child: Align(
+        body: new Stack(fit: StackFit.expand, children: <Widget>[
+          SingleChildScrollView(
+            child: Container(
+                color: Color(0xFFF8F6F8),
+                child: Column(children: <Widget>[
+                  Container(
+                      child: Column(children: <Widget>[
+                    topBar(product.name),
+                    details,
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(32),
+                              topRight: Radius.circular(32))),
+                      child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: SingleChildScrollView(
-                          controller: _scrollController,
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                  padding: EdgeInsets.all(10),
-                                  child: requiredOptions(listCategories)),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Column(children: <Widget>[buttonCart()]),
-                              )
-                            ],
-                          ),
-                        ))),
-              ])),
-        ),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                                padding: EdgeInsets.all(10),
+                                child: requiredOptions(listCategories)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ])),
+                ])),
+          ),
+          buttonCart()
+        ]),
       );
     }
 
