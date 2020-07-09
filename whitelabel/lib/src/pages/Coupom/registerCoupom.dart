@@ -9,7 +9,8 @@ class RegisterCoupom extends StatefulWidget {
 }
 
 class _RegisterCoupomState extends State<RegisterCoupom> {
-  bool ativosSelected = true;
+  bool cupomClicked = false;
+  bool foundCoupom = false;
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -65,13 +66,42 @@ class _RegisterCoupomState extends State<RegisterCoupom> {
       );
     }
 
+    AnimatedContainer successRegistration = new AnimatedContainer(
+      curve: Curves.easeInOutBack,
+      duration: Duration(milliseconds: 850),
+      height: cupomClicked ? 185 : 40,
+      decoration: BoxDecoration(
+          color: !foundCoupom ? Color(0XFFFF5755) : Color(0XFF1BD09A),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(32), topRight: Radius.circular(32))),
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(padding: EdgeInsets.only(top:5),child:!foundCoupom
+            ? Text(
+                "Infelizmente o cupom não é valido!",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800),
+              )
+            : Text(
+                "Cupom adicionado com sucesso",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800),
+              ),
+      )),
+    );
     GestureDetector returnButton = new GestureDetector(
       onTap: () {
         print("oi");
+        setState(() {
+          cupomClicked = false;
+        });
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Coupom()));
       },
-      
       child: Container(
         width: 40,
         height: 40,
@@ -89,6 +119,21 @@ class _RegisterCoupomState extends State<RegisterCoupom> {
     GestureDetector cadastrarCupomButton = new GestureDetector(
       onTap: () {
         print("Cadastrar");
+        if (cupomInputController.text == 'valido') {
+          setState(() {
+            cupomClicked = true;
+            foundCoupom = true;
+          });
+        } else if (cupomInputController.text == '') {
+          setState(() {
+            cupomClicked = false;
+          });
+        } else {
+          setState(() {
+            cupomClicked = true;
+            foundCoupom = false;
+          });
+        }
       },
       child: Container(
         height: 125,
@@ -191,10 +236,15 @@ class _RegisterCoupomState extends State<RegisterCoupom> {
                         ],
                       ),
                     ),
-                    Container(height: 175,child:Stack(
-                      children: <Widget>[cadastrarCupomButton],
-                      alignment: Alignment.bottomCenter,
-                    ))
+                    Container(
+                        height: 195,
+                        child: Stack(
+                          children: <Widget>[
+                            successRegistration,
+                            cadastrarCupomButton,
+                          ],
+                          alignment: Alignment.bottomCenter,
+                        ))
                   ],
                 )),
               )
