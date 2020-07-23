@@ -256,6 +256,7 @@ class _ProfileAddressState extends State<ProfileAddress> {
                           height: MediaQuery.of(context).size.height * 0.2,
                           child: cardSelectedAddress(addresses[selectedAddress]),
                         ),
+                        SizedBox(height: 50,),
                         Container(
                           height: MediaQuery.of(context).size.height * 0.25,
                           child: listAddress(addAddressButton(), addresses),
