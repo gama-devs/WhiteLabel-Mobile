@@ -47,6 +47,63 @@ class _CoupomState extends State<Coupom> {
       ),
     );
 
+    Container coupomContainer(coupomTitle, coupomDescription, validationDate) {
+      return Container(
+        height: 150,
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            border: Border.all(
+                color: Color(0xFFF1F1F1), width: 1, style: BorderStyle.solid),
+            borderRadius: BorderRadius.circular(8)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Icon(Icons.confirmation_number, color: Color(0xFFFF805D)),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  coupomTitle,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFFFF805D)),
+                ),
+              ],
+            ),
+            Container(
+              height: 69,
+              child: Text(
+                coupomDescription,
+                style: TextStyle(fontSize: 16, color: Color(0xFF413131)),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(
+                    child: Center(
+                      child: Text(
+                        "Ver regras",
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0xFF413131)),
+                      ),
+                    ),
+                    height: 25,
+                    width: 70,
+                    decoration: BoxDecoration(
+                        color: Color(0xFFF1F1F1),
+                        borderRadius: BorderRadius.circular(4))),
+                Text("Expirado em "+ validationDate,style: TextStyle(fontSize: 10,color: Color(0xFF979797)),)
+              ],
+            )
+          ],
+        ),
+      );
+    }
+
     GestureDetector indisponiveisButton = new GestureDetector(
       onTap: () {
         print("oi");
@@ -87,6 +144,10 @@ class _CoupomState extends State<Coupom> {
       ),
     );
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+    AnimatedContainer containerSuccess(){
+
+    }
 
     GestureDetector cadastrarCupomButton = new GestureDetector(
       onTap: () {
@@ -165,11 +226,15 @@ class _CoupomState extends State<Coupom> {
                               indisponiveisButton
                             ],
                           ),
+                          SizedBox(height: 15,),
+                          coupomContainer("Cupom 20% de desconto",
+                              "CupomPizza20", "20/02/2020")
                         ],
                       ),
                     ),
                     Spacer(),
-                    cadastrarCupomButton
+                    Stack(children: <Widget>[cadastrarCupomButton],)
+                    
                   ],
                 ),
               )
