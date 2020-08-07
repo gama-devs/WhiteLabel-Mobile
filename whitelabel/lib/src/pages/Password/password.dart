@@ -29,7 +29,9 @@ class _PasswordState extends State<Password> {
   bool isSuccesfull = false;
   bool hide = false;
   var maskFormatter = new MaskTextInputFormatter(
-      mask: '#####-####', filter: {"#": RegExp(r'[0-9]')});
+      mask: '(##)#####-####', filter: {"#": RegExp(r'[0-9]')});
+  TextEditingController celInputController = new TextEditingController();
+  TextEditingController passwordInputController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -175,6 +177,7 @@ class _PasswordState extends State<Password> {
     TextFormField celInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite seu celular' : null,
       inputFormatters: [maskFormatter],
+      controller: celInputController,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
           filled: true,
@@ -190,8 +193,10 @@ class _PasswordState extends State<Password> {
             borderSide: const BorderSide(color: Color(0xFFFF805D), width: 2.0),
           )),
     );
+
     TextFormField senhaInput = TextFormField(
       validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
+      controller: passwordInputController,
       obscureText: hide ? true : false,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
@@ -219,7 +224,7 @@ class _PasswordState extends State<Password> {
     Material bottomButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          topLeft: Radius.circular(32), topRight: Radius.circular(32)),
       color: Color(0xFFFF805D),
       child: MaterialButton(
         minWidth: double.infinity,
@@ -322,7 +327,7 @@ class _PasswordState extends State<Password> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       child: Container(
           decoration: BoxDecoration(
-          color: Color(0xFF1BD09A),
+              color: Color(0xFF1BD09A),
               borderRadius: BorderRadius.only(
                   topRight: Radius.circular(20), topLeft: Radius.circular(20))),
           width: MediaQuery.of(context).size.width,

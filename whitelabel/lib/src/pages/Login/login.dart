@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
+import 'package:whitelabel/src/pages/Menu/principal.dart';
 import 'package:whitelabel/src/pages/Password/password.dart';
 
 class Login extends StatefulWidget {
@@ -119,6 +120,7 @@ class _LoginState extends State<Login> {
         ));
 
     TextFormField celInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: celInputController,
       keyboardType: TextInputType.number,
       inputFormatters: [maskFormatter],
@@ -156,7 +158,7 @@ class _LoginState extends State<Login> {
                 hide ? Icon(Icons.visibility_off) : Icon(Icons.remove_red_eye),
           ),
           contentPadding: EdgeInsets.fromLTRB(25.0, 20.0, 30.0, 20.0),
-          hintText: "Escolha sua senha",
+          hintText: "Informe sua senha",
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15.0),
               borderSide: BorderSide(color: Color(0xFFEDF1F7))),
@@ -213,6 +215,7 @@ class _LoginState extends State<Login> {
     ));
 
     TextFormField emailInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: emailInputController,
       validator: (value) => value.isEmpty ? 'Digite seu e-mail' : null,
       decoration: InputDecoration(
@@ -232,6 +235,7 @@ class _LoginState extends State<Login> {
     );
 
     TextFormField nameInput = TextFormField(
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: nameInputController,
       validator: (value) => value.isEmpty ? 'Digite seu nome' : null,
       decoration: InputDecoration(
@@ -251,17 +255,13 @@ class _LoginState extends State<Login> {
     );
 
     Future<String> postLoginButton(BuildContext context) async {
-      print(passwordInputController.text);
-      print(nameInputController.text);
-      print(celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''));
-      print(emailInputController.text);
-      print("TESTE");
       var jsonLogin = json.encode({
         "company_id": 2,
-        "phone": celInputController.text,
+        "phone": celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''),
         "password": passwordInputController.text
       });
       var number = "2";
+    print(jsonLogin);
       try {
         setState(() {
           loading = true;
@@ -289,7 +289,7 @@ class _LoginState extends State<Login> {
           print(parsedJson['data']['user']['name']);
           print('USER');
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Menu()));
+              context, MaterialPageRoute(builder: (context) => Principal()));
 
         } else {
           setState(() {
@@ -309,7 +309,7 @@ class _LoginState extends State<Login> {
     Material loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+          topLeft: Radius.circular(32), topRight: Radius.circular(32)),
       color: Color(0xFFFF805D),
       child: MaterialButton(
         minWidth: double.infinity,
@@ -344,7 +344,7 @@ class _LoginState extends State<Login> {
         "company_id": number,
         "name": nameInputController.text,
         "email": emailInputController.text,
-        "phone": celInputController.text,
+        "phone":celInputController.text.replaceAll('(', '').replaceAll(')','').replaceAll('-', ''),
         "password": passwordInputController.text,
         "password_confirmation": passwordInputController.text,
         "addresses": [
@@ -392,7 +392,7 @@ class _LoginState extends State<Login> {
     Material registerButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+          topLeft: Radius.circular(32), topRight: Radius.circular(32)),
       color: Color(0xFFFF805D),
       child: MaterialButton(
         minWidth: double.infinity,

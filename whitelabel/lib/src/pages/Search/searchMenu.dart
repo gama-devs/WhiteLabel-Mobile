@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whitelabel/src/pages/Menu/principal.dart';
 
 class SearchMenu extends StatefulWidget {
   final List<ProductCategory> productCategories;
@@ -79,7 +80,7 @@ class _SearchMenuState extends State<SearchMenu> {
                     child: GestureDetector(
                         onTap: () {
                           Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) => Menu()));
+                              MaterialPageRoute(builder: (context) => Principal()));
                         },
                         child: Icon(
                           Icons.arrow_back_ios,

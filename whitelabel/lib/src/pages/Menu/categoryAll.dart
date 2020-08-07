@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
+import 'package:whitelabel/src/pages/Menu/principal.dart';
 
 class CategoryAll extends StatefulWidget {
   final ProductCategory productCategories;
@@ -147,7 +148,7 @@ class _CategoryAllState extends State<CategoryAll> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Menu()));
+                                      builder: (context) => Principal()));
                             },
                             child: Icon(
                               Icons.arrow_back_ios,
