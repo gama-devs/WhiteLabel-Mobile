@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whitelabel/src/pages/Menu/menu.dart';
+import 'package:whitelabel/src/pages/Product/product.dart';
 import '../Menu/menu.dart';
+
+remove(String key) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove(key);
+}
+
 class PaymentMethod {
   String description;
   String name;
@@ -13,28 +21,36 @@ class PaymentMethod {
       this.needInput = false});
 }
 
+int selectedPayment = 1;
+int selectedAddress = 0;
+bool creditCardError = false;
+
 class CartItem {
   int quantity;
   FinalProduct product;
   CartItem({this.quantity, this.product});
 
-  getFinalPrice() {
+  double getFinalPrice() {
     double optionAddValue = 0;
-      for (var category in product.selectedOptions) {
-        for (var option in category.options) {
-          optionAddValue += option.price;
-        }
+    for (var category in this.product.selectedOptions) {
+      for (var option in category.options) {
+        optionAddValue += option.price;
       }
-    return ((this.product.product.price + optionAddValue));
+    }
+    return ((this.product.product.price + optionAddValue) * quantity);
   }
-  getAllOptions(){
+
+  getAllOptions() {
+    print(this.product);
     String selectedOptions = '';
-    for (var category in product.selectedOptions) {
-        for (var option in category.options) {
-          selectedOptions += option.name+ ', ';
-        }
+    for (var category in this.product.selectedOptions) {
+      for (var option in category.options) {
+        print(option);
+        selectedOptions += option.name + ', ';
       }
-    return selectedOptions.substring(0,selectedOptions.length-3);
+    }
+    print(selectedOptions);
+    return selectedOptions;
   }
 }
 
@@ -66,32 +82,51 @@ List<PaymentMethod> paymentMethods = [
 ];
 
 List<CartItem> items = [];
+
 class Cart extends StatefulWidget {
   @override
   _CartState createState() => new _CartState();
 }
 
 bool loaded = false;
-class _CartState extends State<Cart> {
-
-FinalProductList finalProductList;
 
 class _CartState extends State<Cart> {
-    loadSharedPrefs() async {
+  FinalProductList finalProductList;
+  String name = '';
+  loadSharedPrefs() async {
     try {
       finalProductList = FinalProductList.fromJson(await read("cartItems"));
-      for(var finalProduct in finalProductList.listProducts){
-        int quantity = 1;
-        while(finalProductList.listProducts.indexOf(finalProduct) != -1){
-          quantity +=1;
-          finalProductList.listProducts.removeAt(finalProductList.listProducts.indexOf(finalProduct));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String token = prefs.getString('tolken_code');
+      print(token);
+      name = prefs.getString('currentUser');
+      print("Ihul");
+      var noDuplicates = finalProductList.listProducts.toSet().toList();
+      try {
+        for (var finalProduct in noDuplicates) {
+          int quantity = 0;
+          for (var duplicate in finalProductList.listProducts) {
+            if (finalProduct == duplicate) {
+              quantity += 1;
+              print(quantity);
+            }
+          }
+          setState(() {
+            items.add(CartItem(product: finalProduct, quantity: quantity));
+          });
         }
-        items.add(CartItem(product:  finalProduct, quantity: quantity));
+      } catch (e) {
+        print(e);
       }
     } catch (Excepetion) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      name = prefs.getString('currentUser');
+
       print("Erro");
+      print(Excepetion);
     }
   }
+
   Size displaySize(BuildContext context) {
     return MediaQuery.of(context).size;
   }
@@ -103,28 +138,31 @@ class _CartState extends State<Cart> {
   double displayWidth(BuildContext context) {
     return displaySize(context).width;
   }
+
   List<String> flagOptions = ["VISA", "MASTERCARD", "ELO"];
   pullContainer() async {
-    await new Future.delayed(const Duration(milliseconds: 1000), (){
-          setState(() {
-      loaded = true;
+    await new Future.delayed(const Duration(milliseconds: 1000), () {
+      setState(() {
+        loaded = true;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        //Para iniciar com o listView na parte de cima
+        _scrollController.jumpTo(
+          _scrollController.position.maxScrollExtent,
+        );
+      });
     });
-            WidgetsBinding.instance.addPostFrameCallback((_) { //Para iniciar com o listView na parte de cima
-      _scrollController.jumpTo(
-        _scrollController.position.maxScrollExtent,
-      );
-    });
-    });
-
   }
+
   @override
   void initState() {
     loadSharedPrefs();
-    super.initState();}
+    super.initState();
+  }
 
   Container cardItemContainer(cardItem) {
     return Container(
-        padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+        padding: EdgeInsets.fromLTRB(20, 10, 10, 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -147,7 +185,7 @@ class _CartState extends State<Cart> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   padding: EdgeInsets.only(bottom: 3),
                   child: Text(
-                    cardItem.getAllOptions,
+                    cardItem.getAllOptions(),
                     style: TextStyle(color: Color(0xFF413131), fontSize: 12),
                   ),
                 ),
@@ -155,8 +193,7 @@ class _CartState extends State<Cart> {
                   width: MediaQuery.of(context).size.width * 0.4,
                   child: Text(
                     "R\$: " +
-                        cardItem
-                            .getFinalPrice()
+                        (cardItem.getFinalPrice() / 100)
                             .toStringAsFixed(2)
                             .replaceAll('.', ','),
                     style: TextStyle(
@@ -169,7 +206,7 @@ class _CartState extends State<Cart> {
             ),
             Spacer(),
             IconButton(
-              padding: EdgeInsets.only(right: 3),
+              padding: EdgeInsets.only(right: 3, bottom: 12),
               icon: Icon(
                 Icons.minimize,
                 size: 20,
@@ -184,7 +221,7 @@ class _CartState extends State<Cart> {
             ),
             Text(cardItem.quantity.toString()),
             IconButton(
-              padding: EdgeInsets.only(left: 3),
+              padding: EdgeInsets.only(),
               icon: Icon(
                 Icons.add,
                 size: 20,
@@ -200,48 +237,97 @@ class _CartState extends State<Cart> {
         ));
   }
 
-  TextEditingController cupomInputController = new TextEditingController();
-  TextEditingController cpfInputController = new TextEditingController();
-  Card cardAddress(address) {
-    return Card(
-      elevation: 0.5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30),
-        side: BorderSide(
-          color: Color(0xFFFF805D),
-          width: 0.7,
-        ),
-      ),
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.6,
-        height: MediaQuery.of(context).size.height * 0.3,
-        padding: EdgeInsets.fromLTRB(20, 10, 10, 0),
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+  Container addAnotherProduct() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Color(0xFF1BD09A), borderRadius: BorderRadius.circular(4)),
+      height: 75,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                "Ainda dá tempo de adicionar\nmais alguma delicia ☺️",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800),
+              )),
+          Spacer(),
+          Container(
+            padding: EdgeInsets.only(right: 10),
+            child: Container(
+              height: 30,
+              width: 80,
+              child: Center(
                 child: Text(
-                  address.name,
+                  'Adicionar',
                   style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
-                child: Text(
-                  address.description,
-                  style: TextStyle(
-                      color: Color(0xFF413131),
+                      color: Color(0xFF1BD09A),
                       fontSize: 14,
-                      fontWeight: FontWeight.w400),
+                      fontWeight: FontWeight.w800),
                 ),
               ),
-            ]),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4), color: Colors.white),
+            ),
+          )
+        ],
       ),
     );
+  }
+
+  TextEditingController cupomInputController = new TextEditingController();
+  TextEditingController cpfInputController = new TextEditingController();
+  Card cardAddress(address, index, indexSelected) {
+    return Card(
+        elevation: index == indexSelected ? 0.0 : 1.5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+          side: index == indexSelected
+              ? BorderSide(
+                  color: Color(0xFFFF805D),
+                  width: 0.7,
+                )
+              : BorderSide(color: Color(0x00), width: 0),
+        ),
+        child: GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedAddress = index;
+            });
+          },
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.height * 0.3,
+            padding: EdgeInsets.fromLTRB(20, 10, 10, 0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+                    child: Text(
+                      address.name,
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+                    child: Text(
+                      address.description,
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ]),
+          ),
+        ));
   }
 
   GestureDetector addAddressButton() {
@@ -264,7 +350,7 @@ class _CartState extends State<Cart> {
   TextFormField cupomInput() {
     return TextFormField(
       controller: cupomInputController,
-      validator: (value) => value.isEmpty ? 'Digite sua senha' : null,
+      validator: (value) => value.isEmpty ? 'Digite o cupom de desconto' : null,
       decoration: InputDecoration(
           fillColor: Color(0xFFEDF1F7),
           filled: true,
@@ -279,7 +365,7 @@ class _CartState extends State<Cart> {
                     color: Color(0xFF1BD09A),
                     borderRadius: BorderRadius.circular(15)),
                 width: 40,
-                height: 35,
+                height: 40,
                 alignment: Alignment.center,
                 child: Icon(
                   Icons.check,
@@ -309,13 +395,14 @@ class _CartState extends State<Cart> {
         child: addButton,
       ),
     ));
-    for (var address in addresses) {
+    for (int i = 0; i < addresses.length; i++) {
+      var address = addresses[i];
       print(address);
       childs.add(Container(
           padding: EdgeInsets.all(10),
           child: Align(
             alignment: Alignment.topCenter,
-            child: cardAddress(address),
+            child: cardAddress(address, i, selectedAddress),
           )));
     }
     return ListView(
@@ -347,7 +434,10 @@ class _CartState extends State<Cart> {
               ),
               Spacer(),
               Text(
-                "R\$: " + productsPrice.toStringAsFixed(2).replaceAll('.', ','),
+                "R\$ " +
+                    (productsPrice / 100)
+                        .toStringAsFixed(2)
+                        .replaceAll('.', ','),
                 style: TextStyle(
                   color: Color(0xFF413131),
                   fontSize: 16,
@@ -366,7 +456,10 @@ class _CartState extends State<Cart> {
               ),
               Spacer(),
               Text(
-                "R\$: " + deliveryPrice.toStringAsFixed(2).replaceAll('.', ','),
+                "R\$ " +
+                    (deliveryPrice / 100)
+                        .toStringAsFixed(2)
+                        .replaceAll('.', ','),
                 style: TextStyle(
                   color: Color(0xFF413131),
                   fontSize: 16,
@@ -388,7 +481,8 @@ class _CartState extends State<Cart> {
               ),
               Spacer(),
               Text(
-                "R\$: " + totalPrice.toStringAsFixed(2).replaceAll('.', ','),
+                "R\$ " +
+                    (totalPrice / 100).toStringAsFixed(2).replaceAll('.', ','),
                 style: TextStyle(
                     color: Color(0xFFFF805D),
                     fontSize: 18,
@@ -408,23 +502,102 @@ class _CartState extends State<Cart> {
             color: Color(0xFFEDF1F7), borderRadius: BorderRadius.circular(12)),
         child: Container(
             padding: EdgeInsets.all(5),
-            child: DropdownButton(
-              underline: SizedBox(),
-              value: dropDownValue == '' ? null : dropDownValue,
-              isExpanded: true,
-              hint: Text("Informe a bandeira do cartão"),
-              onChanged: (newValue) {
-                setState(() {
-                  dropDownValue = newValue;
-                });
-              },
-              items: options.map<DropdownMenuItem<String>>((value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            )));
+            child: new Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: Color(0xFFEDF1F7),
+                ),
+                child: DropdownButton(
+                  underline: SizedBox(),
+                  value: dropDownValue == '' ? null : dropDownValue,
+                  isExpanded: false,
+                  hint: Text("Informe a bandeira do cartão"),
+                  onChanged: (newValue) {
+                    setState(() {
+                      dropDownValue = newValue;
+                    });
+                  },
+                  items: options.map<DropdownMenuItem<String>>((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          padding: EdgeInsets.only(left:10,right:10),
+                          child: Text(value)),
+                    );
+                  }).toList(),
+                ))));
+  }
+
+  AnimatedContainer cardmethod(indexCard) {
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 700),
+        curve: Curves.easeInOutBack,
+        height: 105,
+        child: GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedPayment = indexCard;
+                dropDownValue = '';
+              });
+            },
+            child: Column(children: <Widget>[
+              Card(
+                elevation: indexCard == selectedPayment ? 0 : 1.5,
+                shape: indexCard == selectedPayment
+                    ? RoundedRectangleBorder(
+                        side: BorderSide(
+                          color: Color(0xffFF805D),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      )
+                    : RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: Color(0x00), width: 0)),
+                child: Container(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                    child: Row(children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                "Cartão pelo app",
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Color(0xff413131),
+                                    fontWeight: FontWeight.w800),
+                              )),
+                          Container(
+                              padding: EdgeInsets.all(10),
+                              child: Row(children: <Widget>[
+                                Icon(Icons.credit_card),
+                                Text(
+                                  "**** **** **** 5285",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Color(0xff413131),
+                                      fontWeight: FontWeight.w300),
+                                )
+                              ])),
+                        ],
+                      ),
+                      Spacer(),
+                      Container(
+                        padding: EdgeInsets.all(15),
+                        child: Center(
+                          child: Text(
+                            "Alterar",
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ),
+                    ])),
+              ),
+            ])));
   }
 
   AnimatedContainer method(paymentMethod, indexCard) {
@@ -441,7 +614,7 @@ class _CartState extends State<Cart> {
             },
             child: Column(children: <Widget>[
               Card(
-                elevation: 0.5,
+                elevation: indexCard == selectedPayment ? 0 : 1.5,
                 shape: indexCard == selectedPayment
                     ? RoundedRectangleBorder(
                         side: BorderSide(
@@ -451,7 +624,7 @@ class _CartState extends State<Cart> {
                       )
                     : RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                      ),
+                        side: BorderSide(color: Color(0x00), width: 0)),
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.9,
                   padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
@@ -493,8 +666,9 @@ class _CartState extends State<Cart> {
 
   Column allPaymentList() {
     List<Widget> cardList = [];
+    cardList.add(cardmethod(0));
     for (int i = 0; i < paymentMethods.length; i++) {
-      cardList.add(Center(child: method(paymentMethods[i], i)));
+      cardList.add(Center(child: method(paymentMethods[i], i + 1)));
     }
     return Column(children: cardList);
   }
@@ -517,7 +691,7 @@ class _CartState extends State<Cart> {
                     color: Color(0xFF1BD09A),
                     borderRadius: BorderRadius.circular(15)),
                 width: 40,
-                height: 35,
+                height: 40,
                 alignment: Alignment.center,
                 child: Icon(
                   Icons.check,
@@ -537,9 +711,11 @@ class _CartState extends State<Cart> {
           )),
     );
   }
+
   ScrollController _scrollController = new ScrollController();
   AnimatedContainer errorButton() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {//Para animar o botão crescendo pra cima, ao invés de pra baixo, eu rolo o listView até o final
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      //Para animar o botão crescendo pra cima, ao invés de pra baixo, eu rolo o listView até o final
       _scrollController.animateTo(
         0.0,
         curve: Curves.easeOut,
@@ -577,8 +753,14 @@ class _CartState extends State<Cart> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
+                      items.clear();
                       creditCardError = false;
+                      remove("cartItems");
+                      loaded = false;
                     });
+
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => Menu()));
                   },
                   child: Container(
                       width: MediaQuery.of(context).size.width * 0.7,
@@ -624,7 +806,8 @@ class _CartState extends State<Cart> {
             child: Container(
               padding: EdgeInsets.only(bottom: 15),
               child: Text(
-                totalPrice.toStringAsFixed(2).replaceAll('.', ',') +
+                "R\$" +
+                    (totalPrice / 100).toStringAsFixed(2).replaceAll('.', ',') +
                     " Confirmar pedido",
                 style: TextStyle(
                     fontSize: 20,
@@ -640,96 +823,103 @@ class _CartState extends State<Cart> {
     if (!loaded) pullContainer();
 
     return AnimatedContainer(
-      curve: Curves.easeOutBack,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32), topRight: Radius.circular(32))),
-      height: loaded ? MediaQuery.of(context).size.height * 0.8 : 0,
-      width: MediaQuery.of(context).size.width,
-      duration: Duration(milliseconds: 1200),
-      child: Container(padding: EdgeInsets.only(top:10),child:SingleChildScrollView(
-        reverse: true,
-        controller: _scrollController,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "🍕 Itens",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Column(
-                  children:
-                      items.map((item) => cardItemContainer(item)).toList()),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "🛵 Endereço de entrega",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.25,
-                child: listAddress(addAddressButton(), addresses),
-              ),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "🤑 Cupom de desconto",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Center(
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: cupomInput(),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "😎 Pagamento",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              finalPrice(items, 10),
-              allPaymentList(),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "📝 CPF ou CNPJ na nota fiscal",
-                  style: TextStyle(
-                      color: Color(0xFF413131),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800),
-                ),
-              ),
-              Center(
-                child: Container(
-                  padding: EdgeInsets.only(bottom: 50),
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: cpfInput(),
-                ),
-              ),
-              creditCardError ? errorButton() : finishButton(),
-            ]),
-      ),
-    ));
+        curve: Curves.easeOutBack,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(32), topRight: Radius.circular(32))),
+        height: loaded ? MediaQuery.of(context).size.height * 0.8 : 0,
+        width: MediaQuery.of(context).size.width,
+        duration: Duration(milliseconds: 1200),
+        child: Container(
+          padding: EdgeInsets.only(top: 10),
+          child: SingleChildScrollView(
+            reverse: true,
+            controller: _scrollController,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "🍕 Itens",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Column(
+                      children: items
+                          .map((item) => cardItemContainer(item))
+                          .toList()),
+                  Container(
+                    padding: EdgeInsets.all(15),
+                    child: addAnotherProduct(),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "🛵 Endereço de entrega",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    child: listAddress(addAddressButton(), addresses),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "🤑 Cupom de desconto",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: cupomInput(),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "😎 Pagamento",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  finalPrice(items, 1000),
+                  allPaymentList(),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "📝 CPF ou CNPJ na nota fiscal",
+                      style: TextStyle(
+                          color: Color(0xFF413131),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  Center(
+                    child: Container(
+                      padding: EdgeInsets.only(bottom: 50),
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: cpfInput(),
+                    ),
+                  ),
+                  creditCardError ? errorButton() : finishButton(),
+                ]),
+          ),
+        ));
   }
 
   @override
@@ -753,7 +943,7 @@ class _CartState extends State<Cart> {
                 ),
               ),
               Text(
-                customerName,
+                name,
                 style: TextStyle(
                     fontSize: 22,
                     color: Colors.white,

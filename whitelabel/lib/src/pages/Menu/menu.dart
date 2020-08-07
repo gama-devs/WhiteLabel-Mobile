@@ -22,17 +22,21 @@ class ProductCategory {
   int showItems;
   ProductCategory(
       {this.name, this.description, this.products, this.showItems = 4});
-  Map<String, dynamic> toJson() => {
+  Map toJson() => {
         'name': name,
         'description': description,
         'products': json.encode(products),
         'showItems': showItems
       };
   factory ProductCategory.fromJson(dynamic json) {
-    var productObjsJson = json['products'] as List;
+    var productObjsJson = jsonDecode(json['products']) as List;
     List<Produto> productObjs = productObjsJson.map((productJson) => Produto.fromJson(productJson)).toList();
     return ProductCategory(name:json['name'],description: json['description'],products: productObjs,showItems: json['showItems']);
   }
+      @override
+  String toString() {
+    return '{ ${this.name}, ${this.description}, ${this.products}, ${this.showItems} }';
+  } 
 }
 
 class Produto {
@@ -49,11 +53,16 @@ class Produto {
       this.price,
       this.image,
       this.jsonData = ''});
-  Map<String, dynamic> toJson() =>
+  Map toJson() =>
       {'image': image, 'name': name,'description':description,'options':options,'price':price,'jsonData':jsonData};
   factory Produto.fromJson(dynamic json) {
-    return Produto(image: json['image'], name : json['name'],description:json['description'],options:json['options'],price:json['price'],jsonData:json['jsonData']);
+    return Produto(image: json['image'] as String, name : json['name'] as String,description:json['description']as String,options:json['options'] as String ,price:json['price'],jsonData:json['jsonData']);
   }
+    @override
+  String toString() {
+    return '{ ${this.name}, ${this.description}, ${this.options}, ${this.price}, ${this.image}, ${this.jsonData} }';
+  }
+
 }
 
 class Menu extends StatefulWidget {
@@ -80,6 +89,12 @@ class _MenuState extends State<Menu> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('tolken_code');
   }
+  
+  getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String user = prefs.getString('currentUser');
+  }
+
 
   var loading = false;
 
@@ -229,7 +244,7 @@ class _MenuState extends State<Menu> {
     );
 
     CarouselSlider carouselPromos = CarouselSlider(
-      options: CarouselOptions(height: 160, viewportFraction: 0.8),
+      options: CarouselOptions(height: 175, viewportFraction: 0.8),
       items: promoImages
           .map((item) => Container(
                 padding: EdgeInsets.only(right: 5, left: 5),
@@ -278,14 +293,17 @@ class _MenuState extends State<Menu> {
           height: MediaQuery.of(context).size.height / 2.5),
       items: produtos
           .map((produto) => Container(
+            padding: EdgeInsets.only(right: 10),
+            child:
+            Container(
+            decoration: BoxDecoration(border: Border.all(color: Color(0xFFF1F1F1))),
                 child: Center(
                     child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  
                   children: <Widget>[
                     Container(
                         child: Container(
-                      padding: EdgeInsets.only(right: 10),
+                      
                       width: MediaQuery.of(context).size.width / 1.8,
                       child: Column(
                         children: <Widget>[
@@ -373,7 +391,7 @@ class _MenuState extends State<Menu> {
                     )),
                   ],
                 )),
-              ))
+              )))
           .toList(),
     );
 
