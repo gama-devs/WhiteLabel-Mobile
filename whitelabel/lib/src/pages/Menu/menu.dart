@@ -15,6 +15,7 @@ import 'package:whitelabel/src/pages/Product/product.dart';
 import 'package:whitelabel/src/pages/Orders/cart.dart';
 
 import '../Orders/cart.dart';
+
 class ProductCategory {
   String name;
   String description;
@@ -30,13 +31,19 @@ class ProductCategory {
       };
   factory ProductCategory.fromJson(dynamic json) {
     var productObjsJson = jsonDecode(json['products']) as List;
-    List<Produto> productObjs = productObjsJson.map((productJson) => Produto.fromJson(productJson)).toList();
-    return ProductCategory(name:json['name'],description: json['description'],products: productObjs,showItems: json['showItems']);
+    List<Produto> productObjs = productObjsJson
+        .map((productJson) => Produto.fromJson(productJson))
+        .toList();
+    return ProductCategory(
+        name: json['name'],
+        description: json['description'],
+        products: productObjs,
+        showItems: json['showItems']);
   }
-      @override
+  @override
   String toString() {
     return '{ ${this.name}, ${this.description}, ${this.products}, ${this.showItems} }';
-  } 
+  }
 }
 
 class Produto {
@@ -53,16 +60,27 @@ class Produto {
       this.price,
       this.image,
       this.jsonData = ''});
-  Map toJson() =>
-      {'image': image, 'name': name,'description':description,'options':options,'price':price,'jsonData':jsonData};
+  Map toJson() => {
+        'image': image,
+        'name': name,
+        'description': description,
+        'options': options,
+        'price': price,
+        'jsonData': jsonData
+      };
   factory Produto.fromJson(dynamic json) {
-    return Produto(image: json['image'] as String, name : json['name'] as String,description:json['description']as String,options:json['options'] as String ,price:json['price'],jsonData:json['jsonData']);
+    return Produto(
+        image: json['image'] as String,
+        name: json['name'] as String,
+        description: json['description'] as String,
+        options: json['options'] as String,
+        price: json['price'],
+        jsonData: json['jsonData']);
   }
-    @override
+  @override
   String toString() {
     return '{ ${this.name}, ${this.description}, ${this.options}, ${this.price}, ${this.image}, ${this.jsonData} }';
   }
-
 }
 
 class Menu extends StatefulWidget {
@@ -225,12 +243,9 @@ class _MenuState extends State<Menu> {
     GestureDetector profileButton = GestureDetector(
       onTap: () {
         Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Cart(
-                              )));
+            context, MaterialPageRoute(builder: (context) => Cart()));
       },
-        child: Container(
+      child: Container(
         width: MediaQuery.of(context).size.width / 7.5,
         height: MediaQuery.of(context).size.width / 7.5,
         alignment: Alignment.center,
@@ -364,7 +379,7 @@ class _MenuState extends State<Menu> {
                                       Container(
                                         padding: EdgeInsets.only(right: 3),
                                         child: Text(
-                                          "R\$:" +
+                                          "R\$ " +
                                               (produto.price / 100)
                                                   .toStringAsFixed(2)
                                                   .replaceAll('.', ','),
@@ -429,6 +444,7 @@ class _MenuState extends State<Menu> {
                                 ),
                           Spacer(),
                           Container(
+                            padding: EdgeInsets.only(right: 15),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.pushReplacement(
@@ -475,13 +491,21 @@ class _MenuState extends State<Menu> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.45,
                       height: MediaQuery.of(context).size.width * 0.35,
-                      decoration: BoxDecoration(border: Border()),
                       child: productList[j].image == null
-                          ? Image.asset("assets/burg1.png", fit: BoxFit.contain)
-                          : Image.network(
-                              "http://50.16.146.1/storage/" +
-                                  productList[j].image,
-                              fit: BoxFit.cover),
+                          ? ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8)),
+                              child: Image.asset("assets/burg1.png",
+                                  fit: BoxFit.contain))
+                          : ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8)),
+                              child: Image.network(
+                                  "http://50.16.146.1/storage/" +
+                                      productList[j].image,
+                                  fit: BoxFit.cover)),
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
@@ -497,10 +521,10 @@ class _MenuState extends State<Menu> {
                                   fontWeight: FontWeight.w800),
                             ),
                             Container(
-                                height: 40,
+                                
                                 child: productList[j].description == null
                                     ? Text(
-                                        "Descricao do produto",
+                                        "Descricao do produto\n",
                                         style: TextStyle(
                                             color: Color(0xFF413131),
                                             fontSize: 12),
@@ -516,7 +540,7 @@ class _MenuState extends State<Menu> {
                                 Container(
                                   padding: EdgeInsets.only(right: 3),
                                   child: Text(
-                                    "R\$: " +
+                                    "R\$ " +
                                         (productList[j].price / 100)
                                             .toStringAsFixed(2)
                                             .replaceAll('.', ','),
